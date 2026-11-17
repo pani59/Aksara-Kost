@@ -26,9 +26,9 @@ function e($value) {
 }
 
 // Foto profil session / database
-$foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESSION['foto']))
-    ? '../uploads/' . $_SESSION['foto'] . '?v=' . time()
-    : '../uploads/default.jpeg';
+$foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION['foto']))
+    ? 'uploads/' . $_SESSION['foto'] . '?v=' . time()
+    : 'uploads/default.jpeg';
 
 $nama_user = $user['nama'] ?? $_SESSION['nama'] ?? 'User';
 $foto_profil = e($foto_session);
@@ -42,7 +42,7 @@ $role_user = e($user['role'] ?? 'pengguna');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tentang Kami - AKSARA KOST</title>
-    <link rel="icon" href="../uploads/logokost.png" type="image/png">
+    <link rel="icon" href="uploads/logokost.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -444,7 +444,7 @@ $role_user = e($user['role'] ?? 'pengguna');
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="../uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -459,7 +459,7 @@ $role_user = e($user['role'] ?? 'pengguna');
 
         <?php if ($user_id): ?>
         <a href="profil.php" class="btn-profile">
-            <img src="<?= $foto_profil ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='../uploads/default.jpeg';">
+            <img src="<?= $foto_profil ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='uploads/default.jpeg';">
             <span><?= $nama_tampil ?></span>
         </a>
         <?php else: ?>
@@ -477,7 +477,7 @@ $role_user = e($user['role'] ?? 'pengguna');
     <aside class="sidebar">
         <div class="sidebar-user">
             <div class="avatar-container">
-                <img src="<?= $foto_profil ?>" alt="Foto Profil" onerror="this.src='../uploads/default.jpeg';">
+                <img src="<?= $foto_profil ?>" alt="Foto Profil" onerror="this.src='uploads/default.jpeg';">
             </div>
             <strong><?= $nama_tampil ?></strong>
             <span><?= $role_user ?></span>
@@ -526,7 +526,7 @@ $role_user = e($user['role'] ?? 'pengguna');
                 <p>Solusi terbaik untuk menemukan kost impianmu dengan mudah, aman, dan terpercaya.</p>
             </div>
             <div class="welcome-icon">
-                <img src="../uploads/logokost.png" alt="Logo Aksara Kost">
+                <img src="uploads/logokost.png" alt="Logo Aksara Kost">
             </div>
         </section>
 
@@ -591,7 +591,7 @@ $role_user = e($user['role'] ?? 'pengguna');
         <!-- FOOTER / INFO KECIL -->
         <footer class="footer-card">
             <div class="footer-logo-box">
-                <img src="../uploads/logokost.png" alt="Logo Aksara Kost">
+                <img src="uploads/logokost.png" alt="Logo Aksara Kost">
                 <div class="footer-brand-text">
                     <span class="footer-brand-title">Aksara</span>
                     <span class="footer-brand-subtitle">KOST</span>
