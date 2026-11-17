@@ -6,5 +6,5 @@ session_unset();
 session_destroy();
 
 // Langsung mengarahkan ke halaman Beranda utama (index.php)
-header("Location: beranda.php");
+header("Location: index.php");
 exit;

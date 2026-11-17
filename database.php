@@ -3,7 +3,7 @@
 $host = "localhost";
 $user = "root";
 $password = "";
-$database = "kos-finder";
+$database = "aksara_kost";
 
 $conn = mysqli_connect($host, $user, $password, $database);
 

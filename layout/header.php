@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'database.php';
+require_once '../database.php';
 
 $nama_bulan_indo = [
     1 => 'Januari',
@@ -304,7 +304,7 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
             <li class="nav-item d-flex align-items-center pr-2">
                 <div class="admin-profile-badge">
                     <a class="d-flex align-items-center text-decoration-none" href="#">
-                        <img src="uploads/Vani.jpeg" class="img-circle elevation-1" alt="User">
+                        <img src="../uploads/Vani.jpeg" class="img-circle elevation-1" alt="User">
                         <span class="text-secondary font-weight-bold ml-2">Admin</span>
                     </a>
                 </div>
@@ -312,15 +312,8 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
         </ul>
     </nav>
 
-    <!-- SIDEBAR -->
-<a href="index.php" class="brand-link">
-    <img src="uploads/logo tata.png"
-         alt="Logo TATA KOST"
-         class="brand-image"
-         style="opacity: 1;">
+    
 
-    <span class="brand-text font-weight-bold">TATA KOST</span>
-</a>
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
         <a href="index.php" class="brand-link py-2" style="visibility:hidden;height:0;padding:0;margin:0;border:none;"></a>
 
@@ -328,7 +321,7 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
             <!-- USER PANEL -->
             <div class="user-panel mt-2 pb-3 mb-3 d-flex align-items-center">
                 <div class="image">
-                    <img src="uploads/Vani.jpeg" class="img-circle elevation-2" alt="User Image">
+                    <img src="../uploads/Vani.jpeg" class="img-circle elevation-2" alt="User Image">
                 </div>
                 <div class="info">
                     <a href="#" class="d-block">VANI PERMATASARI</a>

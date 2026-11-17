@@ -399,7 +399,7 @@ $default_image = '../assets/images/default-kos.jpg';
 <!-- NAVBAR -->
 <nav class="navbar">
     <div class="navbar-container">
-        <a href="beranda.php" class="logo">
+        <a href="index.php" class="logo">
             <img src="../uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
@@ -408,7 +408,7 @@ $default_image = '../assets/images/default-kos.jpg';
         </a>
 
         <div class="nav-center">
-            <a href="beranda.php" class="btn-back-home">
+            <a href="index.php" class="btn-back-home">
                 <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
             </a>
         </div>

@@ -26,7 +26,7 @@ if (!isset($db) || mysqli_connect_errno()) {
 $kos_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($kos_id <= 0) {
-    header("Location: beranda.php");
+    header("Location: index.php");
     exit;
 }
 
@@ -296,7 +296,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
 <!-- NAVBAR -->
 <nav class="navbar">
     <div class="navbar-container">
-        <a href="beranda.php" class="logo">
+        <a href="index.php" class="logo">
             <img src="../uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
@@ -304,9 +304,9 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
             </div>
         </a>
         <div class="nav-menu">
-            <a href="beranda.php">Beranda</a>
+            <a href="index.php">Beranda</a>
             <a href="daftarkos.php">Daftar Kost</a>
-            <a href="beranda.php#tentang">Tentang</a>
+            <a href="index.php#tentang">Tentang</a>
         </div>
         <div>
             <?php if (isset($_SESSION['user_id'])): ?>

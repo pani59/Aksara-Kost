@@ -260,7 +260,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
 <!-- NAVBAR -->
 <nav class="navbar">
     <div class="navbar-container">
-        <a href="beranda.php" class="logo">
+        <a href="index.php" class="logo">
             <img src="../uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
@@ -269,9 +269,9 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
         </a>
 
         <div class="nav-menu">
-            <a href="beranda.php">Beranda</a>
+            <a href="index.php">Beranda</a>
             <a href="daftarkos.php" class="active-link">Kost</a>
-            <a href="beranda.php#tentang">Tentang</a>
+            <a href="index.php#tentang">Tentang</a>
         </div>
 
         <div>

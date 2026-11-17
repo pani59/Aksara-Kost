@@ -92,13 +92,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // PENGALIHAN BERDASARKAN ROLE YANG DIPILIH / AKTIF
                     $active_role = strtolower(trim($_SESSION['role']));
                     if ($active_role === 'admin') {
-                        header("Location: ../index.php");
+                        header("Location: ../admin/index.php");
                         exit;
                     } elseif ($active_role === 'owner') {
-                        header("Location: ../index2.php");
+                        header("Location: ../owner/index2.php");
                         exit;
                     } else {
-                        header("Location: beranda.php");
+                        header("Location: index.php");
                         exit;
                     }
                 }
@@ -308,7 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ================================= -->
 <nav class="navbar">
     <div class="navbar-container">
-        <a href="beranda.php" class="logo">
+        <a href="index.php" class="logo">
             <img src="../uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
@@ -317,10 +317,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </a>
 
         <div class="nav-menu">
-            <a href="beranda.php" class="nav-item">Beranda</a>
-            <a href="beranda.php#daftar-kos" class="nav-item">Kost</a>
-            <a href="beranda.php#peta-lokasi" class="nav-item">Peta</a>
-            <a href="beranda.php#tentang" class="nav-item">Tentang</a>
+            <a href="index.php" class="nav-item">Beranda</a>
+            <a href="index.php#daftar-kos" class="nav-item">Kost</a>
+            <a href="index.php#peta-lokasi" class="nav-item">Peta</a>
+            <a href="index.php#tentang" class="nav-item">Tentang</a>
         </div>
 
         <div class="nav-spacer"></div>
