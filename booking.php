@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../database.php';
+require_once __DIR__ . '/database.php';
 
 // Menyesuaikan koneksi database menggunakan variabel $conn / $db / $koneksi
 if (!isset($db) && isset($conn)) {
@@ -53,10 +53,10 @@ function e($value) {
     return htmlspecialchars((string)($value ?? '-'), ENT_QUOTES, 'UTF-8');
 }
 
-// Foto profil
-$foto_user = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESSION['foto'])) 
-    ? '../uploads/' . $_SESSION['foto'] . '?v=' . time() 
-    : '../uploads/default.jpeg';
+// Foto profil (diubah karena sudah di luar folder aksara)
+$foto_user = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION['foto'])) 
+    ? 'uploads/' . $_SESSION['foto'] . '?v=' . time() 
+    : 'uploads/default.jpeg';
 
 // Mengambil data booking dan foto kos terkait
 $q_booking = mysqli_query($db, "
@@ -81,7 +81,7 @@ $q_booking = mysqli_query($db, "
     ORDER BY b.booking_id DESC
 ");
 
-$default_image = '../assets/images/default-kos.jpg';
+$default_image = 'assets/images/default-kos.jpg';
 ?>
 
 <!DOCTYPE html>
@@ -90,14 +90,14 @@ $default_image = '../assets/images/default-kos.jpg';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Status Pesanan / Booking - AKSARA KOST</title>
-    <link rel="icon" href="../uploads/logokost.png" type="image/png">
+    <link rel="icon" href="uploads/logokost.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         /* =================================
-           RESET DAN DASAR (SAGE GREEN THEME)
+            RESET DAN DASAR (SAGE GREEN THEME)
         ================================= */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
@@ -117,7 +117,7 @@ $default_image = '../assets/images/default-kos.jpg';
         }
 
         /* =================================
-           NAVBAR DENGAN TOMBOL KEMBALI
+            NAVBAR DENGAN TOMBOL KEMBALI
         ================================= */
         .navbar { background: rgba(250,249,246,0.96); backdrop-filter: blur(15px); border-bottom: 1px solid var(--sage-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .navbar-container { width: 100%; max-width: 1300px; margin: auto; padding: 14px 25px; display: flex; align-items: center; justify-content: space-between; position: relative; }
@@ -174,7 +174,7 @@ $default_image = '../assets/images/default-kos.jpg';
         }
 
         /* =================================
-           LAYOUT UTAMA
+            LAYOUT UTAMA
         ================================= */
         .layout {
             max-width: 1300px;
@@ -187,7 +187,7 @@ $default_image = '../assets/images/default-kos.jpg';
         }
 
         /* =================================
-           SIDEBAR
+            SIDEBAR
         ================================= */
         .sidebar {
             background: #ffffff;
@@ -237,7 +237,7 @@ $default_image = '../assets/images/default-kos.jpg';
         }
 
         /* =================================
-           MAIN CONTENT
+            MAIN CONTENT
         ================================= */
         .main-content { min-width: 0; }
 
@@ -400,7 +400,7 @@ $default_image = '../assets/images/default-kos.jpg';
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="../uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -418,7 +418,7 @@ $default_image = '../assets/images/default-kos.jpg';
                 src="<?= e($foto_user); ?>"
                 alt="Profil"
                 class="navbar-profile-img"
-                onerror="this.src='../uploads/default.jpeg';"
+                onerror="this.src='uploads/default.jpeg';"
             >
             <span><?= e($user['nama'] ?? $_SESSION['nama']); ?></span>
         </a>
@@ -435,7 +435,7 @@ $default_image = '../assets/images/default-kos.jpg';
                 <img
                     src="<?= e($foto_user); ?>"
                     alt="Foto Profil"
-                    onerror="this.src='../uploads/default.jpeg';"
+                    onerror="this.src='uploads/default.jpeg';"
                 >
             </div>
             <strong><?= e($user['nama']); ?></strong>
@@ -485,7 +485,7 @@ $default_image = '../assets/images/default-kos.jpg';
                 <p>Pantau riwayat dan status pengajuan booking kost kamu di sini.</p>
             </div>
             <div class="welcome-icon">
-                <img src="../uploads/logokost.png" alt="Logo Aksara Kost">
+                <img src="uploads/logokost.png" alt="Logo Aksara Kost">
             </div>
         </section>
 
@@ -507,7 +507,7 @@ $default_image = '../assets/images/default-kos.jpg';
                 <?php while ($b = mysqli_fetch_assoc($q_booking)): ?>
                     <?php 
                         $foto = !empty($b['foto_kos'])
-                            ? '../uploads/' . $b['foto_kos']
+                            ? 'uploads/' . $b['foto_kos']
                             : $default_image;
 
                         $st = strtolower(trim($b['status_booking'])); 
@@ -523,7 +523,7 @@ $default_image = '../assets/images/default-kos.jpg';
                                 onerror="this.onerror=null; this.src='<?= e($default_image); ?>';"
                             >
                             <div class="logo-badge">
-                                <img src="../uploads/logokost.png" alt="Logo Aksara Kost">
+                                <img src="uploads/logokost.png" alt="Logo Aksara Kost">
                             </div>
                         </div>
 

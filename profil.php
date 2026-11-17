@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../database.php';
+require_once __DIR__ . '/database.php';
 
 // Menyesuaikan koneksi database
 if (!isset($db) && isset($conn)) {
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
 
                 $nama_foto = 'user_' . $user_id . '.' . $file_ext;
-                $tujuan = '../uploads/' . $nama_foto;
+                $tujuan = 'uploads/' . $nama_foto;
 
                 if (move_uploaded_file($file_tmp, $tujuan)) {
                     $upload_berhasil = true;
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 nama = '$nama',
                 email = '$email',
                 no_wa = '$no_wa'
-             WHERE user_id = '$user_id'"
+               WHERE user_id = '$user_id'"
         );
 
         if ($update) {
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $foto_lama !== 'default.jpeg' &&
                     $foto_lama !== $nama_foto
                 ) {
-                    $old_file = '../uploads/' . basename($foto_lama);
+                    $old_file = 'uploads/' . basename($foto_lama);
 
                     if (file_exists($old_file)) {
                         unlink($old_file);
@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Bersihkan file dengan ekstensi lama
                 foreach (['jpg', 'jpeg', 'png', 'gif'] as $ext) {
-                    $old_file = '../uploads/user_' . $user_id . '.' . $ext;
+                    $old_file = 'uploads/user_' . $user_id . '.' . $ext;
 
                     if (
                         file_exists($old_file) &&
@@ -136,10 +136,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // FOTO PROFIL
 $foto_user = (
     !empty($_SESSION['foto']) &&
-    file_exists('../uploads/' . basename($_SESSION['foto']))
+    file_exists('uploads/' . basename($_SESSION['foto']))
 )
-    ? '../uploads/' . basename($_SESSION['foto']) . '?v=' . time()
-    : '../uploads/default.jpeg';
+    ? 'uploads/' . basename($_SESSION['foto']) . '?v=' . time()
+    : 'uploads/default.jpeg';
 
 $nama_user = htmlspecialchars($user['nama'] ?? '');
 $email_user = htmlspecialchars($user['email'] ?? '');
@@ -155,15 +155,15 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profil - AKSARA KOST</title>
-    <link rel="icon" href="../uploads/logokost.png" type="image/png">
+    <title>Profil Saya - AKSARA KOST</title>
+    <link rel="icon" href="uploads/logokost.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         /* =================================
-           RESET DAN DASAR (SAGE GREEN THEME)
+            RESET DAN DASAR (SAGE GREEN THEME)
         ================================= */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
@@ -183,7 +183,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         }
 
         /* =================================
-           NAVBAR DENGAN TOMBOL KEMBALI
+            NAVBAR DENGAN TOMBOL KEMBALI
         ================================= */
         .navbar { background: rgba(250,249,246,0.96); backdrop-filter: blur(15px); border-bottom: 1px solid var(--sage-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .navbar-container { width: 100%; max-width: 1300px; margin: auto; padding: 14px 25px; display: flex; align-items: center; justify-content: space-between; position: relative; }
@@ -240,7 +240,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         }
 
         /* =================================
-           LAYOUT UTAMA
+            LAYOUT UTAMA
         ================================= */
         .layout {
             max-width: 1300px;
@@ -253,7 +253,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         }
 
         /* =================================
-           SIDEBAR
+            SIDEBAR
         ================================= */
         .sidebar {
             background: #ffffff;
@@ -303,11 +303,10 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         }
 
         /* =================================
-           MAIN CONTENT
+            MAIN CONTENT
         ================================= */
         .main-content { min-width: 0; }
 
-        /* WELCOME BANNER */
         .welcome-banner {
             min-height: 170px; padding: 30px 38px; border-radius: 22px;
             background: linear-gradient(120deg, #D1E0D1, #EBF2EB);
@@ -331,7 +330,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         }
         .welcome-circle { position: absolute; width: 240px; height: 240px; background: rgba(255,255,255,0.3); border-radius: 50%; right: 100px; top: 35px; }
 
-        /* FORM CARD */
+        /* PROFILE CARD & FORM */
         .main-card {
             background: #ffffff;
             border: 1px solid var(--sage-border);
@@ -340,200 +339,118 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
             box-shadow: 0 5px 20px rgba(135,169,135,0.06);
         }
 
-        .form-layout {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 30px;
-            align-items: start;
+        .section-title {
+            font-size: 18px;
+            color: var(--text);
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* FOTO PROFIL SECTION */
-        .photo-section {
+        .profile-view-grid {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .profile-avatar-box {
             text-align: center;
         }
 
-        .photo-section h3 {
-            font-size: 18px;
-            margin-bottom: 18px;
-            color: var(--text);
-            font-weight: 800;
-        }
-
-        .preview-container {
-            width: 170px;
-            height: 170px;
+        .profile-avatar-large {
+            width: 150px;
+            height: 150px;
             border-radius: 50%;
             border: 4px solid var(--sage);
             padding: 3px;
             overflow: hidden;
-            margin: 0 auto 15px;
+            margin: 0 auto 12px;
             background: var(--sage-soft);
         }
-
-        .preview-container img {
+        .profile-avatar-large img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: 50%;
         }
 
-        .btn-choose {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: var(--sage-soft);
-            color: var(--sage-dark);
-            border: 1px solid var(--sage-border);
-            border-radius: 30px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .btn-choose:hover {
-            background: var(--sage);
-            color: #ffffff;
-        }
-
-        .photo-note {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 10px;
-        }
-
-        /* FORM INPUT SECTION */
-        .form-section {
-            min-width: 0;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            color: var(--text);
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        .input-wrapper {
+        .profile-details-list {
             display: flex;
-            align-items: center;
-            width: 100%;
-            border: 1px solid var(--sage-border);
-            border-radius: 14px;
-            overflow: hidden;
-            background: #ffffff;
-            transition: 0.3s;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .input-wrapper:focus-within {
-            border-color: var(--sage);
-            box-shadow: 0 0 0 3px rgba(135,169,135,0.12);
-        }
-
-        .input-icon {
-            width: 50px;
-            min-width: 50px;
-            height: 50px;
+        .profile-item {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--sage-soft);
-            color: var(--sage-dark);
-            font-size: 16px;
-        }
-
-        .form-control {
-            width: 100%;
-            height: 50px;
-            padding: 0 16px;
-            border: none;
-            outline: none;
-            background: transparent;
-            color: var(--text);
+            justify-content: flex-start;
+            gap: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--sage-soft);
             font-size: 14px;
-            font-family: 'Poppins', sans-serif;
         }
-
-        .form-control[readonly] {
-            background: #f9f9fb;
+        .profile-label {
             color: var(--muted);
-            cursor: not-allowed;
-        }
-
-        .role-wrapper {
-            background: #f9f9fb;
-        }
-
-        /* ALERT ERROR */
-        .alert-error {
-            background: #fff0f0;
-            color: #dc3545;
-            padding: 12px 18px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #f5c6cb;
-            font-size: 13px;
             font-weight: 600;
+            width: 160px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .profile-value {
+            color: var(--text);
+            font-weight: 700;
+            text-align: left;
         }
 
-        /* BUTTONS */
-        .action-buttons {
+        .profile-actions {
+            margin-top: 25px;
             display: flex;
             gap: 12px;
-            margin-top: 25px;
-            flex-wrap: wrap;
         }
 
-        .btn-save {
-            padding: 12px 26px;
+        .btn-edit {
             background: var(--sage);
-            color: white;
-            border: none;
+            color: #fff;
+            padding: 10px 22px;
             border-radius: 30px;
             font-size: 13px;
             font-weight: 700;
-            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             transition: 0.3s;
             box-shadow: 0 4px 14px rgba(135,169,135,0.2);
         }
+        .btn-edit:hover { background: var(--sage-dark); transform: translateY(-1px); }
 
-        .btn-save:hover {
-            background: var(--sage-dark);
-            transform: translateY(-2px);
-        }
-
-        .btn-cancel {
-            padding: 12px 26px;
+        .btn-keluar {
             background: #ffffff;
-            color: var(--sage-dark);
-            border: 1px solid var(--sage-border);
+            color: #dc3545;
+            border: 1px solid #f5c6cb;
+            padding: 10px 22px;
             border-radius: 30px;
             font-size: 13px;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
+            gap: 8px;
             transition: 0.3s;
+            cursor: pointer;
         }
-
-        .btn-cancel:hover {
-            background: var(--sage-soft);
-        }
+        .btn-keluar:hover { background: #fff0f0; border-color: #dc3545; }
 
         /* =================================
-           RESPONSIVE DESIGN
+            RESPONSIVE DESIGN
         ================================= */
         @media (max-width: 1000px) {
             .layout { grid-template-columns: 240px 1fr; gap: 20px; }
-            .form-layout { grid-template-columns: 200px 1fr; gap: 20px; }
-            .preview-container { width: 140px; height: 140px; }
+            .profile-view-grid { grid-template-columns: 1fr; text-align: center; }
+            .profile-avatar-large { margin: 0 auto 15px; }
+            .profile-item { justify-content: space-between; }
         }
 
         @media (max-width: 768px) {
@@ -547,15 +464,8 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
             .welcome-banner { padding: 25px 20px; min-height: 140px; }
             .welcome-text h1 { font-size: 22px; }
             .welcome-icon { display: none; }
-            .form-layout { grid-template-columns: 1fr; }
-            .photo-section { border-bottom: 1px solid var(--sage-border); padding-bottom: 20px; margin-bottom: 10px; }
-            .preview-container { width: 150px; height: 150px; }
-        }
-
-        @media (max-width: 450px) {
-            .main-card { padding: 20px 15px; }
-            .action-buttons { flex-direction: column; }
-            .btn-save, .btn-cancel { width: 100%; text-align: center; }
+            .profile-actions { flex-direction: column; }
+            .btn-edit, .btn-keluar { width: 100%; justify-content: center; }
         }
     </style>
 </head>
@@ -566,7 +476,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="../uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -580,7 +490,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         </div>
 
         <a href="profil.php" class="btn-profile">
-            <img src="<?= $foto_html ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='../uploads/default.jpeg';">
+            <img src="<?= $foto_html ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='uploads/default.jpeg';">
             <span><?= $nama_html ?></span>
         </a>
     </div>
@@ -593,7 +503,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
     <aside class="sidebar">
         <div class="sidebar-user">
             <div class="avatar-container">
-                <img src="<?= $foto_html ?>" alt="Foto Profil" onerror="this.src='../uploads/default.jpeg';">
+                <img src="<?= $foto_html ?>" alt="Foto Profil" onerror="this.src='uploads/default.jpeg';">
             </div>
             <strong><?= $nama_html ?></strong>
             <span><?= $role_user ?></span>
@@ -627,7 +537,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         </ul>
 
         <div class="sidebar-decoration">
-            <p>Temukan Kost Impianmu!</p>
+            <p>Temukan KOST Impianmu!</p>
         </div>
     </aside>
 
@@ -638,157 +548,108 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         <section class="welcome-banner">
             <div class="welcome-circle"></div>
             <div class="welcome-text">
-                <h1>✎ Edit Profil</h1>
-                <p>Perbarui informasi akun dan foto profil kamu di sini.</p>
+                <h1>Halo, <?= $nama_html ?>!</h1>
+                <p>Selamat datang kembali di halaman profil kamu.</p>
             </div>
             <div class="welcome-icon">
-                <img src="../uploads/logokost.png" alt="Logo Aksara Kost">
+                <img src="uploads/logokost.png" alt="Logo Aksara Kost">
             </div>
         </section>
 
-        <!-- FORM CARD -->
+        <!-- KARTU INFORMASI PROFIL -->
         <section class="main-card">
+            <div class="section-title">
+                <i class="fa-solid fa-user-pen" style="color: var(--sage);"></i> Informasi Profil
+            </div>
 
-            <?php if (!empty($error)): ?>
-                <div class="alert-error">
-                    <i class="fa-solid fa-triangle-exclamation"></i> <?= htmlspecialchars($error); ?>
-                </div>
-            <?php endif; ?>
-
-            <form method="POST" action="" enctype="multipart/form-data">
-                <div class="form-layout">
-
-                    <!-- FOTO PROFIL SECTION -->
-                    <div class="photo-section">
-                        <h3>Foto Profil</h3>
-                        <div class="preview-container">
-                            <img
-                                src="<?= $foto_html ?>"
-                                id="previewFoto"
-                                alt="Preview Foto Profil"
-                                onerror="this.src='../uploads/default.jpeg';"
-                            >
-                        </div>
-
-                        <label for="foto" class="btn-choose">
-                            <i class="fa-solid fa-camera"></i> Pilih Foto
-                        </label>
-                        <input
-                            type="file"
-                            id="foto"
-                            name="foto"
-                            accept=".jpg,.jpeg,.png,.gif"
-                            hidden
-                        >
-                        <p class="photo-note">
-                           
-                        </p>
+            <div class="profile-view-grid">
+                <div class="profile-avatar-box">
+                    <div class="profile-avatar-large">
+                        <img src="<?= $foto_html ?>" alt="Foto Profil" onerror="this.src='uploads/default.jpeg';">
                     </div>
-
-                    <!-- FORM INPUT SECTION -->
-                    <div class="form-section">
-
-                        <!-- NAMA -->
-                        <div class="form-group">
-                            <label for="nama">Nama Lengkap</label>
-                            <div class="input-wrapper">
-                                <div class="input-icon"><i class="fa-solid fa-user"></i></div>
-                                <input
-                                    type="text"
-                                    id="nama"
-                                    name="nama"
-                                    class="form-control"
-                                    value="<?= $nama_user ?>"
-                                    placeholder="Masukkan nama lengkap"
-                                    required
-                                >
-                            </div>
-                        </div>
-
-                        <!-- EMAIL -->
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <div class="input-wrapper">
-                                <div class="input-icon"><i class="fa-solid fa-envelope"></i></div>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    class="form-control"
-                                    value="<?= $email_user ?>"
-                                    placeholder="Masukkan email"
-                                    required
-                                >
-                            </div>
-                        </div>
-
-                        <!-- NOMOR WA -->
-                        <div class="form-group">
-                            <label for="no_wa">No. HP / WA</label>
-                            <div class="input-wrapper">
-                                <div class="input-icon"><i class="fa-solid fa-phone"></i></div>
-                                <input
-                                    type="text"
-                                    id="no_wa"
-                                    name="no_wa"
-                                    class="form-control"
-                                    value="<?= $no_wa_user ?>"
-                                    placeholder="Masukkan nomor HP / WA"
-                                    required
-                                >
-                            </div>
-                        </div>
-
-                        <!-- ROLE -->
-                        <div class="form-group">
-                            <label>Role</label>
-                            <div class="input-wrapper role-wrapper">
-                                <div class="input-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    value="<?= $role_user ?>"
-                                    readonly
-                                >
-                            </div>
-                        </div>
-
-                        <!-- TOMBOL AKSI -->
-                        <div class="action-buttons">
-                            <button type="submit" class="btn-save">
-                                 Simpan Perubahan
-                            </button>
-                            <a href="profil.php" class="btn-cancel">
-                                 Batal
-                            </a>
-                        </div>
-
-                    </div>
-
+                    <span style="font-size: 12px; color: var(--muted); font-weight: 600;">Foto profil akun kamu</span>
                 </div>
-            </form>
 
+                <div class="profile-details-list">
+                    <div class="profile-item">
+                        <span class="profile-label"><i class="fa-solid fa-user"></i> Nama Lengkap</span>
+                        <span class="profile-value"><?= $nama_user ?></span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label"><i class="fa-solid fa-envelope"></i> Email</span>
+                        <span class="profile-value"><?= htmlspecialchars($user['email'] ?? '-') ?></span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label"><i class="fa-solid fa-shield-halved"></i> Role</span>
+                        <span class="profile-value"><?= $role_user ?></span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label"><i class="fa-solid fa-phone"></i> No. HP / WA</span>
+                        <span class="profile-value"><?= htmlspecialchars($user['no_wa'] ?? '-') ?></span>
+                    </div>
+                    <div class="profile-item" style="border-bottom: none;">
+                        <span class="profile-label"><i class="fa-solid fa-circle-check"></i> Status Verifikasi</span>
+                        <span class="profile-value" style="color: #28a745;">Terverifikasi</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <a href="edit.php" class="btn-edit">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit Profil
+                </a>
+                <a href="#" id="btnKeluar" class="btn-keluar">
+                    <i class="fa-solid fa-right-from-bracket"></i> Keluar Akun
+                </a>
+            </div>
         </section>
 
     </main>
 
 </div>
 
-<!-- PREVIEW FOTO JAVASCRIPT -->
+<!-- MODAL KUSTOM KONFIRMASI KELUAR -->
+<div id="customLogoutModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 9999; justify-content: center; align-items: center;">
+    <div style="background: #ffffff; padding: 25px 30px; border-radius: 22px; border: 1px solid var(--sage-border); width: 350px; text-align: center; box-shadow: 0 10px 25px rgba(135,169,135,0.15);">
+        <div style="font-size: 38px; color: var(--sage); margin-bottom: 10px;"><i class="fa-solid fa-circle-exclamation"></i></div>
+        <h3 style="font-size: 18px; color: var(--text); margin-bottom: 8px; font-weight: 800;">Konfirmasi Keluar</h3>
+        <p style="font-size: 13px; color: var(--muted); margin-bottom: 20px;">Apakah kamu yakin ingin keluar dari akun?</p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button id="btnBatalLogout" style="flex: 1; padding: 10px; border-radius: 30px; border: 1px solid var(--sage-border); background: var(--sage-soft); color: var(--sage-dark); font-weight: 700; font-size: 13px; cursor: pointer;">Batal</button>
+            <button id="btnYaLogout" style="flex: 1; padding: 10px; border-radius: 30px; border: none; background: var(--sage); color: #fff; font-weight: 700; font-size: 13px; cursor: pointer;">Ya, Keluar</button>
+        </div>
+    </div>
+</div>
+
+<!-- JAVASCRIPT MODAL KELUAR -->
 <script>
-document.getElementById('foto').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        if (file.size > 2 * 1024 * 1024) {
-            alert('Ukuran foto maksimal 2 MB!');
-            this.value = '';
-            return;
-        }
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('previewFoto').src = e.target.result;
-        };
-        reader.readAsDataURL(file);
+const btnKeluar = document.getElementById('btnKeluar');
+const customLogoutModal = document.getElementById('customLogoutModal');
+const btnBatalLogout = document.getElementById('btnBatalLogout');
+const btnYaLogout = document.getElementById('btnYaLogout');
+
+if (btnKeluar) {
+    btnKeluar.addEventListener('click', function(e) {
+        e.preventDefault();
+        customLogoutModal.style.display = 'flex';
+    });
+}
+
+if (btnBatalLogout) {
+    btnBatalLogout.addEventListener('click', function() {
+        customLogoutModal.style.display = 'none';
+    });
+}
+
+if (btnYaLogout) {
+    btnYaLogout.addEventListener('click', function() {
+        window.location.href = 'logout.php';
+    });
+}
+
+window.addEventListener('click', function(e) {
+    if (e.target === customLogoutModal) {
+        customLogoutModal.style.display = 'none';
     }
 });
 </script>

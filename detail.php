@@ -5,7 +5,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
-require_once __DIR__ . '/../database.php';
+require_once __DIR__ . '/database.php';
 
 // Menyesuaikan koneksi database
 if (!isset($db) && isset($conn)) {
@@ -124,7 +124,7 @@ if (!empty($no_wa) && substr($no_wa, 0, 1) === '0') {
     $no_wa = '62' . substr($no_wa, 1);
 }
 
-$default_image = '../assets/images/default-kos.jpg';
+$default_image = 'assets/images/default-kos.jpg';
 
 // Data pengguna untuk navbar
 $user_login_id = $_SESSION['user_id'] ?? null;
@@ -136,9 +136,9 @@ if ($user_login_id) {
     }
 }
 
-$foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESSION['foto']))
-    ? '../uploads/' . $_SESSION['foto'] . '?v=' . time()
-    : '../uploads/default.jpeg';
+$foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION['foto']))
+    ? 'uploads/' . $_SESSION['foto'] . '?v=' . time()
+    : 'uploads/default.jpeg';
 ?>
 
 <!DOCTYPE html>
@@ -146,8 +146,8 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($kos['nama_kos']); ?> - Detail Kos - AKSARA KOST</title>
-    <link rel="icon" href="../uploads/logokost.png" type="image/png">
+    <title>Detail <?= htmlspecialchars($kos['nama_kos']); ?> - AKSARA KOST</title>
+    <link rel="icon" href="uploads/logokost.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -155,7 +155,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
 
     <style>
         /* =================================
-           RESET DAN DASAR (SAGE GREEN THEME)
+            RESET DAN DASAR (SAGE GREEN THEME)
         ================================= */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
@@ -175,7 +175,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
         }
 
         /* =================================
-           NAVBAR
+            NAVBAR
         ================================= */
         .navbar { background: rgba(250,249,246,0.96); backdrop-filter: blur(15px); border-bottom: 1px solid var(--sage-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .navbar-container { width: 100%; max-width: 1300px; margin: auto; padding: 14px 25px; display: flex; align-items: center; justify-content: space-between; }
@@ -215,7 +215,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
         .navbar-profile-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--sage); }
 
         /* =================================
-           LAYOUT MAIN CONTAINER
+            LAYOUT MAIN CONTAINER
         ================================= */
         .container { 
             max-width: 1100px; 
@@ -297,7 +297,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="../uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -311,7 +311,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
         <div>
             <?php if (isset($_SESSION['user_id'])): ?>
                 <a href="profil.php" class="btn-profile">
-                    <img src="<?= htmlspecialchars($foto_session); ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='../uploads/default.jpeg';">
+                    <img src="<?= htmlspecialchars($foto_session); ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='uploads/default.jpeg';">
                     <span><?= htmlspecialchars($user_data_session['nama'] ?? $_SESSION['nama'] ?? 'User'); ?></span>
                 </a>
             <?php else: ?>
@@ -327,13 +327,13 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
         
         <!-- KOLOM KIRI: GALERI FOTO -->
         <div>
-            <?php $foto_utama = !empty($fotos) ? '../uploads/' . $fotos[0] : $default_image; ?>
+            <?php $foto_utama = !empty($fotos) ? 'uploads/' . $fotos[0] : $default_image; ?>
             <img id="mainImage" src="<?= htmlspecialchars($foto_utama); ?>" class="main-img" onerror="this.src='<?= $default_image; ?>';">
             
             <?php if (!empty($fotos)): ?>
                 <div class="thumbs">
                     <?php foreach ($fotos as $f): ?>
-                        <img src="../uploads/<?= htmlspecialchars($f); ?>" onclick="document.getElementById('mainImage').src=this.src;" onerror="this.src='<?= $default_image; ?>';">
+                        <img src="uploads/<?= htmlspecialchars($f); ?>" onclick="document.getElementById('mainImage').src=this.src;" onerror="this.src='<?= $default_image; ?>';">
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>

@@ -1,35 +1,34 @@
 <?php
 session_start();
-require_once '../database.php';
+require_once 'database.php';
 
 // Menyesuaikan koneksi database menggunakan variabel $db
 if (!isset($db) && isset($conn)) {
-    $db = $conn;
+    $db =$conn;
 } elseif (!isset($db) && isset($koneksi)) {
-    $db = $koneksi;
+    $db =$koneksi;
 }
 
-if (!isset($db) || !$db) {
+if (!isset($db) \vert{}\vert{} !$db) {
     die("Koneksi database gagal. Periksa kembali file database.php.");
 }
 
-if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
+if (!isset($_SESSION['is_login']) \vert{}\vert{}$_SESSION['is_login'] !== true) {
     header("Location: login.php");
     exit;
 }
 
-$user_id = $_SESSION['user_id'];
+$user_id =$_SESSION['user_id'];
 
 // Inisialisasi session array untuk menyimpan ID kos yang dihapus khusus user ini
-if (!isset($_SESSION['deleted_favorites'])) {
-    $_SESSION['deleted_favorites'] = [];
+if (!isset($_SESSION['deleted_favorites'])) {$_SESSION['deleted_favorites'] = [];
 }
 
 // Proses Hapus Favorit (Langsung menghapus tanpa konfirmasi)
 if (isset($_GET['hapus_id'])) {
     $kos_id_hapus = intval($_GET['hapus_id']);
-    if (!in_array($kos_id_hapus, $_SESSION['deleted_favorites'])) {
-        $_SESSION['deleted_favorites'][] = $kos_id_hapus;
+    if (!in_array($kos_id_hapus,$_SESSION['deleted_favorites'])) {
+        $_SESSION['deleted_favorites'][] =$kos_id_hapus;
     }
     header("Location: favorit.php");
     exit;
@@ -53,9 +52,9 @@ function e($value) {
 }
 
 // Foto profil
-$foto_user = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESSION['foto']))
-    ? '../uploads/' . $_SESSION['foto'] . '?v=' . time()
-    : '../uploads/default.jpeg';
+$foto_user = (!empty($_SESSION['foto']) && file_exists('uploads/' .$_SESSION['foto']))
+    ? 'uploads/' . $_SESSION['foto'] . '?v=' . time()
+    : 'uploads/default.jpeg';
 
 // Mengambil data kos dari database
 $sql_fav = "
@@ -76,19 +75,19 @@ $sql_fav = "
     LIMIT 3
 ";
 
-$res_fav = mysqli_query($db, $sql_fav);
+$res_fav = mysqli_query($db,$sql_fav);
 
 if (!$res_fav) {
     die("Gagal mengambil data kos: " . mysqli_error($db));
 }
 
-$default_image = '../assets/images/default-kos.jpg';
+$default_image = 'assets/images/default-kos.jpg';
 
 // Menampung data kos yang belum dihapus oleh user
 $daftar_kos_favorit = [];
 while ($f = mysqli_fetch_assoc($res_fav)) {
-    if (!in_array($f['kos_id'], $_SESSION['deleted_favorites'])) {
-        $daftar_kos_favorit[] = $f;
+    if (!in_array($f['kos_id'],$_SESSION['deleted_favorites'])) {
+        $daftar_kos_favorit[] =$f;
     }
 }
 $jumlah_kos = count($daftar_kos_favorit);
@@ -100,7 +99,7 @@ $jumlah_kos = count($daftar_kos_favorit);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kos Favorit Saya - KOST TATA</title>
-    <link rel="icon" href="../uploads/logo tata.png" type="image/png">
+    <link rel="icon" href="uploads/logo tata.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -398,7 +397,7 @@ $jumlah_kos = count($daftar_kos_favorit);
 <nav class="navbar">
     <div class="navbar-container">
         <a href="beranda.php" class="logo">
-            <img src="../uploads/logo tata.png" alt="Logo KOST TATA" class="logo-icon" onerror="this.src='../uploads/tampilankos.jpeg';">
+            <img src="uploads/logo tata.png" alt="Logo KOST TATA" class="logo-icon" onerror="this.src='uploads/tampilankos.jpeg';">
             <div class="logo-text-group">
                 <span class="logo-title">KOST</span>
                 <span class="logo-subtitle">TATA</span>
@@ -416,7 +415,7 @@ $jumlah_kos = count($daftar_kos_favorit);
                 src="<?= e($foto_user); ?>"
                 alt="Profil"
                 class="navbar-profile-img"
-                onerror="this.src='../uploads/default.jpeg';"
+                onerror="this.src='uploads/default.jpeg';"
             >
             <span><?= e($user['nama']); ?></span>
         </a>
@@ -433,7 +432,7 @@ $jumlah_kos = count($daftar_kos_favorit);
                 <img
                     src="<?= e($foto_user); ?>"
                     alt="Foto Profil"
-                    onerror="this.src='../uploads/default.jpeg';"
+                    onerror="this.src='uploads/default.jpeg';"
                 >
             </div>
             <strong><?= e($user['nama']); ?></strong>
@@ -483,7 +482,7 @@ $jumlah_kos = count($daftar_kos_favorit);
                 <p>Daftar kost pilihan yang sudah kamu sukai.</p>
             </div>
             <div class="welcome-icon">
-                <img src="../uploads/logo tata.png" alt="Logo KOST TATA" onerror="this.src='../uploads/tampilankos.jpeg';">
+                <img src="uploads/logo tata.png" alt="Logo KOST TATA" onerror="this.src='uploads/tampilankos.jpeg';">
             </div>
         </section>
 
@@ -499,13 +498,13 @@ $jumlah_kos = count($daftar_kos_favorit);
         <?php if ($jumlah_kos > 0): ?>
 
             <div class="fav-list">
-                <?php foreach ($daftar_kos_favorit as $f): ?>
+                <?php foreach ($daftar_kos_favorit as$f): ?>
                     <?php
                     $foto = !empty($f['foto_kos'])
-                        ? '../uploads/' . $f['foto_kos']
+                        ? 'uploads/' . $f['foto_kos']
                         : $default_image;
 
-                    $harga = $f['harga_mulai'];
+                    $harga =$f['harga_mulai'];
                     ?>
 
                     <article class="fav-item">
@@ -514,70 +513,4 @@ $jumlah_kos = count($daftar_kos_favorit);
                             <img
                                 src="<?= e($foto); ?>"
                                 alt="<?= e($f['nama_kos']); ?>"
-                                onerror="this.onerror=null; this.src='<?= e($default_image); ?>';"
-                            >
-                            <div class="logo-badge">
-                                <img src="../uploads/logo tata.png" alt="Logo KOST TATA" onerror="this.src='../uploads/tampilankos.jpeg';">
-                            </div>
-                        </div>
-
-                        <!-- INFORMASI KOS -->
-                        <div class="fav-info">
-                            <h3><?= e($f['nama_kos']); ?></h3>
-                            <p class="fav-address">
-                                <i class="fa-solid fa-location-dot" style="color: var(--pink);"></i> <?= e($f['alamat']); ?>
-                            </p>
-
-                            <div class="fav-facilities">
-                                <span class="facility-tag">
-                                    <i class="fa-solid fa-house"></i> Informasi Kost
-                                </span>
-                                <span class="facility-tag">
-                                    <i class="fa-solid fa-heart"></i> Favorit
-                                </span>
-                            </div>
-
-                            <div class="fav-price">
-                                <?php if ($harga !== null && $harga !== ''): ?>
-                                    Rp <?= number_format((float)$harga, 0, ',', '.'); ?>
-                                    <small>/bulan</small>
-                                <?php else: ?>
-                                    <small>Harga belum tersedia</small>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-
-                        <!-- TOMBOL AKSI -->
-                        <div class="fav-actions">
-                            <a href="detail.php?id=<?= $f['kos_id']; ?>" class="btn-detail">
-                                <i class="fa-solid fa-eye"></i> Lihat Detail
-                            </a>
-                            <a href="favorit.php?hapus_id=<?= $f['kos_id']; ?>" class="btn-hapus">
-                                <i class="fa-solid fa-trash-can"></i> Hapus Favorit
-                            </a>
-                        </div>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-
-        <?php else: ?>
-
-            <!-- JIKA BELUM ADA KOS -->
-            <div class="empty-favorite">
-                <div class="empty-icon">
-                    <i class="fa-regular fa-heart"></i>
-                </div>
-                <h3>Belum Ada Kost Favorit</h3>
-                <p>Kamu belum menyimpan kost favorit. Yuk, cari kost yang sesuai dengan keinginanmu!</p>
-                <a href="daftarkos.php" class="btn-cari">
-                    <i class="fa-solid fa-magnifying-glass"></i> Cari Kost Sekarang
-                </a>
-            </div>
-
-        <?php endif; ?>
-
-    </main>
-</div>
-
-</body>
-</html>
+                                onerror="this.

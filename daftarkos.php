@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../database.php';
+require_once __DIR__ . '/database.php';
 
 // Menyesuaikan koneksi database
 if (!isset($db) && isset($conn)) {
@@ -56,7 +56,7 @@ $result = mysqli_query($db, $sql);
 function rupiah($angka) {
     return ($angka > 0) ? 'Rp ' . number_format((int)$angka, 0, ',', '.') : 'Harga belum tersedia';
 }
-$default_image = '../assets/images/default-kos.jpg';
+$default_image = 'assets/images/default-kos.jpg';
 
 // Data pengguna untuk navbar jika login
 $user_id = $_SESSION['user_id'] ?? null;
@@ -68,9 +68,9 @@ if ($user_id) {
     }
 }
 
-$foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESSION['foto']))
-    ? '../uploads/' . $_SESSION['foto'] . '?v=' . time()
-    : '../uploads/default.jpeg';
+$foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION['foto']))
+    ? 'uploads/' . $_SESSION['foto'] . '?v=' . time()
+    : 'uploads/default.jpeg';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -78,7 +78,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Kos - AKSARA KOST</title>
-    <link rel="icon" href="../uploads/logokost.png" type="image/png">
+    <link rel="icon" href="uploads/logokost.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -86,7 +86,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
 
     <style>
         /* =================================
-           RESET DAN DASAR (SAGE GREEN THEME)
+            RESET DAN DASAR (SAGE GREEN THEME)
         ================================= */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
@@ -106,7 +106,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
         }
 
         /* =================================
-           NAVBAR
+            NAVBAR
         ================================= */
         .navbar { background: rgba(250,249,246,0.96); backdrop-filter: blur(15px); border-bottom: 1px solid var(--sage-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .navbar-container { width: 100%; max-width: 1300px; margin: auto; padding: 14px 25px; display: flex; align-items: center; justify-content: space-between; }
@@ -146,7 +146,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
         .navbar-profile-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--sage); }
 
         /* =================================
-           LAYOUT UTAMA
+            LAYOUT UTAMA
         ================================= */
         .container { max-width: 1300px; margin: 35px auto; padding: 0 25px; }
 
@@ -261,7 +261,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="../uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -277,7 +277,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
         <div>
             <?php if ($user_id): ?>
                 <a href="profil.php" class="btn-profile">
-                    <img src="<?= htmlspecialchars($foto_session); ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='../uploads/default.jpeg';">
+                    <img src="<?= htmlspecialchars($foto_session); ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='uploads/default.jpeg';">
                     <span><?= htmlspecialchars($user['nama'] ?? $_SESSION['nama'] ?? 'User'); ?></span>
                 </a>
             <?php else: ?>
@@ -316,7 +316,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESS
         <?php if(mysqli_num_rows($result) > 0): ?>
             <?php while($k = mysqli_fetch_assoc($result)): ?>
                 <?php 
-                    $foto = !empty($k['foto_kos']) ? '../uploads/'.$k['foto_kos'] : $default_image; 
+                    $foto = !empty($k['foto_kos']) ? 'uploads/'.$k['foto_kos'] : $default_image; 
                     $rating_val = !empty($k['avg_rating']) ? $k['avg_rating'] : 4.5;
                 ?>
                 <div class="kos-card-horizontal">

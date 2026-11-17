@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../database.php';
+require_once __DIR__ . '/database.php';
 
 // 1. Wajibkan user login terlebih dahulu
 if (!isset($_SESSION['user_id'])) {
