@@ -1,14 +1,30 @@
 <?php
+// Aktifkan error reporting untuk mendeteksi pesan kesalahan jika ada
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 require_once __DIR__ . '/database.php';
+
+// Menyesuaikan koneksi database ($conn atau $db)
+if (!isset($conn) && isset($db)) {
+    $conn = $db;
+} elseif (!isset($conn) && isset($koneksi)) {
+    $conn = $koneksi;
+}
+
+if (!isset($conn) || mysqli_connect_errno()) {
+    die("Koneksi database gagal: " . mysqli_connect_error());
+}
 
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nama     = mysqli_real_escape_string($conn, $_POST['nama']);
-    $email    = mysqli_real_escape_string($conn, $_POST['email']);
-    $no_wa    = mysqli_real_escape_string($conn, $_POST['no_wa']);
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    $nama     = mysqli_real_escape_string($conn, trim($_POST['nama'] ?? ''));
+    $email    = mysqli_real_escape_string($conn, trim($_POST['email'] ?? ''));
+    $no_wa    = mysqli_real_escape_string($conn, trim($_POST['no_wa'] ?? ''));
+    $password = mysqli_real_escape_string($conn, $_POST['password'] ?? '');
 
     if (!empty($nama) && !empty($email) && !empty($password)) {
         // Validasi panjang password minimal 6 karakter
@@ -16,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = "Password minimal harus 6 karakter!";
         } else {
             $check_email = mysqli_query($conn, "SELECT email FROM user WHERE email = '$email'");
-            if (mysqli_num_rows($check_email) > 0) {
+            if ($check_email && mysqli_num_rows($check_email) > 0) {
                 $error = "Email sudah terdaftar!";
             } else {
                 $query = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) 
@@ -27,11 +43,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $nama_foto = 'default.jpeg';
 
                     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-                        $file_tmp  = $_FILES['foto']['tmp_name'];
-                        $file_ext  = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
+                        $file_tmp   = $_FILES['foto']['tmp_name'];
+                        $file_ext   = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
                         $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
-                        if (in_array($file_ext, $allowed_ext)) {
+                        if (in_array($file_ext, $allowed_ext, true)) {
                             $nama_foto = 'user_' . $user_id . '.' . $file_ext;
                             move_uploaded_file($file_tmp, 'uploads/' . $nama_foto);
                         }
