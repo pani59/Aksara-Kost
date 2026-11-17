@@ -1,15 +1,13 @@
 <?php
+$host = getenv('MYSQLHOST');
+$user = getenv('MYSQLUSER');
+$pass = getenv('MYSQLPASSWORD');
+$database = getenv('MYSQLDATABASE');
+$port = getenv('MYSQLPORT');
 
-$host = "mysql.railway.internal";
-$user = "root";
-$password = "tpSdZFVSicuzmVHXjtkVGxjVkJqZAoOT";
-$database = "railway";
-$port = 3306;
-
-$conn = mysqli_connect($host, $user, $password, $database, $port);
+$conn = mysqli_connect($host, $user, $pass, $database, $port);
 
 if (!$conn) {
     die("Koneksi database gagal: " . mysqli_connect_error());
 }
-
-
+?>
