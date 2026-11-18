@@ -7,44 +7,59 @@ error_reporting(E_ALL);
 session_start();
 require_once __DIR__ . '/database.php';
 
-// Menyesuaikan koneksi database ($conn atau $db)
+// Menyesuaikan koneksi database ($conn atau $koneksi)
 if (!isset($conn) && isset($db)) {
     $conn = $db;
 } elseif (!isset($conn) && isset($koneksi)) {
     $conn = $koneksi;
 }
 
-if (!isset($conn) || mysqli_connect_errno()) {
-    die("Koneksi database gagal: " . mysqli_connect_error());
+if (!isset($conn) || !$conn) {
+    die("Koneksi database gagal. Periksa database.php");
 }
 
 $error = '';
 $success = '';
 
+// PROSES REGISTER
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nama     = mysqli_real_escape_string($conn, trim($_POST['nama'] ?? ''));
-    $email    = mysqli_real_escape_string($conn, trim($_POST['email'] ?? ''));
-    $no_wa    = mysqli_real_escape_string($conn, trim($_POST['no_wa'] ?? ''));
-    $password = mysqli_real_escape_string($conn, $_POST['password'] ?? '');
-    $role     = mysqli_real_escape_string($conn, trim($_POST['role'] ?? ''));
+    $nama     = trim($_POST['nama'] ?? '');
+    $email    = trim($_POST['email'] ?? '');
+    $no_wa    = trim($_POST['no_wa'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $role     = trim($_POST['role'] ?? '');
 
-    if (!empty($nama) && !empty($email) && !empty($password) && !empty($role)) {
-        if (strlen($password) < 6) {
-            $error = "Password minimal harus 6 karakter!";
+    if ($nama === '' || $email === '' || $password === '' || $role === '') {
+        $error = "Harap isi semua kolom wajib dan pilih role!";
+    } elseif (strlen($password) < 6) {
+        $error = "Password minimal harus 6 karakter!";
+    } else {
+        // Cek apakah email sudah terdaftar
+        $stmt_cek = mysqli_prepare($conn, "SELECT email FROM user WHERE email = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmt_cek, "s", $email);
+        mysqli_stmt_execute($stmt_cek);
+        mysqli_stmt_store_result($stmt_cek);
+
+        if (mysqli_stmt_num_rows($stmt_cek) > 0) {
+            $error = "Email sudah terdaftar! Gunakan email lain.";
+            mysqli_stmt_close($stmt_cek);
         } else {
-            $check_email = mysqli_query($conn, "SELECT email FROM user WHERE email = '$email'");
-            if ($check_email && mysqli_num_rows($check_email) > 0) {
-                $error = "Email sudah terdaftar!";
-            } else {
-                $status_verifikasi = 'Menunggu';
+            mysqli_stmt_close($stmt_cek);
 
-                $query = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) 
-                          VALUES ('$nama', '$email', '$password', '$role', '$no_wa', '$status_verifikasi')";
+            // Set status verifikasi awal menjadi "Menunggu"
+            $status_verifikasi = 'Menunggu';
 
-                if (mysqli_query($conn, $query)) {
+            // Query insert data dengan status Menunggu
+            $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt_insert = mysqli_prepare($conn, $query_insert);
+
+            if ($stmt_insert) {
+                mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $email, $password, $role, $no_wa, $status_verifikasi);
+                
+                if (mysqli_stmt_execute($stmt_insert)) {
                     $user_id = mysqli_insert_id($conn);
-                    $nama_foto = 'default.jpeg';
 
+                    // Penanganan upload foto profil opsional
                     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
                         $file_tmp   = $_FILES['foto']['tmp_name'];
                         $file_ext   = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
@@ -52,19 +67,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if (in_array($file_ext, $allowed_ext, true)) {
                             $nama_foto = 'user_' . $user_id . '.' . $file_ext;
-                            move_uploaded_file($file_tmp, 'uploads/' . $nama_foto);
-                            mysqli_query($conn, "UPDATE user SET foto = '$nama_foto' WHERE user_id = '$user_id'");
+                            if (move_uploaded_file($file_tmp, __DIR__ . '/uploads/' . $nama_foto)) {
+                                mysqli_query($conn, "UPDATE user SET foto = '$nama_foto' WHERE user_id = '$user_id'");
+                            }
                         }
                     }
 
-                    $success = "Registrasi berhasil! Akun kamu sedang <b>Menunggu Konfirmasi</b> dari Admin. Silakan tunggu hingga disetujui.";
+                    $success = "Pendaftaran berhasil! Akun Anda sedang <b>Menunggu Konfirmasi</b> dari Admin. Silakan tunggu hingga disetujui untuk dapat login.";
                 } else {
                     $error = "Gagal mendaftar: " . mysqli_error($conn);
                 }
+                mysqli_stmt_close($stmt_insert);
+            } else {
+                $error = "Terjadi kesalahan pada sistem database.";
             }
         }
-    } else {
-        $error = "Harap pilih role dan isi semua kolom yang wajib!";
     }
 }
 ?>
@@ -152,35 +169,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .alert-success {
             background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9;
-            border-radius: 10px; padding: 14px; margin-bottom: 18px; font-size: 13px; text-align: center; line-height: 1.5;
+            border-radius: 10px; padding: 16px; margin-bottom: 18px; font-size: 13px; text-align: center; line-height: 1.6;
         }
 
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; color: var(--text); font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; color: var(--text); font-size: 13px; font-weight: 700; margin-bottom: 8px; }
         .input-wrapper { position: relative; }
         .input-wrapper > i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--sage); font-size: 14px; }
 
+        /* Disamakan persis dengan ukuran tinggi, padding, dan styling input login */
         .form-group input, .form-group select {
-            width: 100%; height: 46px; padding: 0 15px 0 43px;
+            width: 100%; height: 49px; padding: 0 43px;
             border: 1px solid var(--sage-border); border-radius: 10px;
             background: #ffffff; color: var(--text); outline: none; font-family: inherit; font-size: 12px; transition: 0.3s;
         }
-        .form-group select { appearance: none; cursor: pointer; }
-        .form-group input[type="file"] { padding: 10px 15px; height: auto; background: #fafafa; cursor: pointer; }
+        .form-group select { cursor: pointer; }
+        .form-group input[type="file"] { padding: 12px 15px; height: auto; background: #fafafa; cursor: pointer; }
         .form-group input:focus, .form-group select:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(135,169,135,0.12); }
 
         .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); font-size: 15px; cursor: pointer; }
 
         .btn-submit {
-            width: 100%; height: 49px; border: none; border-radius: 30px;
+            width: 100%; height: 51px; border: none; border-radius: 30px;
             background: var(--sage); color: #ffffff;
             font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.3s;
-            margin-top: 8px; box-shadow: 0 6px 16px rgba(135,169,135,0.2);
+            margin-top: 5px; box-shadow: 0 6px 16px rgba(135,169,135,0.2);
         }
         .btn-submit:hover { background: var(--sage-dark); transform: translateY(-2px); }
 
-        .footer-link { margin-top: 20px; text-align: center; color: var(--muted); font-size: 12px; }
-        .footer-link a { color: var(--sage-dark); font-weight: 700; text-decoration: none; }
+        .or-divider { display: flex; align-items: center; gap: 12px; margin: 19px 0; color: var(--muted); font-size: 12px; }
+        .or-divider::before, .or-divider::after { content: ""; height: 1px; flex: 1; background: var(--sage-border); }
+
+        .btn-login-link {
+            width: 100%; height: 49px; display: flex; align-items: center; justify-content: center; gap: 9px;
+            border: 1.5px solid var(--sage); border-radius: 30px; text-decoration: none; color: var(--sage-dark); font-size: 13px; font-weight: 700; transition: 0.3s;
+        }
+        .btn-login-link:hover { background: var(--sage-soft); }
 
         @media(max-width: 950px) {
             .nav-menu { position: static; transform: none; }
@@ -231,7 +255,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     Bergabung dengan <span>AKSARA KOST</span>
                 </h1>
                 <p class="banner-description">
-                    Daftar sebagai Admin, Owner, atau User. Setiap pendaftaran baru akan melalui proses konfirmasi keamanan sistem.
+                    Daftar sebagai Admin, Owner, atau User. Setiap pendaftaran akun baru memerlukan verifikasi dan konfirmasi dari Admin sistem.
                 </p>
                 <div class="banner-features">
                     <div class="feature">
@@ -255,7 +279,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <h1 class="form-title">Daftar <span>Akun Baru</span></h1>
-            <p class="form-subtitle">Pilih peran akun dan tunggu konfirmasi</p>
+            <p class="form-subtitle">Buat akun baru untuk mulai bergabung</p>
 
             <?php if (!empty($error)): ?>
                 <div class="alert-error">
@@ -265,21 +289,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php if (!empty($success)): ?>
                 <div class="alert-success">
-                    <i class="fa-solid fa-circle-check" style="font-size: 16px; margin-bottom: 4px; display: block;"></i>
+                    <i class="fa-solid fa-circle-check" style="font-size: 18px; margin-bottom: 6px; display: block;"></i>
                     <?= $success; ?>
-                    <div style="margin-top: 10px;">
-                        <a href="login.php" style="background: var(--sage); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 700; display: inline-block; text-decoration: none;">Ke Halaman Login</a>
+                    <div style="margin-top: 15px;">
+                        <a href="login.php" class="btn-login-link" style="background: var(--sage); color: white; border: none;">
+                            <i class="fa-solid fa-right-to-bracket"></i> Kembali ke Halaman Login
+                        </a>
                     </div>
                 </div>
             <?php else: ?>
 
             <form action="" method="POST" enctype="multipart/form-data">
-                <!-- NAMA LENGKAP -->
+                <!-- NAMA -->
                 <div class="form-group">
-                    <label>Nama Lengkap</label>
+                    <label>Nama</label>
                     <div class="input-wrapper">
                         <i class="fa-solid fa-user"></i>
-                        <input type="text" name="nama" placeholder="Masukkan nama lengkap" required>
+                        <input type="text" name="nama" placeholder="Masukkan nama Anda" autocomplete="name" required>
                     </div>
                 </div>
 
@@ -288,7 +314,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label>Email</label>
                     <div class="input-wrapper">
                         <i class="fa-solid fa-envelope"></i>
-                        <input type="email" name="email" placeholder="Masukkan email aktif" required>
+                        <input type="email" name="email" placeholder="Masukkan email aktif" autocomplete="email" required>
                     </div>
                 </div>
 
@@ -306,18 +332,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label>Password (Minimal 6 Karakter)</label>
                     <div class="input-wrapper">
                         <i class="fa-solid fa-lock"></i>
-                        <input type="password" name="password" id="password" placeholder="Masukkan password" minlength="6" required>
+                        <input type="password" name="password" id="password" placeholder="Masukkan password" minlength="6" autocomplete="new-password" required>
                         <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="Tampilkan password">
                             <i class="fa-solid fa-eye" id="eyeIcon"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- PILIH ROLE (SAMA PERSIS SEPERTI HALAMAN LOGIN: ADMIN, OWNER, USER) -->
+                <!-- ROLE (DISAMAKAN PERSIS SEPERTI HALAMAN LOGIN) -->
                 <div class="form-group">
                     <label>Role</label>
                     <div class="input-wrapper">
-                        <i class="fa-solid fa-user-tag"></i>
+                        <i class="fa-solid fa-users"></i>
                         <select name="role" required>
                             <option value="" disabled selected hidden>Pilih Role</option>
                             <option value="Admin">Admin</option>
@@ -335,16 +361,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
+                <!-- TOMBOL DAFTAR -->
                 <button type="submit" class="btn-submit">
-                    <i class="fa-solid fa-user-plus"></i> &nbsp; Daftar & Ajukan Konfirmasi
+                    <i class="fa-solid fa-user-plus"></i> &nbsp; Daftar Akun Baru
                 </button>
             </form>
 
-            <?php endif; ?>
+            <div class="or-divider">atau</div>
 
-            <div class="footer-link">
-                Sudah punya akun? <a href="login.php">Login di sini</a>
-            </div>
+            <a href="login.php" class="btn-login-link">
+                <i class="fa-solid fa-right-to-bracket"></i> Sudah punya akun? Login di sini
+            </a>
+
+            <?php endif; ?>
         </section>
 
     </div>
