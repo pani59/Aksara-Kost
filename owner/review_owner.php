@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once '../database.php';
 
 // =================================================
@@ -411,7 +412,8 @@ if (!$result) {
                                 ?>
                                     <tr>
                                         <td><?= $no++; ?></td>
-                                        <td>Booking #<?= htmlspecialchars($data['komentar'] ?? '')</td>
+                                        <!-- DIPERBAIKI: Menggunakan booking_id dan ditutup dengan benar -->
+                                        <td>Booking #<?= htmlspecialchars($data['booking_id'] ?? ''); ?></td>
                                         <td>
                                             <span class="bintang-kuning">
                                                 <?php
@@ -427,7 +429,8 @@ if (!$result) {
                                             <br>
                                             <small class="text-muted">(<?= $rating; ?>/5)</small>
                                         </td>
-                                        <td><?= htmlspecialchars($data['komentar']); ?></td>
+                                        <!-- DIPERBAIKI: Menambahkan pengaman null ?? '' -->
+                                        <td><?= htmlspecialchars($data['komentar'] ?? ''); ?></td>
                                         <td>
                                             <?= !empty($data['dibuat_pada']) ? date('d-m-Y H:i', strtotime($data['dibuat_pada'])) : '-'; ?>
                                         </td>
