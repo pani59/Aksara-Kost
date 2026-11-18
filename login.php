@@ -390,15 +390,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <!-- FORM LOGIN -->
-            <form action="" method="POST">
-                <!-- USERNAME -->
-                <div class="form-group">
-                    <label>Username</label>
-                    <div class="input-wrapper">
-                        <i class="fa-solid fa-user"></i>
-                        <input type="text" name="username" placeholder="Masukkan username" value="<?= htmlspecialchars($username_input); ?>" autocomplete="username" required>
-                    </div>
-                </div>
+            <div class="form-group">
+    <label>Nama</label>
+    <div class="input-wrapper">
+        <i class="fa-solid fa-user"></i>
+        <input type="text" name="username" placeholder="Masukkan nama Anda" value="<?= htmlspecialchars($username_input); ?>" autocomplete="username" required>
+    </div>
+</div>
 
                 <!-- PASSWORD -->
                 <div class="form-group">
