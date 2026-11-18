@@ -17,6 +17,6 @@ if (ini_get("session.use_cookies")) {
 session_destroy();
 
 // 4. Alihkan halaman ke tampilan Kos Vani (kosvani/index.php)
-header("Location: ../aksara/index.php");
+header("Location: ../index.php");
 exit;
 ?>
