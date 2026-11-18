@@ -13,14 +13,6 @@ if (!isset($db) || !$db) {
     die("Koneksi database gagal. Periksa kembali file database.php.");
 }
 
-// Pengecekan login dinonaktifkan sementara sesuai permintaan sebelumnya
-/*
-if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
-    header("Location: login.php");
-    exit;
-}
-*/
-
 $user_id = $_SESSION['user_id'] ?? 1;
 
 // Inisialisasi session array untuk menyimpan ID kos yang dihapus khusus user ini
@@ -28,7 +20,7 @@ if (!isset($_SESSION['deleted_favorites'])) {
     $_SESSION['deleted_favorites'] = [];
 }
 
-// Proses Hapus Favorit (Langsung menghapus tanpa konfirmasi)
+// Proses Hapus Favorit
 if (isset($_GET['hapus_id'])) {
     $kos_id_hapus = intval($_GET['hapus_id']);
     if (!in_array($kos_id_hapus, $_SESSION['deleted_favorites'])) {
@@ -47,7 +39,6 @@ $query_user = mysqli_stmt_get_result($stmt_user);
 $user = mysqli_fetch_assoc($query_user);
 
 if (!$user) {
-    // Data cadangan jika user_id belum ada di session
     $user = ['nama' => 'vanyy', 'role' => 'User'];
 }
 
@@ -61,7 +52,7 @@ $foto_user = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION['f
     ? 'uploads/' . $_SESSION['foto'] . '?v=' . time()
     : 'uploads/default.jpeg';
 
-// Mengambil data kos dari database
+// Mengambil data kos, foto, harga termurah, dan status ketersediaan kamar
 $sql_fav = "
     SELECT k.*,
     (
@@ -75,7 +66,12 @@ $sql_fav = "
         SELECT MIN(km.harga)
         FROM kamar km
         WHERE km.kos_id = k.kos_id
-    ) AS harga_mulai
+    ) AS harga_mulai,
+    (
+        SELECT COUNT(km.kamar_id)
+        FROM kamar km
+        WHERE km.kos_id = k.kos_id AND km.status = 'Tersedia'
+    ) AS jumlah_kamar_tersedia
     FROM kos k
     LIMIT 3
 ";
@@ -130,7 +126,7 @@ $jumlah_kos = count($daftar_kos_favorit);
         .navbar-container { width: 100%; max-width: 1300px; margin: auto; padding: 14px 25px; display: flex; align-items: center; justify-content: space-between; position: relative; }
         
         .logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
-        .logo-icon { width: 34px; height: 34px; object-fit: contain; }
+        .logo-icon { width: 34px; height: 34px; object-fit: contain; background: transparent; }
         .logo-text-group { display: flex; flex-direction: column; line-height: 1.1; }
         .logo-title { color: var(--sage-dark); font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
         .logo-subtitle { color: var(--sage-dark); font-size: 14px; font-weight: 700; }
@@ -249,19 +245,20 @@ $jumlah_kos = count($daftar_kos_favorit);
         .welcome-text h1 { font-size: 28px; color: var(--text); margin-bottom: 8px; font-weight: 800; }
         .welcome-text p { color: var(--muted); font-size: 14px; }
         
+        /* Logo banner transparan tanpa background putih */
         .welcome-icon {
             position: relative;
             z-index: 2;
             margin-right: 20px;
-            background: #ffffff;
-            padding: 10px;
-            border-radius: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
         }
         .welcome-icon img {
-            width: 75px;
-            height: 75px;
+            width: 95px;
+            height: 95px;
             object-fit: contain;
+            background: transparent !important;
         }
 
         .welcome-circle { position: absolute; width: 240px; height: 240px; background: rgba(255,255,255,0.4); border-radius: 50%; right: 100px; top: 35px; }
@@ -302,18 +299,6 @@ $jumlah_kos = count($daftar_kos_favorit);
         .fav-image { position: relative; overflow: hidden; border-radius: 16px; height: 155px; background: #e2e8f0; }
         .fav-image img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
         .fav-item:hover .fav-image img { transform: scale(1.06); }
-
-        .logo-badge {
-            position: absolute; top: 10px; right: 10px; width: 34px; height: 34px;
-            border-radius: 50%; background: #ffffff; padding: 4px;
-            display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.12);
-        }
-        .logo-badge img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
 
         .fav-info { min-width: 0; }
         .fav-info h3 { font-size: 20px; color: var(--text); margin-bottom: 8px; font-weight: 800; }
@@ -472,6 +457,7 @@ $jumlah_kos = count($daftar_kos_favorit);
                 <h1>♥ Kost Favorit Saya</h1>
                 <p>Daftar kost pilihan yang sudah kamu sukai.</p>
             </div>
+            <!-- Logo banner murni transparan tanpa background putih -->
             <div class="welcome-icon">
                 <img src="uploads/logokost.png" alt="Logo AKSARA KOST" onerror="this.src='uploads/tampilankos.jpeg';">
             </div>
@@ -496,19 +482,17 @@ $jumlah_kos = count($daftar_kos_favorit);
                         : $default_image;
 
                     $harga = $f['harga_mulai'];
+                    $status_kamar = ($f['jumlah_kamar_tersedia'] > 0) ? 'Tersedia' : 'Terisi';
                     ?>
 
                     <article class="fav-item">
-                        <!-- FOTO KOS -->
+                        <!-- FOTO KOS (Tanpa Logo Badge) -->
                         <div class="fav-image">
                             <img
                                 src="<?= e($foto); ?>"
                                 alt="<?= e($f['nama_kos']); ?>"
                                 onerror="this.src='uploads/default-kos.jpg';"
                             >
-                            <div class="logo-badge">
-                                <img src="uploads/logokost.png" alt="Logo">
-                            </div>
                         </div>
 
                         <!-- INFORMASI KOS -->
@@ -519,9 +503,11 @@ $jumlah_kos = count($daftar_kos_favorit);
                                 <?= e($f['alamat']); ?>
                             </p>
 
+                            <!-- Fasilitas (Wifi dibuang, status kamar Tersedia / Terisi) -->
                             <div class="fav-facilities">
-                                <span class="facility-tag"><i class="fa-solid fa-bed" style="margin-right: 4px;"></i> Kamar Tersedia</span>
-                                <span class="facility-tag"><i class="fa-solid fa-wifi" style="margin-right: 4px;"></i> Wi-Fi</span>
+                                <span class="facility-tag">
+                                    <i class="fa-solid fa-bed" style="margin-right: 4px;"></i> <?= $status_kamar; ?>
+                                </span>
                             </div>
 
                             <div class="fav-price">
