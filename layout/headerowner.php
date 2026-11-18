@@ -1,12 +1,29 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../database.php';
 
-// Pastikan hanya owner yang bisa akses, atau sesuaikan validasi login Anda
+// Pastikan hanya owner yang bisa akses
 if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
     header("Location: ../login.php");
     exit;
 }
+
+// LOGIKA MENGECEK FILE FOTO FISIK UNIK BERDASARKAN USER_ID
+$found_foto = 'default.jpeg';
+if (isset($_SESSION['user_id'])) {
+    $uid = $_SESSION['user_id'];
+    $extensions = ['jpg', 'jpeg', 'png', 'gif'];
+    foreach ($extensions as $ext) {
+        $filename = 'user_' . $uid . '.' . $ext;
+        if (file_exists(__DIR__ . '/../uploads/' . $filename)) {
+            $found_foto = $filename;
+            break;
+        }
+    }
+}
+$_SESSION['foto'] = $found_foto;
 
 $nama_bulan_indo = [
     1 => 'Januari',
