@@ -305,7 +305,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION
         </a>
         <div class="nav-menu">
             <a href="index.php">Beranda</a>
-            <a href="daftarkos.php">Daftar Kost</a>
+            <a href="daftarkos.php">Kost</a>
             <a href="index.php#tentang">Tentang</a>
         </div>
         <div>
