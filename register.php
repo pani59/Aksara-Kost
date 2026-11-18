@@ -60,15 +60,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (mysqli_stmt_execute($stmt_insert)) {
                     // AMBIL USER_ID UNIK YANG BARU SAJA MASUK KE DATABASE
                     $user_id = mysqli_insert_id($conn);
+                    $nama_foto = $foto_default;
 
-                    // LOGIKA PENYIMPANAN FOTO DENGAN ID UNIK SUPAYA TIDAK TERTUKAR
+                    // LOGIKA PENYIMPANAN FOTO DENGAN ID UNIK SUPAYA TIDAK TERTUKAR (CONTOH TEMANMU)
                     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
                         $file_tmp   = $_FILES['foto']['tmp_name'];
                         $file_ext   = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
                         $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
                         if (in_array($file_ext, $allowed_ext, true)) {
-                            // Format nama file unik: user_[user_id].[ekstensi]
                             $nama_foto = 'user_' . $user_id . '.' . $file_ext;
                             $target_dir = __DIR__ . '/uploads/';
 
@@ -348,7 +348,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- ROLE (ADMIN DIHILANGKAN, HANYA OWNER & USER) -->
+                <!-- ROLE (OWNER & USER) -->
                 <div class="form-group">
                     <label>Role</label>
                     <div class="input-wrapper">
