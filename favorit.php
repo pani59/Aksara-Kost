@@ -4,31 +4,32 @@ require_once 'database.php';
 
 // Menyesuaikan koneksi database menggunakan variabel $db
 if (!isset($db) && isset($conn)) {
-    $db =$conn;
+    $db = $conn;
 } elseif (!isset($db) && isset($koneksi)) {
-    $db =$koneksi;
+    $db = $koneksi;
 }
 
-if (!isset($db) \vert{}\vert{} !$db) {
+if (!isset($db) || !$db) {
     die("Koneksi database gagal. Periksa kembali file database.php.");
 }
 
-if (!isset($_SESSION['is_login']) \vert{}\vert{}$_SESSION['is_login'] !== true) {
+if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
     header("Location: login.php");
     exit;
 }
 
-$user_id =$_SESSION['user_id'];
+$user_id = $_SESSION['user_id'];
 
 // Inisialisasi session array untuk menyimpan ID kos yang dihapus khusus user ini
-if (!isset($_SESSION['deleted_favorites'])) {$_SESSION['deleted_favorites'] = [];
+if (!isset($_SESSION['deleted_favorites'])) {
+    $_SESSION['deleted_favorites'] = [];
 }
 
 // Proses Hapus Favorit (Langsung menghapus tanpa konfirmasi)
 if (isset($_GET['hapus_id'])) {
     $kos_id_hapus = intval($_GET['hapus_id']);
-    if (!in_array($kos_id_hapus,$_SESSION['deleted_favorites'])) {
-        $_SESSION['deleted_favorites'][] =$kos_id_hapus;
+    if (!in_array($kos_id_hapus, $_SESSION['deleted_favorites'])) {
+        $_SESSION['deleted_favorites'][] = $kos_id_hapus;
     }
     header("Location: favorit.php");
     exit;
@@ -52,7 +53,7 @@ function e($value) {
 }
 
 // Foto profil
-$foto_user = (!empty($_SESSION['foto']) && file_exists('uploads/' .$_SESSION['foto']))
+$foto_user = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION['foto']))
     ? 'uploads/' . $_SESSION['foto'] . '?v=' . time()
     : 'uploads/default.jpeg';
 
@@ -75,7 +76,7 @@ $sql_fav = "
     LIMIT 3
 ";
 
-$res_fav = mysqli_query($db,$sql_fav);
+$res_fav = mysqli_query($db, $sql_fav);
 
 if (!$res_fav) {
     die("Gagal mengambil data kos: " . mysqli_error($db));
@@ -86,8 +87,8 @@ $default_image = 'assets/images/default-kos.jpg';
 // Menampung data kos yang belum dihapus oleh user
 $daftar_kos_favorit = [];
 while ($f = mysqli_fetch_assoc($res_fav)) {
-    if (!in_array($f['kos_id'],$_SESSION['deleted_favorites'])) {
-        $daftar_kos_favorit[] =$f;
+    if (!in_array($f['kos_id'], $_SESSION['deleted_favorites'])) {
+        $daftar_kos_favorit[] = $f;
     }
 }
 $jumlah_kos = count($daftar_kos_favorit);
@@ -105,16 +106,13 @@ $jumlah_kos = count($daftar_kos_favorit);
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        /* =================================
-            RESET DAN DASAR
-        ================================= */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; background: #f0f4f8; color: #17213c; min-height: 100vh; }
         a { text-decoration: none; }
 
         :root {
-            --pink: #1e3a8a; /* Biru Tua */
+            --pink: #1e3a8a;
             --pink-dark: #1e293b;
             --pink-light: #eff6ff;
             --pink-bg: #f0f4f8;
@@ -124,9 +122,6 @@ $jumlah_kos = count($daftar_kos_favorit);
             --white: #ffffff;
         }
 
-        /* =================================
-            NAVBAR DENGAN TOMBOL KEMBALI
-        ================================= */
         .navbar { background: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .navbar-container { width: 100%; max-width: 1300px; margin: auto; padding: 14px 25px; display: flex; align-items: center; justify-content: space-between; position: relative; }
         
@@ -181,9 +176,6 @@ $jumlah_kos = count($daftar_kos_favorit);
             border: 2px solid #93c5fd;
         }
 
-        /* =================================
-            LAYOUT UTAMA
-        ================================= */
         .layout {
             max-width: 1300px;
             margin: 35px auto;
@@ -194,9 +186,6 @@ $jumlah_kos = count($daftar_kos_favorit);
             align-items: start;
         }
 
-        /* =================================
-            SIDEBAR
-        ================================= */
         .sidebar {
             background: #ffffff;
             border: 1px solid var(--border);
@@ -244,9 +233,6 @@ $jumlah_kos = count($daftar_kos_favorit);
             font-size: 12px; color: #1e40af; font-weight: 600;
         }
 
-        /* =================================
-            MAIN CONTENT
-        ================================= */
         .main-content { min-width: 0; }
 
         .welcome-banner {
@@ -291,7 +277,6 @@ $jumlah_kos = count($daftar_kos_favorit);
             font-weight: 700;
         }
 
-        /* KARTU KOS FAVORIT */
         .fav-list { display: flex; flex-direction: column; gap: 22px; }
         .fav-item {
             background: #ffffff; 
@@ -333,7 +318,6 @@ $jumlah_kos = count($daftar_kos_favorit);
         .fav-price { color: var(--pink); font-size: 18px; font-weight: 800; }
         .fav-price small { font-size: 12px; font-weight: normal; color: var(--muted); }
 
-        /* Tombol Aksi */
         .fav-actions { border-left: 1px solid var(--border); padding-left: 22px; display: flex; flex-direction: column; gap: 10px; }
         .btn-detail {
             display: block; text-align: center; background: #eff6ff; color: var(--pink);
@@ -498,13 +482,13 @@ $jumlah_kos = count($daftar_kos_favorit);
         <?php if ($jumlah_kos > 0): ?>
 
             <div class="fav-list">
-                <?php foreach ($daftar_kos_favorit as$f): ?>
+                <?php foreach ($daftar_kos_favorit as $f): ?>
                     <?php
                     $foto = !empty($f['foto_kos'])
                         ? 'uploads/' . $f['foto_kos']
                         : $default_image;
 
-                    $harga =$f['harga_mulai'];
+                    $harga = $f['harga_mulai'];
                     ?>
 
                     <article class="fav-item">
@@ -513,4 +497,65 @@ $jumlah_kos = count($daftar_kos_favorit);
                             <img
                                 src="<?= e($foto); ?>"
                                 alt="<?= e($f['nama_kos']); ?>"
-                                onerror="this.
+                                onerror="this.src='uploads/default-kos.jpg';"
+                            >
+                            <div class="logo-badge">
+                                <img src="uploads/logo tata.png" alt="Logo">
+                            </div>
+                        </div>
+
+                        <!-- INFORMASI KOS -->
+                        <div class="fav-info">
+                            <h3><?= e($f['nama_kos']); ?></h3>
+                            <p class="fav-address">
+                                <i class="fa-solid fa-location-dot" style="color: var(--pink); margin-right: 5px;"></i>
+                                <?= e($f['alamat']); ?>
+                            </p>
+
+                            <div class="fav-facilities">
+                                <span class="facility-tag"><i class="fa-solid fa-bed" style="margin-right: 4px;"></i> Kamar Tersedia</span>
+                                <span class="facility-tag"><i class="fa-solid fa-wifi" style="margin-right: 4px;"></i> Wi-Fi</span>
+                            </div>
+
+                            <div class="fav-price">
+                                <?php if ($harga): ?>
+                                    Rp <?= number_format($harga, 0, ',', '.'); ?> <small>/ bulan</small>
+                                <?php else: ?>
+                                    Harga belum tersedia
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <!-- TOMBOL AKSI -->
+                        <div class="fav-actions">
+                            <a href="detail.php?id=<?= $f['kos_id']; ?>" class="btn-detail">
+                                <i class="fa-solid fa-eye" style="margin-right: 5px;"></i> Lihat Detail
+                            </a>
+                            <a href="favorit.php?hapus_id=<?= $f['kos_id']; ?>" class="btn-hapus" onclick="return confirm('Hapus kost ini dari daftar favorit?');">
+                                <i class="fa-solid fa-trash" style="margin-right: 5px;"></i> Hapus
+                            </a>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+
+        <?php else: ?>
+            <!-- JIKA KOSONG -->
+            <div class="empty-favorite">
+                <div class="empty-icon">
+                    <i class="fa-regular fa-heart"></i>
+                </div>
+                <h3>Belum Ada Kos Favorit</h3>
+                <p>Kamu belum menambahkan kost ke daftar favorit. Yuk, cari kost impianmu sekarang!</p>
+                <a href="beranda.php" class="btn-cari">
+                    <i class="fa-solid fa-magnifying-glass" style="margin-right: 8px;"></i> Cari Kos Sekarang
+                </a>
+            </div>
+        <?php endif; ?>
+
+    </main>
+
+</div>
+
+</body>
+</html>
