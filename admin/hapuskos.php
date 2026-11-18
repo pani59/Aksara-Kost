@@ -1,10 +1,9 @@
 <?php
-
 require_once '../database.php';
 
-// Cek apakah ada ID
+// Cek apakah ada parameter ID kos
 if (!isset($_GET['id'])) {
-    header("Location: kos.php");
+    header("Location: kos.php"); // Sesuaikan dengan nama file tabel kos di admin kamu
     exit;
 }
 
@@ -45,10 +44,9 @@ if (!$hapus) {
 }
 
 // ==========================================
-// KEMBALI KE HALAMAN KOS
+// KEMBALI KE HALAMAN KOS ADMIN
 // ==========================================
 
-header("Location: kos.php");
+header("Location: kos.php"); // Pastikan kembali ke file daftar kos di folder admin
 exit;
-
 ?>
