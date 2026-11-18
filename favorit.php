@@ -21,19 +21,21 @@ if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
     }
 }
 
+
 $user_id = $_SESSION['user_id'];
 
-// Inisialisasi session array untuk menyimpan ID kos favorit khusus user ini (Default kosong untuk akun baru)
+// Inisialisasi session array untuk menyimpan ID kos favorit khusus user ini
 if (!isset($_SESSION['user_favorites'])) {
     $_SESSION['user_favorites'] = [];
 }
 
-// Proses Hapus Favorit
-if (isset($_GET['hapus_id'])) {
-    $kos_id_hapus = (int)$_GET['hapus_id'];
-    if ($kos_id_hapus > 0) {
-        $_SESSION['user_favorites'] = array_values(array_diff($_SESSION['user_favorites'], [$kos_id_hapus]));
+// 1. PROSES TAMBAH FAVORIT (HARUS DI ATAS SEBELUM REDIRECT)
+if (isset($_GET['tambah_id'])) {
+    $kos_id_tambah = (int)$_GET['tambah_id'];
+    if ($kos_id_tambah > 0 && !in_array($kos_id_tambah, $_SESSION['user_favorites'])) {
+        $_SESSION['user_favorites'][] = $kos_id_tambah;
     }
+    // Setelah sukses dimasukkan ke session, bersihkan URL ?tambah_id=... agar bersih
     header("Location: favorit.php");
     exit;
 }
