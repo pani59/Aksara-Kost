@@ -8,9 +8,7 @@ session_start();
 require_once __DIR__ . '/database.php';
 
 // Menyesuaikan koneksi database ($conn atau $koneksi)
-if (!isset($conn) && isset($db)) {
-    $conn = $db;
-} elseif (!isset($conn) && isset($koneksi)) {
+if (!isset($conn) && isset($koneksi)) {
     $conn = $koneksi;
 }
 
@@ -21,7 +19,9 @@ if (!isset($conn) || !$conn) {
 $error = '';
 $success = '';
 
+// ========================================
 // PROSES REGISTER
+// ========================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama     = trim($_POST['nama'] ?? '');
     $email    = trim($_POST['email'] ?? '');
@@ -46,21 +46,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             mysqli_stmt_close($stmt_cek);
 
-            // Set status verifikasi awal menjadi "Menunggu"
+            // Set status verifikasi awal menjadi "Menunggu" dan foto default
             $status_verifikasi = 'Menunggu';
+            $foto_default = 'default.jpeg';
 
-            // Query insert data ke database
-            $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?)";
+            // Query insert data dengan kolom foto dan status verifikasi sesuai database penguji
+            $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, foto, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt_insert = mysqli_prepare($conn, $query_insert);
 
             if ($stmt_insert) {
-                mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $email, $password, $role, $no_wa, $status_verifikasi);
+                mysqli_stmt_bind_param($stmt_insert, "sssssss", $nama, $email, $password, $role, $no_wa, $foto_default, $status_verifikasi);
                 
                 if (mysqli_stmt_execute($stmt_insert)) {
-                    // MENGAMBIL USER_ID UNIK YANG BARU SAJA DIBUAT
+                    // AMBIL USER_ID UNIK YANG BARU SAJA MASUK KE DATABASE
                     $user_id = mysqli_insert_id($conn);
 
-                    // LOGIKA PENYIMPANAN FOTO BERDASARKAN USER_ID
+                    // LOGIKA PENYIMPANAN FOTO DENGAN ID UNIK SUPAYA TIDAK TERTUKAR
                     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
                         $file_tmp   = $_FILES['foto']['tmp_name'];
                         $file_ext   = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
@@ -71,13 +72,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $nama_foto = 'user_' . $user_id . '.' . $file_ext;
                             $target_dir = __DIR__ . '/uploads/';
 
-                            // Pastikan folder uploads ada
                             if (!is_dir($target_dir)) {
                                 mkdir($target_dir, 0777, true);
                             }
 
                             if (move_uploaded_file($file_tmp, $target_dir . $nama_foto)) {
-                                @mysqli_query($conn, "UPDATE user SET foto = '$nama_foto' WHERE user_id = '$user_id'");
+                                // Update nama file foto ke database berdasarkan user_id unik
+                                mysqli_query($conn, "UPDATE user SET foto = '$nama_foto' WHERE user_id = '$user_id'");
                             }
                         }
                     }
@@ -347,7 +348,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- ROLE (ADMIN DIHILANGKAN, HANYA OWNER DAN USER) -->
+                <!-- ROLE (ADMIN DIHILANGKAN, HANYA OWNER & USER) -->
                 <div class="form-group">
                     <label>Role</label>
                     <div class="input-wrapper">
