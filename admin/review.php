@@ -486,7 +486,7 @@ if (!$result) {
                                 ?>
                                     <tr>
                                         <td><?= $no++; ?></td>
-                                        <td>Booking #<?= htmlspecialchars($data['booking_id']); ?></td>
+                                        <td>Booking #<?= htmlspecialchars($data['booking_id'] ?? ''); ?></td>
                                         
                                         <!-- RATING -->
                                         <td>
@@ -505,8 +505,8 @@ if (!$result) {
                                             <small class="text-muted">(<?= $rating; ?>/5)</small>
                                         </td>
 
-                                        <!-- KOMENTAR -->
-                                        <td><?= htmlspecialchars($data['komentar']); ?></td>
+                                        <!-- KOMENTAR (Sudah diperbaiki dengan pengaman null) -->
+                                        <td><?= htmlspecialchars($data['komentar'] ?? ''); ?></td>
 
                                         <!-- TANGGAL -->
                                         <td>
@@ -518,7 +518,7 @@ if (!$result) {
                                         <!-- AKSI EDIT DAN HAPUS -->
                                         <td class="kolom-aksi">
                                             <a href="editreview.php?id=<?= (int)$data['review_id']; ?>" class="btn btn-success btn-sm font-weight-bold">
-                                                 Edit
+                                               Edit
                                             </a>
                                             <a href="hapusreview.php?id=<?= (int)$data['review_id']; ?>" class="btn btn-danger btn-sm font-weight-bold" onclick="return confirm('Yakin ingin menghapus ulasan ini?');">
                                                 Hapus
