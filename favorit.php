@@ -13,10 +13,10 @@ if (!isset($db) || !$db) {
     die("Koneksi database gagal. Periksa kembali file database.php.");
 }
 
-if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
-    header("Location: login.php");
-    exit;
-}
+// if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
+//     header("Location: login.php");
+//     exit;
+// }
 
 $user_id = $_SESSION['user_id'];
 
