@@ -3,9 +3,8 @@ require_once '../database.php';
 
 // Cek apakah ada parameter ID kos
 if (!isset($_GET['id'])) {
-    header("Location: kos.php"); // Sesuaikan dengan nama file tabel kos di admin kamu
-    exit;
-}
+header("Location: /admin/kos.php"); 
+exit;
 
 $id = (int) $_GET['id'];
 
