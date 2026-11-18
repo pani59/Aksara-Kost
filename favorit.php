@@ -54,7 +54,7 @@ $foto_user = (!empty($nama_file_foto) && file_exists('uploads/' . $nama_file_fot
     ? 'uploads/' . $nama_file_foto . '?v=' . time() 
     : 'uploads/default.jpeg';
 
-// Mengambil data kos dari database
+// Mengambil data kos beserta status kamar dari database
 $sql_fav = "
     SELECT k.*,
     (
@@ -68,7 +68,14 @@ $sql_fav = "
         SELECT MIN(km.harga)
         FROM kamar km
         WHERE km.kos_id = k.kos_id
-    ) AS harga_mulai
+    ) AS harga_mulai,
+    (
+        SELECT km.status_kamar
+        FROM kamar km
+        WHERE km.kos_id = k.kos_id
+        ORDER BY km.kamar_id ASC
+        LIMIT 1
+    ) AS status_kamar
     FROM kos k
     LIMIT 3
 ";
@@ -352,6 +359,7 @@ $jumlah_kos = count($daftar_kos_favorit);
                     <?php
                     $foto = !empty($f['foto_kos']) ? 'uploads/' . $f['foto_kos'] : $default_image;
                     $harga = $f['harga_mulai'];
+                    $status_kamar = $f['status_kamar'] ?? 'Kosong';
                     ?>
 
                     <article class="fav-item">
@@ -369,7 +377,10 @@ $jumlah_kos = count($daftar_kos_favorit);
                             </p>
 
                             <div class="fav-facilities">
-                                <span class="facility-tag"><i class="fa-solid fa-bed" style="margin-right: 4px;"></i> Kamar Tersedia</span>
+                                <span class="facility-tag">
+                                    <i class="fa-solid fa-bed" style="margin-right: 4px;"></i> 
+                                    <?= e($status_kamar); ?>
+                                </span>
                                 <span class="facility-tag"><i class="fa-solid fa-wifi" style="margin-right: 4px;"></i> Wi-Fi</span>
                             </div>
 
