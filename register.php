@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email    = mysqli_real_escape_string($conn, trim($_POST['email'] ?? ''));
     $no_wa    = mysqli_real_escape_string($conn, trim($_POST['no_wa'] ?? ''));
     $password = mysqli_real_escape_string($conn, $_POST['password'] ?? '');
-    $role     = mysqli_real_escape_string($conn, trim($_POST['role'] ?? 'User'));
+    $role     = mysqli_real_escape_string($conn, trim($_POST['role'] ?? ''));
 
     if (!empty($nama) && !empty($email) && !empty($password) && !empty($role)) {
         // Validasi panjang password minimal 6 karakter
@@ -38,7 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = "Email sudah terdaftar!";
             } else {
                 // Status verifikasi default diatur menjadi "Menunggu" (Menunggu Konfirmasi Admin)
-                // Jika role adalah 'User', bisa langsung aktif atau ikut menunggu (sesuai kebutuhan, di sini kita buat "Menunggu" untuk semua agar admin bisa verifikasi)
                 $status_verifikasi = 'Menunggu';
 
                 $query = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) 
@@ -69,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     } else {
-        $error = "Harap isi semua kolom yang wajib!";
+        $error = "Harap pilih role dan isi semua kolom yang wajib!";
     }
 }
 ?>
@@ -170,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 1px solid var(--sage-border); border-radius: 10px;
             background: #ffffff; color: var(--text); outline: none; font-family: inherit; font-size: 12px; transition: 0.3s;
         }
-        .form-group select { appearance: none; cursor: pointer; }
+        .form-group select { appearance: none; cursor: pointer; color: #a2a4b1; }
         .form-group input[type="file"] { padding: 10px 15px; height: auto; background: #fafafa; cursor: pointer; }
         .form-group input:focus, .form-group select:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(135,169,135,0.12); }
 
@@ -236,7 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     Bergabung dengan <span>AKSARA KOST</span>
                 </h1>
                 <p class="banner-description">
-                    Daftar sebagai User, Owner, atau Admin. Setiap pendaftaran baru akan melalui proses konfirmasi keamanan sistem.
+                    Daftar sebagai Admin, Owner, atau User. Setiap pendaftaran baru akan melalui proses konfirmasi keamanan sistem.
                 </p>
                 <div class="banner-features">
                     <div class="feature">
@@ -279,19 +278,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php else: ?>
 
             <form action="" method="POST" enctype="multipart/form-data">
-                <!-- PILIH ROLE -->
-                <div class="form-group">
-                    <label>Daftar Sebagai (Role)</label>
-                    <div class="input-wrapper">
-                        <i class="fa-solid fa-user-tag"></i>
-                        <select name="role" required>
-                            <option value="User">User (Pencari Kost)</option>
-                            <option value="Owner">Owner (Pemilik Kost)</option>
-                            <option value="Admin">Admin (Pengelola Sistem)</option>
-                        </select>
-                    </div>
-                </div>
-
                 <!-- NAMA LENGKAP -->
                 <div class="form-group">
                     <label>Nama Lengkap</label>
@@ -328,6 +314,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <button type="button" class="toggle-password" onclick="togglePassword()" aria-label="Tampilkan password">
                             <i class="fa-solid fa-eye" id="eyeIcon"></i>
                         </button>
+                    </div>
+                </div>
+
+                <!-- PILIH ROLE (SESUDAH PASSWORD DENGAN URUTAN ADMIN, OWNER, USER) -->
+                <div class="form-group">
+                    <label>Daftar Sebagai (Role)</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user-tag"></i>
+                        <select name="role" required onchange="this.style.color='#2C3E35'">
+                            <option value="" disabled selected hidden>Pilih Role</option>
+                            <option value="Admin">Admin (Pengelola Sistem)</option>
+                            <option value="Owner">Owner (Pemilik Kost)</option>
+                            <option value="User">User (Pencari Kost)</option>
+                        </select>
                     </div>
                 </div>
 
