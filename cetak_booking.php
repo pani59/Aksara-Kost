@@ -1,22 +1,26 @@
 <?php
 session_start();
-require_once __DIR__ . '/../database.php';
+require_once __DIR__ . '/database.php';
 
-// Menyesuaikan koneksi database
-if (!isset($conn) && isset($db)) {
-    $conn = $db;
-} elseif (!isset($conn) && isset($koneksi)) {
-    $conn = $koneksi;
+// Menyesuaikan koneksi database secara fleksibel ($db, $conn, atau $koneksi)
+if (!isset($db) && isset($conn)) {
+    $db = $conn;
+} elseif (!isset($db) && isset($koneksi)) {
+    $db = $koneksi;
+}
+
+if (!isset($db) || !$db) {
+    die("Koneksi database gagal. Periksa kembali file database.php.");
 }
 
 $booking_id = $_GET['id'] ?? '';
 $format     = $_GET['format'] ?? '';
 $act        = $_GET['act'] ?? $format;
 
-// Query data booking lengkap
-$query = mysqli_query($conn, "
+// Query data booking lengkap menggunakan koneksi $db yang aktif
+$stmt_booking = mysqli_prepare($db, "
     SELECT 
-        b.booking_id, b.tanggal_survey, COALESCE(b.status_booking, 'Menunggu') AS status_booking,
+        b.booking_id, b.tanggal_survey, COALESCE(b.status_booking, 'Menunggu') AS status_booking, 
         km.no_kamar, km.tipe_kamar, km.harga,
         k.nama_kos, k.alamat,
         u_pencari.nama AS nama_pencari,
@@ -26,16 +30,19 @@ $query = mysqli_query($conn, "
     JOIN kos k ON km.kos_id = k.kos_id
     JOIN user u_pencari ON b.user_id = u_pencari.user_id
     LEFT JOIN user u_owner ON k.owner_id = u_owner.user_id
-    WHERE b.booking_id = '$booking_id'
+    WHERE b.booking_id = ?
 ");
 
+mysqli_stmt_bind_param($stmt_booking, "i", $booking_id);
+mysqli_stmt_execute($stmt_booking);
+$query = mysqli_stmt_get_result($stmt_booking);
 $data = mysqli_fetch_assoc($query);
 
 $st = strtolower(trim($data['status_booking'] ?? ''));
 $is_approved = ($st === 'disetujui' || $st === 'approved' || $st === 'selesai');
 
 if (!$data || !$is_approved) {
-    echo "<script>alert('Bukti booking tidak dapat dicetak!'); window.close();</script>";
+    echo "<script>alert('Bukti booking tidak dapat dicetak karena belum disetujui atau data tidak ditemukan!'); window.location.href='booking.php';</script>";
     exit;
 }
 
