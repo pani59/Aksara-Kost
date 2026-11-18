@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Jakarta');
 require_once __DIR__ . '/database.php';
 
 // 1. Wajibkan user login terlebih dahulu
