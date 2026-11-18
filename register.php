@@ -51,8 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $foto_default = 'default.jpeg';
 
             // Query insert data dengan kolom foto dan status verifikasi sesuai database penguji
-            $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, foto, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            $stmt_insert = mysqli_prepare($conn, $query_insert);
+            $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?)";
+$stmt_insert = mysqli_prepare($conn, $query_insert);
+mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $email, $password, $role, $no_wa, $status_verifikasi);
 
             if ($stmt_insert) {
                 mysqli_stmt_bind_param($stmt_insert, "sssssss", $nama, $email, $password, $role, $no_wa, $foto_default, $status_verifikasi);
