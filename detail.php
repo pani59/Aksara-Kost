@@ -398,7 +398,9 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION
             <?php else: ?>
                 <button class="btn-action btn-hubungi" style="background:#888;" onclick="alert('Nomor WA Pemilik belum tersedia.')"><i class="fa-brands fa-whatsapp"></i> Hubungi Pemilik</button>
             <?php endif; ?>
-            <button class="btn-action btn-tandai" onclick="alert('Berhasil ditandai!')"><i class="fa-solid fa-heart"></i> Simpan Favorit</button>
+            <a href="favorit.php?tambah_id=<?= $kos['kos_id'] ?? $_GET['id']; ?>" class="btn-action btn-tandai" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none;" onclick="alert('Kost berhasil ditambahkan ke favorit!');">
+    <i class="fa-solid fa-heart" style="margin-right: 6px;"></i> Simpan Favorit
+</a>
         </div>
 
         <!-- SEKSI ULASAN & REVIEW -->
