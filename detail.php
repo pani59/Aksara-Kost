@@ -1,32 +1,51 @@
 <?php
-// Aktifkan error reporting untuk mendeteksi pesan kesalahan jika ada
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 session_start();
 require_once __DIR__ . '/database.php';
 
-// Menyesuaikan koneksi database
+// Menyesuaikan koneksi database menggunakan variabel $conn / $db / $koneksi
 if (!isset($db) && isset($conn)) {
     $db = $conn;
 } elseif (!isset($db) && isset($koneksi)) {
     $db = $koneksi;
 }
 
-if (!isset($db) || mysqli_connect_errno()) {
-    die("Koneksi database gagal: " . mysqli_connect_error());
+if (!isset($db) || !$db) {
+    die("Koneksi database gagal. Periksa kembali file database.php.");
 }
 
-/*
-|--------------------------------------------------------------------------
-| TANGKAP ID KOS
-|--------------------------------------------------------------------------
-*/
-$kos_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+// Pengecekan login
+if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: login.php");
+        exit;
+    }
+}
 
-if ($kos_id <= 0) {
-    header("Location: index.php");
+$user_id = $_SESSION['user_id'];
+
+// Inisialisasi session array untuk menyimpan ID kos favorit khusus user ini
+if (!isset($_SESSION['user_favorites'])) {
+    $_SESSION['user_favorites'] = [];
+}
+
+// 1. PROSES TAMBAH FAVORIT (HARUS DI ATAS SEBELUM REDIRECT)
+if (isset($_GET['tambah_id'])) {
+    $kos_id_tambah = (int)$_GET['tambah_id'];
+    if ($kos_id_tambah > 0 && !in_array($kos_id_tambah, $_SESSION['user_favorites'])) {
+        $_SESSION['user_favorites'][] = $kos_id_tambah;
+    }
+    // Setelah sukses dimasukkan ke session, bersihkan URL ?tambah_id=... agar bersih
+    header("Location: favorit.php");
+    exit;
+}
+
+// 2. PROSES HAPUS FAVORIT
+if (isset($_GET['hapus_id'])) {
+    $kos_id_hapus = (int)$_GET['hapus_id'];
+    if ($kos_id_hapus > 0) {
+        $_SESSION['user_favorites'] = array_values(array_diff($_SESSION['user_favorites'], [$kos_id_hapus]));
+    }
+    header("Location: favorit.php");
     exit;
 }
 
