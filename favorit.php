@@ -40,6 +40,19 @@ if (isset($_GET['tambah_id'])) {
     exit;
 }
 
+// Proses Hapus Favorit yang Akurat
+if (isset($_GET['hapus_id'])) {
+    $kos_id_hapus = (int)$_GET['hapus_id'];
+    if ($kos_id_hapus > 0 && isset($_SESSION['user_favorites'])) {
+        // Menghapus ID kos dari dalam array session user_favorites
+        $_SESSION['user_favorites'] = array_values(array_filter($_SESSION['user_favorites'], function($id) use ($kos_id_hapus) {
+            return (int)$id !== $kos_id_hapus;
+        }));
+    }
+    header("Location: favorit.php");
+    exit;
+}
+
 // Mengambil data pengguna berdasarkan session user_id
 $stmt_user = mysqli_prepare($db, "SELECT * FROM user WHERE user_id = ?");
 mysqli_stmt_bind_param($stmt_user, "s", $user_id);
