@@ -1,11 +1,8 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 session_start();
 require_once 'database.php';
 
-// Menyesuaikan koneksi database menggunakan variabel $db
+// Menyesuaikan koneksi database menggunakan variabel $conn / $db / $koneksi
 if (!isset($db) && isset($conn)) {
     $db = $conn;
 } elseif (!isset($db) && isset($koneksi)) {
@@ -16,11 +13,13 @@ if (!isset($db) || !$db) {
     die("Koneksi database gagal. Periksa kembali file database.php.");
 }
 
-// Pengecekan login dinonaktifkan agar bisa langsung dibuka tanpa login
+// Pengecekan login dinonaktifkan sementara agar bisa langsung dibuka tanpa login
 /*
 if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
-    header("Location: login.php");
-    exit;
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: login.php");
+        exit;
+    }
 }
 */
 
@@ -42,7 +41,7 @@ if (isset($_GET['hapus_id'])) {
     exit;
 }
 
-// Mengambil data pengguna
+// Mengambil data pengguna dari database (termasuk foto profilnya)
 $stmt_user = mysqli_prepare($db, "SELECT * FROM user WHERE user_id = ?");
 mysqli_stmt_bind_param($stmt_user, "s", $user_id);
 mysqli_stmt_execute($stmt_user);
@@ -60,10 +59,11 @@ function e($value) {
     return htmlspecialchars((string)($value ?? '-'), ENT_QUOTES, 'UTF-8');
 }
 
-// Foto profil disamakan dengan database (mengambil kolom foto dari tabel user)
-$foto_user = (!empty($user['foto']) && file_exists('../uploads/' . $user['foto']))
-    ? '../uploads/' . $user['foto'] . '?v=' . time()
-    : '../uploads/default.jpeg';
+// Foto profil (mengambil dari database user yang sedang aktif, sama seperti contoh kode pesanan)
+$nama_file_foto = $user['foto'] ?? '';
+$foto_user = (!empty($nama_file_foto) && file_exists('uploads/' . $nama_file_foto)) 
+    ? 'uploads/' . $nama_file_foto . '?v=' . time() 
+    : 'uploads/default.jpeg';
 
 // Mengambil data kos dari database
 $sql_fav = "
@@ -90,7 +90,7 @@ if (!$res_fav) {
     die("Gagal mengambil data kos: " . mysqli_error($db));
 }
 
-$default_image = '../assets/images/default-kos.jpg';
+$default_image = 'assets/images/default-kos.jpg';
 
 // Menampung data kos yang belum dihapus oleh user
 $daftar_kos_favorit = [];
@@ -108,14 +108,14 @@ $jumlah_kos = count($daftar_kos_favorit);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kos Favorit Saya - AKSARA KOST</title>
-    <link rel="icon" href="../uploads/logokost.png" type="image/png">
+    <link rel="icon" href="uploads/logokost.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         /* =================================
-            RESET DAN DASAR (HIJAU SAGE PASTEL)
+            RESET DAN DASAR (SAGE GREEN THEME)
         ================================= */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
@@ -123,28 +123,28 @@ $jumlah_kos = count($daftar_kos_favorit);
         a { text-decoration: none; }
 
         :root {
-            --primary: #87A987;
-            --primary-dark: #6D8A6D;
-            --primary-soft: #EBF2EB;
-            --primary-light: #F4F7F4;
-            --primary-border: #D1E0D1;
+            --sage: #87A987;
+            --sage-dark: #6D8A6D;
+            --sage-soft: #EBF2EB;
+            --sage-light: #F4F7F4;
+            --sage-border: #D1E0D1;
             --text: #2C3E35;
             --muted: #627268;
             --white: #ffffff;
-            --shadow: 0 10px 35px rgba(135,169,135,0.08);
+            --shadow: 0 10px 35px rgba(135,169,135,0.12);
         }
 
         /* =================================
             NAVBAR DENGAN TOMBOL KEMBALI
         ================================= */
-        .navbar { background: rgba(250,249,246,0.96); backdrop-filter: blur(15px); border-bottom: 1px solid var(--primary-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .navbar { background: rgba(250,249,246,0.96); backdrop-filter: blur(15px); border-bottom: 1px solid var(--sage-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .navbar-container { width: 100%; max-width: 1300px; margin: auto; padding: 14px 25px; display: flex; align-items: center; justify-content: space-between; position: relative; }
         
         .logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
         .logo-icon { width: 34px; height: 34px; object-fit: contain; }
         .logo-text-group { display: flex; flex-direction: column; line-height: 1.1; }
-        .logo-title { color: var(--primary-dark); font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
-        .logo-subtitle { color: var(--primary-dark); font-size: 14px; font-weight: 700; }
+        .logo-title { color: var(--sage-dark); font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+        .logo-subtitle { color: var(--sage-dark); font-size: 14px; font-weight: 700; }
         
         .nav-center { 
             position: absolute; 
@@ -155,9 +155,9 @@ $jumlah_kos = count($daftar_kos_favorit);
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: var(--primary-dark);
-            background: var(--primary-soft);
-            border: 1px solid var(--primary-border);
+            color: var(--sage-dark);
+            background: var(--sage-soft);
+            border: 1px solid var(--sage-border);
             padding: 8px 18px;
             border-radius: 30px;
             font-size: 13px;
@@ -165,15 +165,15 @@ $jumlah_kos = count($daftar_kos_favorit);
             transition: 0.3s;
         }
         .btn-back-home:hover {
-            background: var(--primary);
+            background: var(--sage);
             color: #ffffff;
             transform: translateY(-1px);
         }
 
         .btn-profile {
-            background: var(--primary-soft);
-            color: var(--primary-dark) !important;
-            border: 1px solid var(--primary-border);
+            background: var(--sage-soft);
+            color: var(--sage-dark) !important;
+            border: 1px solid var(--sage-border);
             padding: 5px 15px 5px 5px;
             border-radius: 30px;
             display: flex;
@@ -188,7 +188,7 @@ $jumlah_kos = count($daftar_kos_favorit);
             height: 32px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--primary);
+            border: 2px solid var(--sage);
         }
 
         /* =================================
@@ -209,7 +209,7 @@ $jumlah_kos = count($daftar_kos_favorit);
         ================================= */
         .sidebar {
             background: #ffffff;
-            border: 1px solid var(--primary-border);
+            border: 1px solid var(--sage-border);
             border-radius: 22px;
             padding: 28px 20px 0;
             overflow: hidden;
@@ -219,7 +219,7 @@ $jumlah_kos = count($daftar_kos_favorit);
         .sidebar-user {
             text-align: center;
             padding-bottom: 25px;
-            border-bottom: 1px solid var(--primary-soft);
+            border-bottom: 1px solid var(--sage-soft);
         }
 
         .avatar-container {
@@ -227,14 +227,14 @@ $jumlah_kos = count($daftar_kos_favorit);
             height: 110px;
             margin: 0 auto 13px;
             border-radius: 50%;
-            border: 4px solid var(--primary);
+            border: 4px solid var(--sage);
             padding: 3px;
             overflow: hidden;
         }
         .avatar-container img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
         .sidebar-user strong { display: block; font-size: 18px; color: var(--text); margin-bottom: 4px; }
-        .sidebar-user span { color: var(--muted); font-size: 13px; }
+        .sidebar-user span { color: var(--muted); font-size: 13px; text-transform: capitalize; }
 
         .menu-list { list-style: none; margin-top: 20px; }
         .menu-list li { margin-bottom: 8px; }
@@ -244,14 +244,14 @@ $jumlah_kos = count($daftar_kos_favorit);
             border-radius: 12px; transition: 0.3s;
         }
         .menu-list a:hover, .menu-list a.active {
-            background: var(--primary-soft); color: var(--primary-dark); font-weight: 700;
+            background: var(--sage-soft); color: var(--sage-dark); font-weight: 700;
         }
-        .menu-icon { font-size: 18px; width: 25px; text-align: center; color: var(--primary); }
+        .menu-icon { font-size: 18px; width: 25px; text-align: center; color: var(--sage); }
 
         .sidebar-decoration {
             margin: 30px -20px 0; padding: 25px 10px 15px;
-            text-align: center; background: linear-gradient(180deg, #fff 0%, var(--primary-soft) 100%);
-            font-size: 12px; color: var(--primary-dark); font-weight: 600;
+            text-align: center; background: linear-gradient(180deg, #fff 0%, var(--sage-soft) 100%);
+            font-size: 12px; color: var(--sage-dark); font-weight: 600;
         }
 
         /* =================================
@@ -261,8 +261,8 @@ $jumlah_kos = count($daftar_kos_favorit);
 
         .welcome-banner {
             min-height: 170px; padding: 30px 38px; border-radius: 22px;
-            background: linear-gradient(120deg, var(--primary-soft), #D1E0D1);
-            border: 1px solid var(--primary-border); display: flex; align-items: center;
+            background: linear-gradient(120deg, #D1E0D1, #EBF2EB);
+            border: 1px solid var(--sage-border); display: flex; align-items: center;
             justify-content: space-between; overflow: hidden; position: relative; margin-bottom: 22px;
         }
         .welcome-text { position: relative; z-index: 2; }
@@ -292,9 +292,9 @@ $jumlah_kos = count($daftar_kos_favorit);
         .section-heading h2 { font-size: 22px; color: var(--text); font-weight: 800; }
 
         .total-favorit {
-            background: var(--primary-soft);
-            color: var(--primary-dark);
-            border: 1px solid var(--primary-border);
+            background: var(--sage-soft);
+            color: var(--sage-dark);
+            border: 1px solid var(--sage-border);
             padding: 8px 15px;
             border-radius: 30px;
             font-size: 12px;
@@ -305,7 +305,7 @@ $jumlah_kos = count($daftar_kos_favorit);
         .fav-list { display: flex; flex-direction: column; gap: 22px; }
         .fav-item {
             background: #ffffff; 
-            border: 1px solid var(--primary-border);
+            border: 1px solid var(--sage-border);
             border-radius: 22px; 
             padding: 30px; 
             display: grid;
@@ -315,9 +315,9 @@ $jumlah_kos = count($daftar_kos_favorit);
             transition: 0.3s;
             box-shadow: 0 5px 20px rgba(135,169,135,0.06);
         }
-        .fav-item:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: 0 8px 22px rgba(135,169,135,0.12); }
+        .fav-item:hover { transform: translateY(-3px); border-color: var(--sage); box-shadow: 0 8px 22px rgba(135,169,135,0.12); }
 
-        .fav-image { position: relative; overflow: hidden; border-radius: 16px; height: 155px; background: #D1E0D1; }
+        .fav-image { position: relative; overflow: hidden; border-radius: 16px; height: 155px; background: var(--sage-soft); }
         .fav-image img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
         .fav-item:hover .fav-image img { transform: scale(1.06); }
 
@@ -336,43 +336,43 @@ $jumlah_kos = count($daftar_kos_favorit);
         .fav-address { font-size: 13px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
 
         .fav-facilities { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
-        .facility-tag { background: var(--primary-soft); color: var(--primary-dark); padding: 6px 12px; border-radius: 30px; font-size: 11px; font-weight: 600; }
+        .facility-tag { background: var(--sage-soft); color: var(--sage-dark); padding: 6px 12px; border-radius: 30px; font-size: 11px; font-weight: 600; }
 
-        .fav-price { color: var(--primary); font-size: 18px; font-weight: 800; }
+        .fav-price { color: var(--sage-dark); font-size: 18px; font-weight: 800; }
         .fav-price small { font-size: 12px; font-weight: normal; color: var(--muted); }
 
         /* Tombol Aksi */
-        .fav-actions { border-left: 1px solid var(--primary-border); padding-left: 22px; display: flex; flex-direction: column; gap: 10px; }
+        .fav-actions { border-left: 1px solid var(--sage-border); padding-left: 22px; display: flex; flex-direction: column; gap: 10px; }
         .btn-detail {
-            display: block; text-align: center; background: var(--primary-soft); color: var(--primary-dark);
-            border: 1px solid var(--primary-border); padding: 11px 15px; border-radius: 30px;
+            display: block; text-align: center; background: var(--sage-soft); color: var(--sage-dark);
+            border: 1px solid var(--sage-border); padding: 11px 15px; border-radius: 30px;
             font-size: 13px; font-weight: 700; transition: 0.3s;
         }
-        .btn-detail:hover { background: var(--primary); color: white; }
+        .btn-detail:hover { background: var(--sage); color: white; }
 
         .btn-hapus {
             display: block; text-align: center;
-            background: #ffffff; border: 1px solid var(--primary-border); color: #475569;
+            background: #ffffff; border: 1px solid var(--sage-border); color: #475569;
             padding: 11px 15px; border-radius: 30px; font-size: 12px; font-weight: 700;
             cursor: pointer; transition: 0.3s;
         }
         .btn-hapus:hover { background: #fff0f0; color: #dc3545; border-color: #fca5a5; }
 
-        .empty-favorite { background: #ffffff; border: 1px solid var(--primary-border); border-radius: 22px; text-align: center; padding: 50px 20px; }
-        .empty-icon { font-size: 60px; color: var(--primary); margin-bottom: 15px; }
+        .empty-favorite { background: #ffffff; border: 1px solid var(--sage-border); border-radius: 22px; text-align: center; padding: 50px 20px; }
+        .empty-icon { font-size: 60px; color: var(--sage); margin-bottom: 15px; }
         .empty-favorite h3 { color: var(--text); font-size: 20px; margin-bottom: 8px; font-weight: 800; }
         .empty-favorite p { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
         .btn-cari {
-            display: inline-block; background: var(--primary); color: white;
+            display: inline-block; background: var(--sage); color: white;
             padding: 12px 24px; border-radius: 30px; font-size: 13px; font-weight: 700; transition: 0.3s;
-            box-shadow: 0 6px 16px rgba(135,169,135,0.15);
+            box-shadow: 0 6px 16px rgba(135,169,135,0.2);
         }
-        .btn-cari:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-cari:hover { background: var(--sage-dark); transform: translateY(-2px); }
 
         @media (max-width: 1000px) {
             .layout { grid-template-columns: 240px 1fr; gap: 20px; }
             .fav-item { grid-template-columns: 160px minmax(0, 1fr); }
-            .fav-actions { grid-column: 2; border-left: none; border-top: 1px solid var(--primary-border); padding: 15px 0 0; flex-direction: row; }
+            .fav-actions { grid-column: 2; border-left: none; border-top: 1px solid var(--sage-border); padding: 15px 0 0; flex-direction: row; }
             .fav-actions > * { flex: 1; }
         }
 
@@ -404,8 +404,8 @@ $jumlah_kos = count($daftar_kos_favorit);
 <!-- NAVBAR -->
 <nav class="navbar">
     <div class="navbar-container">
-        <a href="beranda.php" class="logo">
-            <img src="../uploads/logokost.png" alt="Logo AKSARA KOST" class="logo-icon" onerror="this.src='../uploads/tampilankos.jpeg';">
+        <a href="index.php" class="logo">
+            <img src="uploads/logokost.png" alt="Logo AKSARA KOST" class="logo-icon" onerror="this.src='uploads/tampilankos.jpeg';">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -413,7 +413,7 @@ $jumlah_kos = count($daftar_kos_favorit);
         </a>
 
         <div class="nav-center">
-            <a href="beranda.php" class="btn-back-home">
+            <a href="index.php" class="btn-back-home">
                 <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
             </a>
         </div>
@@ -423,9 +423,9 @@ $jumlah_kos = count($daftar_kos_favorit);
                 src="<?= e($foto_user); ?>"
                 alt="Profil"
                 class="navbar-profile-img"
-                onerror="this.src='../uploads/default.jpeg';"
+                onerror="this.src='uploads/default.jpeg';"
             >
-            <span><?= e($user['nama']); ?></span>
+            <span><?= e($user['nama'] ?? $_SESSION['nama']); ?></span>
         </a>
     </div>
 </nav>
@@ -440,7 +440,7 @@ $jumlah_kos = count($daftar_kos_favorit);
                 <img
                     src="<?= e($foto_user); ?>"
                     alt="Foto Profil"
-                    onerror="this.src='../uploads/default.jpeg';"
+                    onerror="this.src='uploads/default.jpeg';"
                 >
             </div>
             <strong><?= e($user['nama']); ?></strong>
@@ -490,7 +490,7 @@ $jumlah_kos = count($daftar_kos_favorit);
                 <p>Daftar kost pilihan yang sudah kamu sukai.</p>
             </div>
             <div class="welcome-icon">
-                <img src="../uploads/logokost.png" alt="Logo AKSARA KOST" onerror="this.src='../uploads/tampilankos.jpeg';">
+                <img src="uploads/logokost.png" alt="Logo AKSARA KOST" onerror="this.src='uploads/tampilankos.jpeg';">
             </div>
         </section>
 
@@ -509,7 +509,7 @@ $jumlah_kos = count($daftar_kos_favorit);
                 <?php foreach ($daftar_kos_favorit as $f): ?>
                     <?php
                     $foto = !empty($f['foto_kos'])
-                        ? '../uploads/' . $f['foto_kos']
+                        ? 'uploads/' . $f['foto_kos']
                         : $default_image;
 
                     $harga = $f['harga_mulai'];
@@ -521,10 +521,10 @@ $jumlah_kos = count($daftar_kos_favorit);
                             <img
                                 src="<?= e($foto); ?>"
                                 alt="<?= e($f['nama_kos']); ?>"
-                                onerror="this.onerror=null; this.src='../uploads/default-kos.jpg';"
+                                onerror="this.onerror=null; this.src='<?= e($default_image); ?>';"
                             >
                             <div class="logo-badge">
-                                <img src="../uploads/logokost.png" alt="Logo AKSARA KOST" onerror="this.src='../uploads/tampilankos.jpeg';">
+                                <img src="uploads/logokost.png" alt="Logo AKSARA KOST" onerror="this.src='uploads/tampilankos.jpeg';">
                             </div>
                         </div>
 
@@ -532,24 +532,19 @@ $jumlah_kos = count($daftar_kos_favorit);
                         <div class="fav-info">
                             <h3><?= e($f['nama_kos']); ?></h3>
                             <p class="fav-address">
-                                <i class="fa-solid fa-location-dot" style="color: var(--primary);"></i> <?= e($f['alamat']); ?>
+                                <i class="fa-solid fa-location-dot" style="color: var(--sage);"></i> <?= e($f['alamat']); ?>
                             </p>
 
                             <div class="fav-facilities">
-                                <span class="facility-tag">
-                                    <i class="fa-solid fa-house"></i> Informasi Kost
-                                </span>
-                                <span class="facility-tag">
-                                    <i class="fa-solid fa-heart"></i> Favorit
-                                </span>
+                                <span class="facility-tag"><i class="fa-solid fa-bed" style="margin-right: 4px;"></i> Kamar Tersedia</span>
+                                <span class="facility-tag"><i class="fa-solid fa-wifi" style="margin-right: 4px;"></i> Wi-Fi</span>
                             </div>
 
                             <div class="fav-price">
                                 <?php if ($harga !== null && $harga !== ''): ?>
-                                    Rp <?= number_format((float)$harga, 0, ',', '.'); ?>
-                                    <small>/bulan</small>
+                                    Rp <?= number_format((float)$harga, 0, ',', '.'); ?> <small>/ bulan</small>
                                 <?php else: ?>
-                                    <small>Harga belum tersedia</small>
+                                    Harga belum tersedia
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -557,10 +552,10 @@ $jumlah_kos = count($daftar_kos_favorit);
                         <!-- TOMBOL AKSI -->
                         <div class="fav-actions">
                             <a href="detail.php?id=<?= $f['kos_id']; ?>" class="btn-detail">
-                                <i class="fa-solid fa-eye"></i> Lihat Detail
+                                <i class="fa-solid fa-eye" style="margin-right: 5px;"></i> Lihat Detail
                             </a>
-                            <a href="favorit.php?hapus_id=<?= $f['kos_id']; ?>" class="btn-hapus">
-                                <i class="fa-solid fa-trash-can"></i> Hapus Favorit
+                            <a href="favorit.php?hapus_id=<?= $f['kos_id']; ?>" class="btn-hapus" onclick="return confirm('Hapus kost ini dari daftar favorit?');">
+                                <i class="fa-solid fa-trash" style="margin-right: 5px;"></i> Hapus
                             </a>
                         </div>
                     </article>
@@ -569,21 +564,22 @@ $jumlah_kos = count($daftar_kos_favorit);
 
         <?php else: ?>
 
-            <!-- JIKA BELUM ADA KOS -->
+            <!-- JIKA KOSONG -->
             <div class="empty-favorite">
                 <div class="empty-icon">
                     <i class="fa-regular fa-heart"></i>
                 </div>
-                <h3>Belum Ada Kost Favorit</h3>
-                <p>Kamu belum menyimpan kost favorit. Yuk, cari kost yang sesuai dengan keinginanmu!</p>
-                <a href="daftarkos.php" class="btn-cari">
-                    <i class="fa-solid fa-magnifying-glass"></i> Cari Kost Sekarang
+                <h3>Belum Ada Kos Favorit</h3>
+                <p>Kamu belum menambahkan kost ke daftar favorit. Yuk, cari kost impianmu sekarang!</p>
+                <a href="index.php" class="btn-cari">
+                    <i class="fa-solid fa-magnifying-glass" style="margin-right: 8px;"></i> Cari Kos Sekarang
                 </a>
             </div>
 
         <?php endif; ?>
 
     </main>
+
 </div>
 
 </body>
