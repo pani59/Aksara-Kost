@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . 'database.php';
+require_once 'database.php';
 
 // Menyesuaikan koneksi database menggunakan variabel $db
 if (!isset($db) && isset($conn)) {
