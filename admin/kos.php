@@ -526,7 +526,7 @@ if (!$result) {
                                             <a href="editkos.php?id=<?= (int)$data['kos_id']; ?>" class="btn btn-success btn-sm font-weight-bold">
                                                  Edit
                                             </a>
-                                            <a href="hapus_kos.php?id=<?= (int)$data['kos_id']; ?>" class="btn btn-danger btn-sm font-weight-bold" onclick="return confirm('Yakin ingin menghapus kost ini?');">
+                                            <a href="hapuskos.php?id=<?= (int)$data['kos_id']; ?>" class="btn btn-danger btn-sm font-weight-bold" onclick="return confirm('Yakin ingin menghapus kost ini?');">
                                                 Hapus
                                             </a>
                                         </td>
