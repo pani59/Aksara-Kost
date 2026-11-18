@@ -48,18 +48,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Set status verifikasi awal menjadi "Menunggu"
             $status_verifikasi = 'Menunggu';
+            $foto_default = 'default.jpeg';
 
             // Query insert data dengan status Menunggu
-            $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?)";
+            $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, foto, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt_insert = mysqli_prepare($conn, $query_insert);
 
             if ($stmt_insert) {
-                mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $email, $password, $role, $no_wa, $status_verifikasi);
+                mysqli_stmt_bind_param($stmt_insert, "sssssss", $nama, $email, $password, $role, $no_wa, $foto_default, $status_verifikasi);
                 
                 if (mysqli_stmt_execute($stmt_insert)) {
                     $user_id = mysqli_insert_id($conn);
 
-                    // Penanganan upload foto profil opsional
+                    // Penanganan upload foto profil menggunakan user_id yang unik
                     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
                         $file_tmp   = $_FILES['foto']['tmp_name'];
                         $file_ext   = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
@@ -67,7 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         if (in_array($file_ext, $allowed_ext, true)) {
                             $nama_foto = 'user_' . $user_id . '.' . $file_ext;
-                            if (move_uploaded_file($file_tmp, __DIR__ . '/uploads/' . $nama_foto)) {
+                            $target_path = __DIR__ . '/uploads/' . $nama_foto;
+
+                            if (move_uploaded_file($file_tmp, $target_path)) {
+                                // Update nama foto ke database berdasarkan user_id unik
                                 mysqli_query($conn, "UPDATE user SET foto = '$nama_foto' WHERE user_id = '$user_id'");
                             }
                         }
@@ -177,7 +181,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .input-wrapper { position: relative; }
         .input-wrapper > i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--sage); font-size: 14px; }
 
-        /* Disamakan persis dengan ukuran tinggi, padding, dan styling input login */
         .form-group input, .form-group select {
             width: 100%; height: 49px; padding: 0 43px;
             border: 1px solid var(--sage-border); border-radius: 10px;
@@ -339,7 +342,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- ROLE (DISAMAKAN PERSIS SEPERTI HALAMAN LOGIN) -->
+                <!-- ROLE -->
                 <div class="form-group">
                     <label>Role</label>
                     <div class="input-wrapper">
