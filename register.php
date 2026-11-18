@@ -19,14 +19,16 @@ if (!isset($conn) || mysqli_connect_errno()) {
 }
 
 $error = '';
+$success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama     = mysqli_real_escape_string($conn, trim($_POST['nama'] ?? ''));
     $email    = mysqli_real_escape_string($conn, trim($_POST['email'] ?? ''));
     $no_wa    = mysqli_real_escape_string($conn, trim($_POST['no_wa'] ?? ''));
     $password = mysqli_real_escape_string($conn, $_POST['password'] ?? '');
+    $role     = mysqli_real_escape_string($conn, trim($_POST['role'] ?? 'User'));
 
-    if (!empty($nama) && !empty($email) && !empty($password)) {
+    if (!empty($nama) && !empty($email) && !empty($password) && !empty($role)) {
         // Validasi panjang password minimal 6 karakter
         if (strlen($password) < 6) {
             $error = "Password minimal harus 6 karakter!";
@@ -35,8 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($check_email && mysqli_num_rows($check_email) > 0) {
                 $error = "Email sudah terdaftar!";
             } else {
+                // Status verifikasi default diatur menjadi "Menunggu" (Menunggu Konfirmasi Admin)
+                // Jika role adalah 'User', bisa langsung aktif atau ikut menunggu (sesuai kebutuhan, di sini kita buat "Menunggu" untuk semua agar admin bisa verifikasi)
+                $status_verifikasi = 'Menunggu';
+
                 $query = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) 
-                          VALUES ('$nama', '$email', '$password', 'User', '$no_wa', 'Terverifikasi')";
+                          VALUES ('$nama', '$email', '$password', '$role', '$no_wa', '$status_verifikasi')";
 
                 if (mysqli_query($conn, $query)) {
                     $user_id = mysqli_insert_id($conn);
@@ -50,17 +56,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if (in_array($file_ext, $allowed_ext, true)) {
                             $nama_foto = 'user_' . $user_id . '.' . $file_ext;
                             move_uploaded_file($file_tmp, 'uploads/' . $nama_foto);
+                            
+                            // Update nama foto ke database jika ada upload
+                            mysqli_query($conn, "UPDATE user SET foto = '$nama_foto' WHERE user_id = '$user_id'");
                         }
                     }
 
-                    $_SESSION['user_id']  = $user_id;
-                    $_SESSION['nama']     = $nama;
-                    $_SESSION['role']     = 'User';
-                    $_SESSION['foto']     = $nama_foto;
-                    $_SESSION['is_login'] = true;
-
-                    header("Location: profil.php");
-                    exit;
+                    $success = "Registrasi berhasil! Akun kamu sedang <b>Menunggu Konfirmasi</b> dari Admin. Silakan cek status atau login setelah disetujui.";
                 } else {
                     $error = "Gagal mendaftar: " . mysqli_error($conn);
                 }
@@ -83,9 +85,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        /* =================================
-            RESET DAN DASAR (SAGE GREEN THEME)
-        ================================= */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; background: #FAF9F6; color: #2C3E35; min-height: 100vh; }
@@ -102,9 +101,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             --shadow: 0 10px 35px rgba(135,169,135,0.12);
         }
 
-        /* =================================
-            NAVBAR
-        ================================= */
         .navbar { background: rgba(250,249,246,0.96); backdrop-filter: blur(15px); border-bottom: 1px solid var(--sage-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .navbar-container { width: 100%; max-width: 1300px; margin: auto; padding: 14px 25px; display: flex; align-items: center; justify-content: space-between; }
         
@@ -116,51 +112,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         .nav-menu { display: flex; gap: 35px; align-items: center; position: absolute; left: 50%; transform: translateX(-50%); }
         .nav-menu a.nav-item { color: var(--muted); font-size: 15px; font-weight: 800; text-decoration: none; transition: color 0.2s; }
-        .nav-menu a.nav-item:hover, .nav-menu a.nav-item.active-link { color: var(--sage-dark) !important; }
-
+        .nav-menu a.nav-item:hover { color: var(--sage-dark) !important; }
         .nav-spacer { width: 100px; }
 
-        /* =================================
-            AREA REGISTER
-        ================================= */
         .register-page { width: 100%; padding: 35px 25px 50px; }
         .register-wrapper {
-            max-width: 1150px;
-            width: 100%;
-            margin: auto;
-            display: grid;
-            grid-template-columns: 0.95fr 1.05fr;
-            background: #ffffff;
-            border-radius: 22px;
-            overflow: hidden;
-            border: 1px solid var(--sage-border);
+            max-width: 1150px; width: 100%; margin: auto; display: grid;
+            grid-template-columns: 0.95fr 1.05fr; background: #ffffff;
+            border-radius: 22px; overflow: hidden; border: 1px solid var(--sage-border);
             box-shadow: 0 15px 45px rgba(135,169,135,0.1);
         }
 
-        /* =================================
-            BAGIAN KIRI (BANNER)
-        ================================= */
         .register-banner {
             background: linear-gradient(145deg, var(--sage-soft), #D1E0D1);
-            padding: 48px 42px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .register-banner::before {
-            content: "";
-            position: absolute;
-            width: 230px;
-            height: 230px;
-            background: rgba(255,255,255,0.4);
-            border-radius: 50%;
-            top: -100px;
-            left: -100px;
+            padding: 48px 42px; display: flex; flex-direction: column;
+            justify-content: center; position: relative; overflow: hidden;
         }
         .register-banner-content { position: relative; z-index: 2; }
-
         .banner-title { font-size: 35px; line-height: 1.25; font-weight: 800; color: var(--text); margin-bottom: 12px; }
         .banner-title span { color: var(--sage-dark); }
         .banner-description { color: var(--muted); font-size: 13px; line-height: 1.8; margin-bottom: 28px; }
@@ -173,26 +141,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: var(--sage); color: #ffffff; font-size: 14px;
         }
 
-        /* =================================
-            BAGIAN KANAN (FORM REGISTER)
-        ================================= */
         .register-form-container { padding: 45px 55px; display: flex; flex-direction: column; justify-content: center; }
 
         .form-logo { display: flex; justify-content: center; margin-bottom: 16px; }
-        .form-logo-icon {
-            width: 62px; 
-            height: 62px;
-            background: transparent;
-            border: none;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-        }
-        .form-logo-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
+        .form-logo-icon { width: 62px; height: 62px; display: flex; align-items: center; justify-content: center; }
+        .form-logo-icon img { width: 100%; height: 100%; object-fit: contain; }
 
         .form-title { text-align: center; font-size: 30px; font-weight: 800; color: var(--text); margin-bottom: 7px; }
         .form-title span { color: var(--sage-dark); }
@@ -202,26 +155,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: #fff0f0; color: #d63031; border: 1px solid #ffcaca;
             border-radius: 10px; padding: 12px 14px; margin-bottom: 18px; font-size: 12px;
         }
-        .alert-error i { margin-right: 6px; }
+        .alert-success {
+            background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9;
+            border-radius: 10px; padding: 14px; margin-bottom: 18px; font-size: 13px; text-align: center; line-height: 1.5;
+        }
 
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; color: var(--text); font-size: 13px; font-weight: 700; margin-bottom: 6px; }
         .input-wrapper { position: relative; }
         .input-wrapper > i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--sage); font-size: 14px; }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%; height: 46px; padding: 0 15px 0 43px;
             border: 1px solid var(--sage-border); border-radius: 10px;
             background: #ffffff; color: var(--text); outline: none; font-family: inherit; font-size: 12px; transition: 0.3s;
         }
-        .form-group input[type="file"] {
-            padding: 10px 15px;
-            height: auto;
-            background: #fafafa;
-            cursor: pointer;
-        }
-        .form-group input::placeholder { color: #a2a4b1; }
-        .form-group input:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(135,169,135,0.12); }
+        .form-group select { appearance: none; cursor: pointer; }
+        .form-group input[type="file"] { padding: 10px 15px; height: auto; background: #fafafa; cursor: pointer; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(135,169,135,0.12); }
 
         .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); font-size: 15px; cursor: pointer; }
 
@@ -236,35 +187,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .footer-link { margin-top: 20px; text-align: center; color: var(--muted); font-size: 12px; }
         .footer-link a { color: var(--sage-dark); font-weight: 700; text-decoration: none; }
 
-        /* =================================
-            RESPONSIVE DESIGN
-        ================================= */
         @media(max-width: 950px) {
             .nav-menu { position: static; transform: none; }
             .nav-spacer { display: none; }
             .register-wrapper { grid-template-columns: 0.9fr 1.1fr; }
             .register-banner { padding: 30px; }
             .register-form-container { padding: 35px 30px; }
-            .banner-title { font-size: 29px; }
         }
-
         @media(max-width: 650px) {
             .navbar-container { padding: 12px 15px; flex-wrap: wrap; gap: 12px; justify-content: space-between; }
             .nav-menu { width: 100%; justify-content: center; gap: 20px; }
             .register-page { padding: 20px 12px 30px; }
-            .register-wrapper { display: flex; flex-direction: column; border-radius: 17px; }
-            .register-banner { padding: 27px 22px; }
-            .banner-title { font-size: 28px; }
+            .register-wrapper { display: flex; flex-direction: column; }
             .register-form-container { padding: 30px 22px; }
-            .form-title { font-size: 25px; }
         }
     </style>
 </head>
 <body>
 
-<!-- =================================
-    NAVBAR
-================================= -->
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
@@ -286,44 +226,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </nav>
 
-<!-- =================================
-    HALAMAN REGISTER
-================================= -->
 <main class="register-page">
     <div class="register-wrapper">
 
-        <!-- BAGIAN KIRI: BANNER -->
+        <!-- KIRI: BANNER -->
         <section class="register-banner">
             <div class="register-banner-content">
                 <h1 class="banner-title">
-                    Bergabung dengan 
-                    <span>AKSARA KOST</span>
+                    Bergabung dengan <span>AKSARA KOST</span>
                 </h1>
-
                 <p class="banner-description">
-                    Daftarkan akunmu dan temukan hunian kost impian 
-                    dengan mudah, cepat, dan aman bersama kami.
+                    Daftar sebagai User, Owner, atau Admin. Setiap pendaftaran baru akan melalui proses konfirmasi keamanan sistem.
                 </p>
-
-                <!-- KEUNGGULAN -->
                 <div class="banner-features">
                     <div class="feature">
+                        <div class="feature-icon"><i class="fa-solid fa-user-shield"></i></div>
+                        <span>Verifikasi Oleh Admin</span>
+                    </div>
+                    <div class="feature">
                         <div class="feature-icon"><i class="fa-solid fa-house"></i></div>
-                        <span>Banyak Pilihan Kost</span>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                        <span>Aman & Terpercaya</span>
-                    </div>
-                    <div class="feature">
-                        <div class="feature-icon"><i class="fa-solid fa-location-dot"></i></div>
-                        <span>Lokasi Strategis</span>
+                        <span>Kelola & Cari Kost Mudah</span>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- BAGIAN KANAN: FORM PENDAFTARAN -->
+        <!-- KANAN: FORM -->
         <section class="register-form-container">
             <div class="form-logo">
                 <div class="form-logo-icon">
@@ -331,24 +259,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
-            <h1 class="form-title">
-                Daftar <span>Akun Baru</span>
-            </h1>
+            <h1 class="form-title">Daftar <span>Akun Baru</span></h1>
+            <p class="form-subtitle">Pilih peran akun dan tunggu konfirmasi</p>
 
-            <p class="form-subtitle">
-                Buat akun baru untuk mulai mencari kost
-            </p>
-
-            <!-- PESAN ERROR -->
             <?php if (!empty($error)): ?>
                 <div class="alert-error">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    <?= htmlspecialchars($error); ?>
+                    <i class="fa-solid fa-circle-exclamation"></i> <?= htmlspecialchars($error); ?>
                 </div>
             <?php endif; ?>
 
-            <!-- FORM REGISTER -->
+            <?php if (!empty($success)): ?>
+                <div class="alert-success">
+                    <i class="fa-solid fa-circle-check" style="font-size: 16px; margin-bottom: 4px; display: block;"></i>
+                    <?= $success; ?>
+                    <div style="margin-top: 10px;">
+                        <a href="login.php" style="background: var(--sage); color: white; padding: 6px 16px; border-radius: 20px; font-weight: 700; display: inline-block; text-decoration: none;">Ke Halaman Login</a>
+                    </div>
+                </div>
+            <?php else: ?>
+
             <form action="" method="POST" enctype="multipart/form-data">
+                <!-- PILIH ROLE -->
+                <div class="form-group">
+                    <label>Daftar Sebagai (Role)</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user-tag"></i>
+                        <select name="role" required>
+                            <option value="User">User (Pencari Kost)</option>
+                            <option value="Owner">Owner (Pemilik Kost)</option>
+                            <option value="Admin">Admin (Pengelola Sistem)</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- NAMA LENGKAP -->
                 <div class="form-group">
                     <label>Nama Lengkap</label>
@@ -363,7 +306,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label>Email</label>
                     <div class="input-wrapper">
                         <i class="fa-solid fa-envelope"></i>
-                        <input type="email" name="email" placeholder="Masukkan email" required>
+                        <input type="email" name="email" placeholder="Masukkan email aktif" required>
                     </div>
                 </div>
 
@@ -396,11 +339,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- TOMBOL DAFTAR -->
                 <button type="submit" class="btn-submit">
-                    <i class="fa-solid fa-user-plus"></i> &nbsp; Daftar Sekarang
+                    <i class="fa-solid fa-user-plus"></i> &nbsp; Daftar & Ajukan Konfirmasi
                 </button>
             </form>
+
+            <?php endif; ?>
 
             <div class="footer-link">
                 Sudah punya akun? <a href="login.php">Login di sini</a>
@@ -410,9 +354,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </main>
 
-<!-- =================================
-    JAVASCRIPT PASSWORD TOGGLE
-================================= -->
 <script>
 function togglePassword() {
     const password = document.getElementById('password');
