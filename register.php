@@ -46,44 +46,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             mysqli_stmt_close($stmt_cek);
 
-            // Set status verifikasi awal menjadi "Menunggu" dan foto default
+            // Set status verifikasi awal menjadi "Menunggu"
             $status_verifikasi = 'Menunggu';
-            $foto_default = 'default.jpeg';
 
-            // Query insert data dengan kolom foto dan status verifikasi sesuai database penguji
+            // Query insert data yang bersih dan sesuai dengan kolom database penguji
             $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?)";
-$stmt_insert = mysqli_prepare($conn, $query_insert);
-mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $email, $password, $role, $no_wa, $status_verifikasi);
+            $stmt_insert = mysqli_prepare($conn, $query_insert);
 
             if ($stmt_insert) {
-                mysqli_stmt_bind_param($stmt_insert, "sssssss", $nama, $email, $password, $role, $no_wa, $foto_default, $status_verifikasi);
+                // Hanya ada 6 parameter yang di-bind sesuai dengan jumlah kolom di atas
+                mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $email, $password, $role, $no_wa, $status_verifikasi);
                 
                 if (mysqli_stmt_execute($stmt_insert)) {
-                    // AMBIL USER_ID UNIK YANG BARU SAJA MASUK KE DATABASE
-                    $user_id = mysqli_insert_id($conn);
-                    $nama_foto = $foto_default;
-
-                    // LOGIKA PENYIMPANAN FOTO DENGAN ID UNIK SUPAYA TIDAK TERTUKAR (CONTOH TEMANMU)
-                    if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-                        $file_tmp   = $_FILES['foto']['tmp_name'];
-                        $file_ext   = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
-                        $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
-
-                        if (in_array($file_ext, $allowed_ext, true)) {
-                            $nama_foto = 'user_' . $user_id . '.' . $file_ext;
-                            $target_dir = __DIR__ . '/uploads/';
-
-                            if (!is_dir($target_dir)) {
-                                mkdir($target_dir, 0777, true);
-                            }
-
-                            if (move_uploaded_file($file_tmp, $target_dir . $nama_foto)) {
-                                // Update nama file foto ke database berdasarkan user_id unik
-                                mysqli_query($conn, "UPDATE user SET foto = '$nama_foto' WHERE user_id = '$user_id'");
-                            }
-                        }
-                    }
-
                     $success = "Pendaftaran berhasil! Akun Anda sedang <b>Menunggu Konfirmasi</b> dari Admin. Silakan tunggu hingga disetujui untuk dapat login.";
                 } else {
                     $error = "Gagal mendaftar: " . mysqli_error($conn);
@@ -194,7 +168,6 @@ mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $email, $password, $role, 
             background: #ffffff; color: var(--text); outline: none; font-family: inherit; font-size: 12px; transition: 0.3s;
         }
         .form-group select { cursor: pointer; }
-        .form-group input[type="file"] { padding: 12px 15px; height: auto; background: #fafafa; cursor: pointer; }
         .form-group input:focus, .form-group select:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(135,169,135,0.12); }
 
         .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); font-size: 15px; cursor: pointer; }
@@ -309,7 +282,7 @@ mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $email, $password, $role, 
                 </div>
             <?php else: ?>
 
-            <form action="" method="POST" enctype="multipart/form-data">
+            <form action="" method="POST">
                 <!-- NAMA -->
                 <div class="form-group">
                     <label>Nama</label>
@@ -349,7 +322,7 @@ mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $email, $password, $role, 
                     </div>
                 </div>
 
-                <!-- ROLE (OWNER & USER) -->
+                <!-- ROLE -->
                 <div class="form-group">
                     <label>Role</label>
                     <div class="input-wrapper">
@@ -359,14 +332,6 @@ mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $email, $password, $role, 
                             <option value="Owner">Owner</option>
                             <option value="User">User</option>
                         </select>
-                    </div>
-                </div>
-
-                <!-- FOTO PROFIL -->
-                <div class="form-group">
-                    <label>Foto Profil (Opsional)</label>
-                    <div class="input-wrapper">
-                        <input type="file" name="foto" accept="image/*">
                     </div>
                 </div>
 
