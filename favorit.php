@@ -13,28 +13,46 @@ if (!isset($db) || !$db) {
     die("Koneksi database gagal. Periksa kembali file database.php.");
 }
 
-// Menggunakan user_id dari sesi login yang sedang berjalan
-$user_id = $_SESSION['user_id'] ?? 1;
-
-// Inisialisasi session array untuk menyimpan ID kos yang dihapus khusus user ini
-if (!isset($_SESSION['deleted_favorites'])) {
-    $_SESSION['deleted_favorites'] = [];
+// Pengecekan login
+if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: login.php");
+        exit;
+    }
 }
 
-// Proses Hapus Favorit
-if (isset($_GET['hapus_id'])) {
-    $kos_id_hapus = intval($_GET['hapus_id']);
-    if (!in_array($kos_id_hapus, $_SESSION['deleted_favorites'])) {
-        $_SESSION['deleted_favorites'][] = $kos_id_hapus;
+$user_id = $_SESSION['user_id'];
+
+// Inisialisasi session array untuk menyimpan ID kos favorit khusus user yang sedang login (Default KOSong untuk akun baru)
+if (!isset($_SESSION['user_favorites'])) {
+    $_SESSION['user_favorites'] = [];
+}
+
+// Proses Tambah Favorit (jika ada parameter ?tambah_id=...)
+if (isset($_GET['tambah_id'])) {
+    $kos_id_tambah = (int)$_GET['tambah_id'];
+    if ($kos_id_tambah > 0 && !in_array($kos_id_tambah, $_SESSION['user_favorites'])) {
+        $_SESSION['user_favorites'][] = $kos_id_tambah;
     }
     header("Location: favorit.php");
     exit;
 }
 
-// Mengambil data pengguna dari database berdasarkan user_id yang aktif
+// Proses Hapus Favorit (jika ada parameter ?hapus_id=...)
+if (isset($_GET['hapus_id'])) {
+    $kos_id_hapus = (int)$_GET['hapus_id'];
+    if ($kos_id_hapus > 0) {
+        $_SESSION['user_favorites'] = array_values(array_diff($_SESSION['user_favorites'], [$kos_id_hapus]));
+    }
+    header("Location: favorit.php");
+    exit;
+}
+
+// Mengambil data pengguna
 $stmt_user = mysqli_prepare($db, "SELECT * FROM user WHERE user_id = ?");
 mysqli_stmt_bind_param($stmt_user, "s", $user_id);
 mysqli_stmt_execute($stmt_user);
+
 $query_user = mysqli_stmt_get_result($stmt_user);
 $user = mysqli_fetch_assoc($query_user);
 
@@ -47,53 +65,51 @@ function e($value) {
     return htmlspecialchars((string)($value ?? '-'), ENT_QUOTES, 'UTF-8');
 }
 
-// Foto profil (mengambil langsung dari data user yang aktif)
-$nama_file_foto = $user['foto'] ?? $_SESSION['foto'] ?? 'default.jpeg';
-$foto_user = (!empty($nama_file_foto) && file_exists('uploads/' . $nama_file_foto)) 
-    ? 'uploads/' . $nama_file_foto . '?v=' . time() 
+// Foto profil
+$foto_user = (!empty($user['foto']) && file_exists('uploads/' . $user['foto'])) 
+    ? 'uploads/' . $user['foto'] . '?v=' . time() 
     : 'uploads/default.jpeg';
 
-// Mengambil SEMUA data kos dari database tanpa batasan LIMIT
-$sql_fav = "
-    SELECT kos.*,
-    (
-        SELECT fk.path_foto
-        FROM foto_kos fk
-        WHERE fk.kos_id = kos.kos_id
-        ORDER BY fk.foto_id ASC
-        LIMIT 1
-    ) AS foto_kos,
-    (
-        SELECT MIN(km.harga)
-        FROM kamar km
-        WHERE km.kos_id = kos.kos_id
-    ) AS harga_mulai,
-    (
-        SELECT km.status_kamar
-        FROM kamar km
-        WHERE km.kos_id = kos.kos_id
-        ORDER BY km.kamar_id ASC
-        LIMIT 1
-    ) AS status_kamar
-    FROM kos
-";
-
-$res_fav = mysqli_query($db, $sql_fav);
-
-if (!$res_fav) {
-    die("Gagal mengambil data kos: " . mysqli_error($db));
-}
-
-$default_image = 'assets/images/default-kos.jpg';
-
-// Menampung data kos yang belum dihapus oleh user
+// Mengambil data kos HANYA yang ada di dalam session favorit user
 $daftar_kos_favorit = [];
-while ($f = mysqli_fetch_assoc($res_fav)) {
-    if (!in_array((int)$f['kos_id'], $_SESSION['deleted_favorites'])) {
-        $daftar_kos_favorit[] = $f;
+if (!empty($_SESSION['user_favorites'])) {
+    $ids = implode(',', array_map('intval', $_SESSION['user_favorites']));
+    
+    $sql_fav = "
+        SELECT kos.*,
+        (
+            SELECT fk.path_foto
+            FROM foto_kos fk
+            WHERE fk.kos_id = kos.kos_id
+            ORDER BY fk.foto_id ASC
+            LIMIT 1
+        ) AS foto_kos,
+        (
+            SELECT MIN(km.harga)
+            FROM kamar km
+            WHERE km.kos_id = kos.kos_id
+        ) AS harga_mulai,
+        (
+            SELECT km.status_kamar
+            FROM kamar km
+            WHERE km.kos_id = kos.kos_id
+            ORDER BY km.kamar_id ASC
+            LIMIT 1
+        ) AS status_kamar
+        FROM kos
+        WHERE kos.kos_id IN ($ids)
+    ";
+
+    $res_fav = mysqli_query($db, $sql_fav);
+    if ($res_fav) {
+        while ($f = mysqli_fetch_assoc($res_fav)) {
+            $daftar_kos_favorit[] = $f;
+        }
     }
 }
+
 $jumlah_kos = count($daftar_kos_favorit);
+$default_image = 'assets/images/default-kos.jpg';
 ?>
 
 <!DOCTYPE html>
@@ -218,7 +234,7 @@ $jumlah_kos = count($daftar_kos_favorit);
         .fav-image img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
         .fav-item:hover .fav-image img { transform: scale(1.06); }
 
-        .logo-badge { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; }
+        .logo-badge { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; display: flex; justify-content: center; align-items: center; background: #fff; border-radius: 50%; padding: 4px; box-shadow: 0 3px 8px rgba(0,0,0,0.12); }
         .logo-badge img { width: 100%; height: 100%; object-fit: contain; }
 
         .fav-info { min-width: 0; }
@@ -239,10 +255,10 @@ $jumlah_kos = count($daftar_kos_favorit);
         .btn-detail:hover { background: var(--sage); color: white; }
 
         .btn-hapus {
-            display: block; text-align: center; background: #ffffff; border: 1px solid var(--sage-border);
-            color: #475569; padding: 11px 15px; border-radius: 30px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.3s;
+            display: block; text-align: center; background: #ffffff; border: 1px solid #d99;
+            color: #a55; padding: 11px 15px; border-radius: 30px; font-size: 12px; font-weight: 700; cursor: pointer; transition: 0.3s;
         }
-        .btn-hapus:hover { background: #fff0f0; color: #dc3545; border-color: #fca5a5; }
+        .btn-hapus:hover { background: #fff0f0; color: #dc3545; border-color: #dc3545; }
 
         .empty-favorite { background: #ffffff; border: 1px solid var(--sage-border); border-radius: 22px; text-align: center; padding: 50px 20px; }
         .empty-icon { font-size: 60px; color: var(--sage); margin-bottom: 15px; }
@@ -289,7 +305,7 @@ $jumlah_kos = count($daftar_kos_favorit);
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="uploads/logokost.png" alt="Logo AKSARA KOST" class="logo-icon" onerror="this.src='uploads/tampilankos.jpeg';">
+            <img src="uploads/logokost.png" alt="Logo AKSARA KOST" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -304,7 +320,7 @@ $jumlah_kos = count($daftar_kos_favorit);
 
         <a href="profil.php" class="btn-profile">
             <img src="<?= e($foto_user); ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='uploads/default.jpeg';">
-            <span><?= e($user['nama'] ?? 'User'); ?></span>
+            <span><?= e($user['nama']); ?></span>
         </a>
     </div>
 </nav>
@@ -341,7 +357,7 @@ $jumlah_kos = count($daftar_kos_favorit);
                 <p>Daftar kost pilihan yang sudah kamu sukai.</p>
             </div>
             <div class="welcome-icon">
-                <img src="uploads/logokost.png" alt="Logo AKSARA KOST" onerror="this.src='uploads/tampilankos.jpeg';">
+                <img src="uploads/logokost.png" alt="Logo AKSARA KOST">
             </div>
         </section>
 
@@ -364,7 +380,7 @@ $jumlah_kos = count($daftar_kos_favorit);
                         <div class="fav-image">
                             <img src="<?= e($foto); ?>" alt="<?= e($f['nama_kos']); ?>" onerror="this.onerror=null; this.src='<?= e($default_image); ?>';">
                             <div class="logo-badge">
-                                <img src="uploads/logokost.png" alt="Logo AKSARA KOST" onerror="this.src='uploads/tampilankos.jpeg';">
+                                <img src="uploads/logokost.png" alt="Logo AKSARA KOST">
                             </div>
                         </div>
 
