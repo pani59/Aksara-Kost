@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'database.php';
+require_once __DIR__ . 'database.php';
 
 // Menyesuaikan koneksi database menggunakan variabel $db
 if (!isset($db) && isset($conn)) {
@@ -49,7 +49,7 @@ $user = mysqli_fetch_assoc($query_user);
 
 if (!$user) {
     // Data cadangan jika user_id belum ada di database
-    $user = ['nama' => 'Vany', 'role' => 'User'];
+    $user = ['nama' => 'Vanyy', 'role' => 'User', 'foto' => ''];
 }
 
 // Fungsi keamanan output
@@ -57,12 +57,11 @@ function e($value) {
     return htmlspecialchars((string)($value ?? '-'), ENT_QUOTES, 'UTF-8');
 }
 
-// Foto profil
-// Foto profil (KODE BARU YANG BENAR)
+// Foto profil disamakan dengan database (mengambil kolom foto dari tabel user)
 $foto_user = (!empty($user['foto']) && file_exists('../uploads/' . $user['foto']))
     ? '../uploads/' . $user['foto'] . '?v=' . time()
     : '../uploads/default.jpeg';
-    
+
 // Mengambil data kos dari database
 $sql_fav = "
     SELECT k.*,
