@@ -411,7 +411,7 @@ if (!$result) {
                                 ?>
                                     <tr>
                                         <td><?= $no++; ?></td>
-                                        <td>Booking #<?= htmlspecialchars($data['booking_id']); ?></td>
+                                        <td>Booking #<?= htmlspecialchars($data['komentar'] ?? '')</td>
                                         <td>
                                             <span class="bintang-kuning">
                                                 <?php
