@@ -31,7 +31,7 @@ if (isset($_GET['hapus_id'])) {
     exit;
 }
 
-// Mengambil data pengguna BERDASARKAN user_id yang aktif (menggunakan prepared statement agar aman)
+// Mengambil data pengguna dari database berdasarkan user_id yang aktif
 $stmt_user = mysqli_prepare($db, "SELECT * FROM user WHERE user_id = ?");
 mysqli_stmt_bind_param($stmt_user, "s", $user_id);
 mysqli_stmt_execute($stmt_user);
@@ -53,7 +53,7 @@ $foto_user = (!empty($nama_file_foto) && file_exists('uploads/' . $nama_file_fot
     ? 'uploads/' . $nama_file_foto . '?v=' . time() 
     : 'uploads/default.jpeg';
 
-// Mengambil data kos dengan query yang aman dan terisolasi
+// Mengambil SEMUA data kos dari database tanpa batasan LIMIT
 $sql_fav = "
     SELECT kos.*,
     (
@@ -76,7 +76,6 @@ $sql_fav = "
         LIMIT 1
     ) AS status_kamar
     FROM kos
-    LIMIT 3
 ";
 
 $res_fav = mysqli_query($db, $sql_fav);
@@ -90,7 +89,7 @@ $default_image = 'assets/images/default-kos.jpg';
 // Menampung data kos yang belum dihapus oleh user
 $daftar_kos_favorit = [];
 while ($f = mysqli_fetch_assoc($res_fav)) {
-    if (!in_array($f['kos_id'], $_SESSION['deleted_favorites'])) {
+    if (!in_array((int)$f['kos_id'], $_SESSION['deleted_favorites'])) {
         $daftar_kos_favorit[] = $f;
     }
 }
