@@ -31,11 +31,10 @@ if (isset($_GET['hapus_id'])) {
     exit;
 }
 
-// Mengambil data pengguna dari database berdasarkan user_id yang aktif
+// Mengambil data pengguna BERDASARKAN user_id yang aktif (menggunakan prepared statement agar aman)
 $stmt_user = mysqli_prepare($db, "SELECT * FROM user WHERE user_id = ?");
 mysqli_stmt_bind_param($stmt_user, "s", $user_id);
 mysqli_stmt_execute($stmt_user);
-
 $query_user = mysqli_stmt_get_result($stmt_user);
 $user = mysqli_fetch_assoc($query_user);
 
@@ -48,35 +47,35 @@ function e($value) {
     return htmlspecialchars((string)($value ?? '-'), ENT_QUOTES, 'UTF-8');
 }
 
-// Foto profil (mengambil dari database user yang sedang aktif)
+// Foto profil (mengambil langsung dari data user yang aktif)
 $nama_file_foto = $user['foto'] ?? $_SESSION['foto'] ?? 'default.jpeg';
 $foto_user = (!empty($nama_file_foto) && file_exists('uploads/' . $nama_file_foto)) 
     ? 'uploads/' . $nama_file_foto . '?v=' . time() 
     : 'uploads/default.jpeg';
 
-// Mengambil data kos beserta status kamar dari database
+// Mengambil data kos dengan query yang aman dan terisolasi
 $sql_fav = "
-    SELECT k.*,
+    SELECT kos.*,
     (
         SELECT fk.path_foto
         FROM foto_kos fk
-        WHERE fk.kos_id = k.kos_id
+        WHERE fk.kos_id = kos.kos_id
         ORDER BY fk.foto_id ASC
         LIMIT 1
     ) AS foto_kos,
     (
         SELECT MIN(km.harga)
         FROM kamar km
-        WHERE km.kos_id = k.kos_id
+        WHERE km.kos_id = kos.kos_id
     ) AS harga_mulai,
     (
         SELECT km.status_kamar
         FROM kamar km
-        WHERE km.kos_id = k.kos_id
+        WHERE km.kos_id = kos.kos_id
         ORDER BY km.kamar_id ASC
         LIMIT 1
     ) AS status_kamar
-    FROM kos k
+    FROM kos
     LIMIT 3
 ";
 
