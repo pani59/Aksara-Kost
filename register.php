@@ -29,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $role     = mysqli_real_escape_string($conn, trim($_POST['role'] ?? ''));
 
     if (!empty($nama) && !empty($email) && !empty($password) && !empty($role)) {
-        // Validasi panjang password minimal 6 karakter
         if (strlen($password) < 6) {
             $error = "Password minimal harus 6 karakter!";
         } else {
@@ -37,7 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($check_email && mysqli_num_rows($check_email) > 0) {
                 $error = "Email sudah terdaftar!";
             } else {
-                // Status verifikasi default diatur menjadi "Menunggu" (Menunggu Konfirmasi Admin)
                 $status_verifikasi = 'Menunggu';
 
                 $query = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) 
@@ -55,13 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if (in_array($file_ext, $allowed_ext, true)) {
                             $nama_foto = 'user_' . $user_id . '.' . $file_ext;
                             move_uploaded_file($file_tmp, 'uploads/' . $nama_foto);
-                            
-                            // Update nama foto ke database jika ada upload
                             mysqli_query($conn, "UPDATE user SET foto = '$nama_foto' WHERE user_id = '$user_id'");
                         }
                     }
 
-                    $success = "Registrasi berhasil! Akun kamu sedang <b>Menunggu Konfirmasi</b> dari Admin. Silakan cek status atau login setelah disetujui.";
+                    $success = "Registrasi berhasil! Akun kamu sedang <b>Menunggu Konfirmasi</b> dari Admin. Silakan tunggu hingga disetujui.";
                 } else {
                     $error = "Gagal mendaftar: " . mysqli_error($conn);
                 }
@@ -169,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 1px solid var(--sage-border); border-radius: 10px;
             background: #ffffff; color: var(--text); outline: none; font-family: inherit; font-size: 12px; transition: 0.3s;
         }
-        .form-group select { appearance: none; cursor: pointer; color: #a2a4b1; }
+        .form-group select { appearance: none; cursor: pointer; }
         .form-group input[type="file"] { padding: 10px 15px; height: auto; background: #fafafa; cursor: pointer; }
         .form-group input:focus, .form-group select:focus { border-color: var(--sage); box-shadow: 0 0 0 3px rgba(135,169,135,0.12); }
 
@@ -317,16 +313,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- PILIH ROLE (SESUDAH PASSWORD DENGAN URUTAN ADMIN, OWNER, USER) -->
+                <!-- PILIH ROLE (SAMA PERSIS SEPERTI HALAMAN LOGIN: ADMIN, OWNER, USER) -->
                 <div class="form-group">
-                    <label>Daftar Sebagai (Role)</label>
+                    <label>Role</label>
                     <div class="input-wrapper">
                         <i class="fa-solid fa-user-tag"></i>
-                        <select name="role" required onchange="this.style.color='#2C3E35'">
+                        <select name="role" required>
                             <option value="" disabled selected hidden>Pilih Role</option>
-                            <option value="Admin">Admin (Pengelola Sistem)</option>
-                            <option value="Owner">Owner (Pemilik Kost)</option>
-                            <option value="User">User (Pencari Kost)</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Owner">Owner</option>
+                            <option value="User">User</option>
                         </select>
                     </div>
                 </div>
