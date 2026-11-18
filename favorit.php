@@ -13,12 +13,15 @@ if (!isset($db) || !$db) {
     die("Koneksi database gagal. Periksa kembali file database.php.");
 }
 
-// if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
-//     header("Location: login.php");
-//     exit;
-// }
+// Pengecekan login dinonaktifkan sementara sesuai permintaan sebelumnya
+/*
+if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
+    header("Location: login.php");
+    exit;
+}
+*/
 
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'] ?? 1;
 
 // Inisialisasi session array untuk menyimpan ID kos yang dihapus khusus user ini
 if (!isset($_SESSION['deleted_favorites'])) {
@@ -44,7 +47,8 @@ $query_user = mysqli_stmt_get_result($stmt_user);
 $user = mysqli_fetch_assoc($query_user);
 
 if (!$user) {
-    die("Data pengguna tidak ditemukan.");
+    // Data cadangan jika user_id belum ada di session
+    $user = ['nama' => 'vanyy', 'role' => 'User'];
 }
 
 // Fungsi keamanan output
@@ -99,8 +103,8 @@ $jumlah_kos = count($daftar_kos_favorit);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kos Favorit Saya - KOST TATA</title>
-    <link rel="icon" href="uploads/logo tata.png" type="image/png">
+    <title>Kos Favorit Saya - AKSARA KOST</title>
+    <link rel="icon" href="uploads/logokost.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -108,28 +112,28 @@ $jumlah_kos = count($daftar_kos_favorit);
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Poppins', sans-serif; background: #f0f4f8; color: #17213c; min-height: 100vh; }
+        body { font-family: 'Poppins', sans-serif; background: #FAF9F6; color: #2C3E35; min-height: 100vh; }
         a { text-decoration: none; }
 
         :root {
-            --pink: #1e3a8a;
-            --pink-dark: #1e293b;
-            --pink-light: #eff6ff;
-            --pink-bg: #f0f4f8;
-            --border: #cbd5e1;
-            --text: #17213c;
-            --muted: #626274;
+            --sage: #87A987;
+            --sage-dark: #6D8A6D;
+            --sage-soft: #EBF2EB;
+            --sage-light: #F4F7F4;
+            --sage-border: #D1E0D1;
+            --text: #2C3E35;
+            --muted: #627268;
             --white: #ffffff;
         }
 
-        .navbar { background: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .navbar { background: #ffffff; border-bottom: 1px solid var(--sage-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .navbar-container { width: 100%; max-width: 1300px; margin: auto; padding: 14px 25px; display: flex; align-items: center; justify-content: space-between; position: relative; }
         
         .logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
         .logo-icon { width: 34px; height: 34px; object-fit: contain; }
         .logo-text-group { display: flex; flex-direction: column; line-height: 1.1; }
-        .logo-title { color: #1e3a8a; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
-        .logo-subtitle { color: #1e3a8a; font-size: 14px; font-weight: 700; }
+        .logo-title { color: var(--sage-dark); font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+        .logo-subtitle { color: var(--sage-dark); font-size: 14px; font-weight: 700; }
         
         .nav-center { 
             position: absolute; 
@@ -140,9 +144,9 @@ $jumlah_kos = count($daftar_kos_favorit);
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: #1e3a8a;
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
+            color: var(--sage-dark);
+            background: var(--sage-soft);
+            border: 1px solid var(--sage-border);
             padding: 8px 18px;
             border-radius: 30px;
             font-size: 13px;
@@ -150,15 +154,15 @@ $jumlah_kos = count($daftar_kos_favorit);
             transition: 0.3s;
         }
         .btn-back-home:hover {
-            background: #1e3a8a;
+            background: var(--sage);
             color: #ffffff;
             transform: translateY(-1px);
         }
 
         .btn-profile {
-            background: #eff6ff;
-            color: #1e3a8a !important;
-            border: 1px solid #bfdbfe;
+            background: var(--sage-soft);
+            color: var(--sage-dark) !important;
+            border: 1px solid var(--sage-border);
             padding: 5px 15px 5px 5px;
             border-radius: 30px;
             display: flex;
@@ -173,7 +177,7 @@ $jumlah_kos = count($daftar_kos_favorit);
             height: 32px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #93c5fd;
+            border: 2px solid var(--sage);
         }
 
         .layout {
@@ -188,17 +192,17 @@ $jumlah_kos = count($daftar_kos_favorit);
 
         .sidebar {
             background: #ffffff;
-            border: 1px solid var(--border);
+            border: 1px solid var(--sage-border);
             border-radius: 22px;
             padding: 28px 20px 0;
             overflow: hidden;
-            box-shadow: 0 5px 20px rgba(30, 58, 138, 0.04);
+            box-shadow: 0 5px 20px rgba(135,169,135,0.08);
         }
 
         .sidebar-user {
             text-align: center;
             padding-bottom: 25px;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid var(--sage-border);
         }
 
         .avatar-container {
@@ -206,7 +210,7 @@ $jumlah_kos = count($daftar_kos_favorit);
             height: 110px;
             margin: 0 auto 13px;
             border-radius: 50%;
-            border: 4px solid #93c5fd;
+            border: 4px solid var(--sage);
             padding: 3px;
             overflow: hidden;
         }
@@ -219,42 +223,45 @@ $jumlah_kos = count($daftar_kos_favorit);
         .menu-list li { margin-bottom: 8px; }
         .menu-list a {
             display: flex; align-items: center; gap: 13px;
-            padding: 13px 17px; color: #544b57; font-size: 14px; font-weight: 600;
+            padding: 13px 17px; color: var(--muted); font-size: 14px; font-weight: 600;
             border-radius: 12px; transition: 0.3s;
         }
         .menu-list a:hover, .menu-list a.active {
-            background: #dbeafe; color: var(--pink); font-weight: 700;
+            background: var(--sage-soft); color: var(--sage-dark); font-weight: 700;
         }
-        .menu-icon { font-size: 18px; width: 25px; text-align: center; color: var(--pink); }
+        .menu-icon { font-size: 18px; width: 25px; text-align: center; color: var(--sage); }
 
         .sidebar-decoration {
             margin: 30px -20px 0; padding: 25px 10px 15px;
-            text-align: center; background: linear-gradient(180deg, #fff 0%, #e0f2fe 100%);
-            font-size: 12px; color: #1e40af; font-weight: 600;
+            text-align: center; background: linear-gradient(180deg, #fff 0%, var(--sage-soft) 100%);
+            font-size: 12px; color: var(--sage-dark); font-weight: 600;
         }
 
         .main-content { min-width: 0; }
 
         .welcome-banner {
             min-height: 170px; padding: 30px 38px; border-radius: 22px;
-            background: linear-gradient(120deg, #bfdbfe, #eff6ff);
-            border: 1px solid #93c5fd; display: flex; align-items: center;
+            background: linear-gradient(120deg, var(--sage-soft), #D1E0D1);
+            border: 1px solid var(--sage-border); display: flex; align-items: center;
             justify-content: space-between; overflow: hidden; position: relative; margin-bottom: 22px;
         }
         .welcome-text { position: relative; z-index: 2; }
-        .welcome-text h1 { font-size: 28px; color: #17213c; margin-bottom: 8px; font-weight: 800; }
-        .welcome-text p { color: #626274; font-size: 14px; }
+        .welcome-text h1 { font-size: 28px; color: var(--text); margin-bottom: 8px; font-weight: 800; }
+        .welcome-text p { color: var(--muted); font-size: 14px; }
         
         .welcome-icon {
             position: relative;
             z-index: 2;
             margin-right: 20px;
+            background: #ffffff;
+            padding: 10px;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         .welcome-icon img {
-            width: 100px;
-            height: 100px;
+            width: 75px;
+            height: 75px;
             object-fit: contain;
-            opacity: 0.9;
         }
 
         .welcome-circle { position: absolute; width: 240px; height: 240px; background: rgba(255,255,255,0.4); border-radius: 50%; right: 100px; top: 35px; }
@@ -268,9 +275,9 @@ $jumlah_kos = count($daftar_kos_favorit);
         .section-heading h2 { font-size: 22px; color: var(--text); font-weight: 800; }
 
         .total-favorit {
-            background: #eff6ff;
-            color: var(--pink);
-            border: 1px solid #bfdbfe;
+            background: var(--sage-soft);
+            color: var(--sage-dark);
+            border: 1px solid var(--sage-border);
             padding: 8px 15px;
             border-radius: 30px;
             font-size: 12px;
@@ -280,7 +287,7 @@ $jumlah_kos = count($daftar_kos_favorit);
         .fav-list { display: flex; flex-direction: column; gap: 22px; }
         .fav-item {
             background: #ffffff; 
-            border: 1px solid var(--border);
+            border: 1px solid var(--sage-border);
             border-radius: 22px; 
             padding: 30px; 
             display: grid;
@@ -288,9 +295,9 @@ $jumlah_kos = count($daftar_kos_favorit);
             gap: 25px; 
             align-items: center; 
             transition: 0.3s;
-            box-shadow: 0 5px 20px rgba(30, 58, 138, 0.04);
+            box-shadow: 0 5px 20px rgba(135,169,135,0.08);
         }
-        .fav-item:hover { transform: translateY(-3px); border-color: #93c5fd; box-shadow: 0 8px 22px rgba(30, 58, 138, 0.08); }
+        .fav-item:hover { transform: translateY(-3px); border-color: var(--sage); box-shadow: 0 8px 22px rgba(135,169,135,0.12); }
 
         .fav-image { position: relative; overflow: hidden; border-radius: 16px; height: 155px; background: #e2e8f0; }
         .fav-image img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
@@ -310,45 +317,45 @@ $jumlah_kos = count($daftar_kos_favorit);
 
         .fav-info { min-width: 0; }
         .fav-info h3 { font-size: 20px; color: var(--text); margin-bottom: 8px; font-weight: 800; }
-        .fav-address { font-size: 13px; color: #626274; margin-bottom: 12px; line-height: 1.5; }
+        .fav-address { font-size: 13px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
 
         .fav-facilities { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
-        .facility-tag { background: #eff6ff; color: #1e40af; padding: 6px 12px; border-radius: 30px; font-size: 11px; font-weight: 600; }
+        .facility-tag { background: var(--sage-soft); color: var(--sage-dark); padding: 6px 12px; border-radius: 30px; font-size: 11px; font-weight: 600; }
 
-        .fav-price { color: var(--pink); font-size: 18px; font-weight: 800; }
+        .fav-price { color: var(--sage-dark); font-size: 18px; font-weight: 800; }
         .fav-price small { font-size: 12px; font-weight: normal; color: var(--muted); }
 
-        .fav-actions { border-left: 1px solid var(--border); padding-left: 22px; display: flex; flex-direction: column; gap: 10px; }
+        .fav-actions { border-left: 1px solid var(--sage-border); padding-left: 22px; display: flex; flex-direction: column; gap: 10px; }
         .btn-detail {
-            display: block; text-align: center; background: #eff6ff; color: var(--pink);
-            border: 1px solid #bfdbfe; padding: 11px 15px; border-radius: 30px;
+            display: block; text-align: center; background: var(--sage-soft); color: var(--sage-dark);
+            border: 1px solid var(--sage-border); padding: 11px 15px; border-radius: 30px;
             font-size: 13px; font-weight: 700; transition: 0.3s;
         }
-        .btn-detail:hover { background: var(--pink); color: white; }
+        .btn-detail:hover { background: var(--sage); color: white; }
 
         .btn-hapus {
             display: block; text-align: center;
-            background: #ffffff; border: 1px solid #cbd5e1; color: #475569;
+            background: #ffffff; border: 1px solid var(--sage-border); color: #627268;
             padding: 11px 15px; border-radius: 30px; font-size: 12px; font-weight: 700;
             cursor: pointer; transition: 0.3s;
         }
         .btn-hapus:hover { background: #fef2f2; color: #dc3545; border-color: #fca5a5; }
 
-        .empty-favorite { background: #ffffff; border: 1px solid var(--border); border-radius: 22px; text-align: center; padding: 50px 20px; }
-        .empty-icon { font-size: 60px; color: var(--pink); margin-bottom: 15px; }
+        .empty-favorite { background: #ffffff; border: 1px solid var(--sage-border); border-radius: 22px; text-align: center; padding: 50px 20px; }
+        .empty-icon { font-size: 60px; color: var(--sage); margin-bottom: 15px; }
         .empty-favorite h3 { color: var(--text); font-size: 20px; margin-bottom: 8px; font-weight: 800; }
         .empty-favorite p { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
         .btn-cari {
-            display: inline-block; background: linear-gradient(90deg, #1d4ed8, #1e40af); color: white;
+            display: inline-block; background: var(--sage); color: white;
             padding: 12px 24px; border-radius: 30px; font-size: 13px; font-weight: 700; transition: 0.3s;
-            box-shadow: 0 6px 16px rgba(30, 58, 138, 0.15);
+            box-shadow: 0 6px 16px rgba(135,169,135,0.2);
         }
-        .btn-cari:hover { background: #1e3a8a; transform: translateY(-2px); }
+        .btn-cari:hover { background: var(--sage-dark); transform: translateY(-2px); }
 
         @media (max-width: 1000px) {
             .layout { grid-template-columns: 240px 1fr; gap: 20px; }
             .fav-item { grid-template-columns: 160px minmax(0, 1fr); }
-            .fav-actions { grid-column: 2; border-left: none; border-top: 1px solid var(--border); padding: 15px 0 0; flex-direction: row; }
+            .fav-actions { grid-column: 2; border-left: none; border-top: 1px solid var(--sage-border); padding: 15px 0 0; flex-direction: row; }
             .fav-actions > * { flex: 1; }
         }
 
@@ -381,10 +388,10 @@ $jumlah_kos = count($daftar_kos_favorit);
 <nav class="navbar">
     <div class="navbar-container">
         <a href="beranda.php" class="logo">
-            <img src="uploads/logo tata.png" alt="Logo KOST TATA" class="logo-icon" onerror="this.src='uploads/tampilankos.jpeg';">
+            <img src="uploads/logokost.png" alt="Logo AKSARA KOST" class="logo-icon" onerror="this.src='uploads/tampilankos.jpeg';">
             <div class="logo-text-group">
-                <span class="logo-title">KOST</span>
-                <span class="logo-subtitle">TATA</span>
+                <span class="logo-title">AKSARA</span>
+                <span class="logo-subtitle">KOST</span>
             </div>
         </a>
 
@@ -466,7 +473,7 @@ $jumlah_kos = count($daftar_kos_favorit);
                 <p>Daftar kost pilihan yang sudah kamu sukai.</p>
             </div>
             <div class="welcome-icon">
-                <img src="uploads/logo tata.png" alt="Logo KOST TATA" onerror="this.src='uploads/tampilankos.jpeg';">
+                <img src="uploads/logokost.png" alt="Logo AKSARA KOST" onerror="this.src='uploads/tampilankos.jpeg';">
             </div>
         </section>
 
@@ -500,7 +507,7 @@ $jumlah_kos = count($daftar_kos_favorit);
                                 onerror="this.src='uploads/default-kos.jpg';"
                             >
                             <div class="logo-badge">
-                                <img src="uploads/logo tata.png" alt="Logo">
+                                <img src="uploads/logokost.png" alt="Logo">
                             </div>
                         </div>
 
@@ -508,7 +515,7 @@ $jumlah_kos = count($daftar_kos_favorit);
                         <div class="fav-info">
                             <h3><?= e($f['nama_kos']); ?></h3>
                             <p class="fav-address">
-                                <i class="fa-solid fa-location-dot" style="color: var(--pink); margin-right: 5px;"></i>
+                                <i class="fa-solid fa-location-dot" style="color: var(--sage); margin-right: 5px;"></i>
                                 <?= e($f['alamat']); ?>
                             </p>
 
