@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $password_valid = hash_equals($db_password, $password);
                 }
 
-                // FLEKSIBEL: Jika akun di database adalah admin, izinkan masuk walau role pilihan berbeda (atau sesuaikan)
+                // FLEKSIBEL: Jika akun di database adalah admin, izinkan masuk walau role pilihan berbeda
                 $is_admin_account = ($db_role === 'admin');
 
                 if (!$is_admin_account && $db_role !== $input_role) {
@@ -123,9 +123,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        /* =================================
-            RESET DAN DASAR (SAGE GREEN THEME)
-        ================================= */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; background: #FAF9F6; color: #2C3E35; min-height: 100vh; }
@@ -142,9 +139,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             --shadow: 0 10px 35px rgba(135,169,135,0.12);
         }
 
-        /* =================================
-            NAVBAR
-        ================================= */
         .navbar { background: rgba(250,249,246,0.96); backdrop-filter: blur(15px); border-bottom: 1px solid var(--sage-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .navbar-container { width: 100%; max-width: 1300px; margin: auto; padding: 14px 25px; display: flex; align-items: center; justify-content: space-between; }
         
@@ -160,9 +154,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .nav-spacer { width: 100px; }
 
-        /* =================================
-            AREA LOGIN
-        ================================= */
         .login-page { width: 100%; padding: 35px 25px 50px; }
         .login-wrapper {
             max-width: 1150px;
@@ -178,9 +169,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 15px 45px rgba(135,169,135,0.1);
         }
 
-        /* =================================
-            BAGIAN KIRI (BANNER)
-        ================================= */
         .login-banner {
             background: linear-gradient(145deg, var(--sage-soft), #D1E0D1);
             padding: 48px 42px;
@@ -214,9 +202,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: var(--sage); color: #ffffff; font-size: 14px;
         }
 
-        /* =================================
-            BAGIAN KANAN (FORM LOGIN)
-        ================================= */
         .login-form-container { padding: 45px 55px; display: flex; flex-direction: column; justify-content: center; }
 
         .form-logo { display: flex; justify-content: center; margin-bottom: 16px; }
@@ -277,9 +262,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         .btn-register:hover { background: var(--sage-soft); }
 
-        /* =================================
-            RESPONSIVE DESIGN
-        ================================= */
         @media(max-width: 950px) {
             .nav-menu { position: static; transform: none; }
             .nav-spacer { display: none; }
@@ -303,9 +285,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-<!-- =================================
-    NAVBAR
-================================= -->
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
@@ -327,9 +306,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </nav>
 
-<!-- =================================
-    HALAMAN LOGIN
-================================= -->
 <main class="login-page">
     <div class="login-wrapper">
 
@@ -347,7 +323,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     impianmu dengan mudah, cepat, dan aman.
                 </p>
 
-                <!-- KEUNGGULAN -->
                 <div class="banner-features">
                     <div class="feature">
                         <div class="feature-icon"><i class="fa-solid fa-house"></i></div>
@@ -389,14 +364,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <!-- FORM LOGIN -->
-            <div class="form-group">
-    <label>Nama</label>
-    <div class="input-wrapper">
-        <i class="fa-solid fa-user"></i>
-        <input type="text" name="username" placeholder="Masukkan nama Anda" value="<?= htmlspecialchars($username_input); ?>" autocomplete="username" required>
-    </div>
-</div>
+            <!-- FORM LOGIN (DIKEMBALIKAN UTUH DI SINI) -->
+            <form action="" method="POST">
+                <!-- NAMA -->
+                <div class="form-group">
+                    <label>Nama</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" name="username" placeholder="Masukkan nama Anda" value="<?= htmlspecialchars($username_input); ?>" autocomplete="username" required>
+                    </div>
+                </div>
 
                 <!-- PASSWORD -->
                 <div class="form-group">
@@ -442,9 +419,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </main>
 
-<!-- =================================
-    JAVASCRIPT PASSWORD
-================================= -->
 <script>
 function togglePassword() {
     const password = document.getElementById('password');
