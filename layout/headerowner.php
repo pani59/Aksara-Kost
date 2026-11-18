@@ -2,6 +2,12 @@
 session_start();
 require_once '../database.php';
 
+// Pastikan hanya owner yang bisa akses, atau sesuaikan validasi login Anda
+if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
+    header("Location: ../login.php");
+    exit;
+}
+
 $nama_bulan_indo = [
     1 => 'Januari',
     2 => 'Februari',
@@ -299,13 +305,13 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
                 <a href="index.php" class="nav-link text-secondary font-weight-bold">Home</a>
             </li>
         </ul>
-        <!-- PROFIL OWNER -->
+        <!-- PROFIL OWNER DINAMIS -->
         <ul class="navbar-nav ml-auto">
             <li class="nav-item d-flex align-items-center pr-2">
                 <div class="owner-profile-badge">
                     <a class="d-flex align-items-center text-decoration-none" href="#">
-                        <img src="../uploads/default.jpeg" class="img-circle elevation-1" alt="User">
-                        <span class="text-secondary font-weight-bold ml-2">Owner</span>
+                        <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'default.jpeg'); ?>" class="img-circle elevation-1" alt="User" onerror="this.src='../uploads/default.jpeg';">
+                        <span class="text-secondary font-weight-bold ml-2"><?= htmlspecialchars($_SESSION['nama'] ?? 'Owner'); ?></span>
                     </a>
                 </div>
             </li>
@@ -317,13 +323,13 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
         <a href="index.php" class="brand-link py-2" style="visibility:hidden;height:0;padding:0;margin:0;border:none;"></a>
 
         <div class="sidebar pt-2">
-           <!-- USER PANEL -->
+           <!-- USER PANEL DINAMIS -->
             <div class="user-panel mt-2 pb-3 mb-3 d-flex align-items-center">
                 <div class="image">
-                    <img src="../uploads/default.jpeg" class="img-circle elevation-2" alt="User Image">
+                    <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'default.jpeg'); ?>" class="img-circle elevation-2" alt="User Image" onerror="this.src='../uploads/default.jpeg';">
                 </div>
                 <div class="info">
-                    <a href="#" class="d-block">Dedi</a>
+                    <a href="#" class="d-block"><?= htmlspecialchars($_SESSION['nama'] ?? 'Owner'); ?></a>
                 </div>
             </div>
 
@@ -400,7 +406,7 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
         <section class="content-header pt-3">
             <div class="container-fluid">
                 <h1 class="judul-halaman">Dashboard Owner</h1>
-                <p class="sub-judul">Selamat datang di panel owner</p>
+                <p class="sub-judul">Selamat datang di panel owner, <?= htmlspecialchars($_SESSION['nama'] ?? 'Owner'); ?></p>
             </div>
         </section>
 
