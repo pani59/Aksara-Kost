@@ -58,10 +58,11 @@ function e($value) {
 }
 
 // Foto profil
-$foto_user = (!empty($_SESSION['foto']) && file_exists('../uploads/' . $_SESSION['foto']))
-    ? '../uploads/' . $_SESSION['foto'] . '?v=' . time()
+// Foto profil (KODE BARU YANG BENAR)
+$foto_user = (!empty($user['foto']) && file_exists('../uploads/' . $user['foto']))
+    ? '../uploads/' . $user['foto'] . '?v=' . time()
     : '../uploads/default.jpeg';
-
+    
 // Mengambil data kos dari database
 $sql_fav = "
     SELECT k.*,
