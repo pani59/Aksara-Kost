@@ -48,31 +48,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Set status verifikasi awal menjadi "Menunggu"
             $status_verifikasi = 'Menunggu';
-            $foto_default = 'default.jpeg';
 
-            // Query insert data dengan status Menunggu
-            $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, foto, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            // Query insert data ke database
+            $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt_insert = mysqli_prepare($conn, $query_insert);
 
             if ($stmt_insert) {
-                mysqli_stmt_bind_param($stmt_insert, "sssssss", $nama, $email, $password, $role, $no_wa, $foto_default, $status_verifikasi);
+                mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $email, $password, $role, $no_wa, $status_verifikasi);
                 
                 if (mysqli_stmt_execute($stmt_insert)) {
+                    // MENGAMBIL USER_ID UNIK YANG BARU SAJA DIBUAT
                     $user_id = mysqli_insert_id($conn);
 
-                    // Penanganan upload foto profil menggunakan user_id yang unik
+                    // LOGIKA PENYIMPANAN FOTO BERDASARKAN USER_ID
                     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
                         $file_tmp   = $_FILES['foto']['tmp_name'];
                         $file_ext   = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
                         $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
                         if (in_array($file_ext, $allowed_ext, true)) {
+                            // Format nama file unik: user_[user_id].[ekstensi]
                             $nama_foto = 'user_' . $user_id . '.' . $file_ext;
-                            $target_path = __DIR__ . '/uploads/' . $nama_foto;
+                            $target_dir = __DIR__ . '/uploads/';
 
-                            if (move_uploaded_file($file_tmp, $target_path)) {
-                                // Update nama foto ke database berdasarkan user_id unik
-                                mysqli_query($conn, "UPDATE user SET foto = '$nama_foto' WHERE user_id = '$user_id'");
+                            // Pastikan folder uploads ada
+                            if (!is_dir($target_dir)) {
+                                mkdir($target_dir, 0777, true);
+                            }
+
+                            if (move_uploaded_file($file_tmp, $target_dir . $nama_foto)) {
+                                @mysqli_query($conn, "UPDATE user SET foto = '$nama_foto' WHERE user_id = '$user_id'");
                             }
                         }
                     }
@@ -258,7 +263,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     Bergabung dengan <span>AKSARA KOST</span>
                 </h1>
                 <p class="banner-description">
-                    Daftar sebagai Admin, Owner, atau User. Setiap pendaftaran akun baru memerlukan verifikasi dan konfirmasi dari Admin sistem.
+                    Daftar sebagai Owner atau User. Setiap pendaftaran akun baru memerlukan verifikasi dan konfirmasi dari Admin sistem.
                 </p>
                 <div class="banner-features">
                     <div class="feature">
@@ -342,14 +347,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- ROLE -->
+                <!-- ROLE (ADMIN DIHILANGKAN, HANYA OWNER DAN USER) -->
                 <div class="form-group">
                     <label>Role</label>
                     <div class="input-wrapper">
                         <i class="fa-solid fa-users"></i>
                         <select name="role" required>
                             <option value="" disabled selected hidden>Pilih Role</option>
-                            <option value="Admin">Admin</option>
                             <option value="Owner">Owner</option>
                             <option value="User">User</option>
                         </select>
