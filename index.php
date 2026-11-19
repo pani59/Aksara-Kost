@@ -174,7 +174,7 @@ if ($json_locations === false) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beranda - AKSARA KOST</title>
-    <link rel="icon" href="uploads/logoaksara.png">
+    <link rel="icon" href="uploads/logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -417,7 +417,7 @@ if ($json_locations === false) {
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="uploads/logoaksara.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="uploads/logo.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -559,7 +559,7 @@ if ($json_locations === false) {
     <!-- TENTANG AKSARA KOST -->
     <section class="about-card-wrapper" id="tentang">
         <div class="about-header">
-            <img src="uploads/logoaksara.png" alt="Logo Aksara Kost" class="about-icon-main">
+            <img src="uploads/logo.png" alt="Logo Aksara Kost" class="about-icon-main">
             <h2>Tentang AKSARA KOST</h2>
             <p>Platform pencarian kost online yang mudah, cepat, dan terpercaya. Temukan kost idealmu hanya dalam beberapa klik, dengan data terverifikasi dan dukungan penuh untuk pengalaman mencari kost yang aman dan nyaman.</p>
         </div>
@@ -594,7 +594,7 @@ if ($json_locations === false) {
     <div class="footer-container">
         <div class="footer-col">
             <div class="footer-logo">
-                <img src="uploads/logoaksara.png" alt="Logo Aksara Kost">
+                <img src="uploads/logo.png" alt="Logo Aksara Kost">
                 <div class="footer-logo-text">
                     <strong>Aksara</strong>
                     <span>Kost</span>
