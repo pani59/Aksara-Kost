@@ -2,6 +2,22 @@
 session_start();
 require_once '../database.php';
 
+// LOGIKA MENGECEK FILE FOTO FISIK UNIK BERDASARKAN USER_ID
+$found_foto = 'default.jpeg';
+if (isset($_SESSION['user_id'])) {
+    $uid = $_SESSION['user_id'];
+    $extensions = ['jpg', 'jpeg', 'png', 'gif'];
+    foreach ($extensions as $ext) {
+        $filename = 'user_' . $uid . '.' . $ext;
+        if (file_exists(__DIR__ . '/../uploads/' . $filename)) {
+            $found_foto = $filename;
+            break;
+        }
+    }
+}
+$_SESSION['foto'] = $found_foto;
+
+
 $nama_bulan_indo = [
     1 => 'Januari',
     2 => 'Februari',
@@ -341,13 +357,13 @@ $total_tahunan = array_sum($pendapatan_bulanan);
         <div class="sidebar pt-2">
            <!-- USER PANEL -->
             <div class="user-panel mt-2 pb-3 mb-3 d-flex align-items-center">
-                <div class="image">
-                    <img src="../uploads/default.jpeg" class="img-circle elevation-2" alt="User Image">
-                </div>
-                <div class="info">
-                    <a href="#" class="d-block">Dedi</a>
-                </div>
-            </div>
+    <div class="image">
+        <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'default.jpeg'); ?>" class="img-circle elevation-2" alt="User Image" onerror="this.src='../uploads/default.jpeg';">
+    </div>
+    <div class="info">
+        <a href="#" class="d-block"><?= htmlspecialchars($_SESSION['nama'] ?? 'Owner'); ?></a>
+    </div>
+</div>
             <!-- SEARCH -->
             <div class="form-inline mb-2">
                 <div class="input-group" data-widget="sidebar-search">

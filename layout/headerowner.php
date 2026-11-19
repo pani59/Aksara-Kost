@@ -322,13 +322,13 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
                 <a href="index.php" class="nav-link text-secondary font-weight-bold">Home</a>
             </li>
         </ul>
-        <!-- PROFIL OWNER DINAMIS -->
+        <!-- PROFIL KANAN ATAS: FOTO BERUBAH DINAMIS, NAMA TETAP "Owner" -->
         <ul class="navbar-nav ml-auto">
             <li class="nav-item d-flex align-items-center pr-2">
                 <div class="owner-profile-badge">
                     <a class="d-flex align-items-center text-decoration-none" href="#">
                         <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'default.jpeg'); ?>" class="img-circle elevation-1" alt="User" onerror="this.src='../uploads/default.jpeg';">
-                        <span class="text-secondary font-weight-bold ml-2"><?= htmlspecialchars($_SESSION['nama'] ?? 'Owner'); ?></span>
+                        <span class="text-secondary font-weight-bold ml-2">Owner</span>
                     </a>
                 </div>
             </li>
@@ -340,7 +340,7 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
         <a href="index.php" class="brand-link py-2" style="visibility:hidden;height:0;padding:0;margin:0;border:none;"></a>
 
         <div class="sidebar pt-2">
-           <!-- USER PANEL DINAMIS -->
+           <!-- USER PANEL SIDEBAR: FOTO & NAMA KEDUANYA BERUBAH DINAMIS -->
             <div class="user-panel mt-2 pb-3 mb-3 d-flex align-items-center">
                 <div class="image">
                     <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'default.jpeg'); ?>" class="img-circle elevation-2" alt="User Image" onerror="this.src='../uploads/default.jpeg';">

@@ -11,6 +11,21 @@ $result = mysqli_query($conn, $query);
 if (!$result) {
     die("Query error: " . mysqli_error($conn));
 }
+// LOGIKA MENGECEK FILE FOTO FISIK UNIK BERDASARKAN USER_ID
+$found_foto = 'default.jpeg';
+if (isset($_SESSION['user_id'])) {
+    $uid = $_SESSION['user_id'];
+    $extensions = ['jpg', 'jpeg', 'png', 'gif'];
+    foreach ($extensions as $ext) {
+        $filename = 'user_' . $uid . '.' . $ext;
+        if (file_exists(__DIR__ . '/../uploads/' . $filename)) {
+            $found_foto = $filename;
+            break;
+        }
+    }
+}
+$_SESSION['foto'] = $found_foto;
+
 ?>
 
 <!DOCTYPE html>
@@ -285,11 +300,11 @@ if (!$result) {
         <ul class="navbar-nav ml-auto">
             <li class="nav-item d-flex align-items-center pr-2">
                 <div class="owner-profile-badge">
-                    <a class="d-flex align-items-center text-decoration-none" href="#">
-                        <img src="../uploads/default.jpeg" class="img-circle elevation-1" alt="User">
-                        <span class="text-secondary font-weight-bold ml-2">Owner</span>
-                    </a>
-                </div>
+    <a class="d-flex align-items-center text-decoration-none" href="#">
+        <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'default.jpeg'); ?>" class="img-circle elevation-1" alt="User" onerror="this.src='../uploads/default.jpeg';">
+        <span class="text-secondary font-weight-bold ml-2">Owner</span>
+    </a>
+</div>
             </li>
         </ul>
     </nav>
@@ -301,13 +316,13 @@ if (!$result) {
         <div class="sidebar pt-2">
            <!-- USER PANEL -->
             <div class="user-panel mt-2 pb-3 mb-3 d-flex align-items-center">
-                <div class="image">
-                    <img src="../uploads/default.jpeg" class="img-circle elevation-2" alt="User Image">
-                </div>
-                <div class="info">
-                    <a href="#" class="d-block">Dedi</a>
-                </div>
-            </div>
+    <div class="image">
+        <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'default.jpeg'); ?>" class="img-circle elevation-2" alt="User Image" onerror="this.src='../uploads/default.jpeg';">
+    </div>
+    <div class="info">
+        <a href="#" class="d-block"><?= htmlspecialchars($_SESSION['nama'] ?? 'Owner'); ?></a>
+    </div>
+</div>
 
             <!-- SEARCH -->
             <div class="form-inline mb-2">
