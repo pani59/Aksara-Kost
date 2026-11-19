@@ -87,6 +87,7 @@ if (isset($_POST['simpan'])) {
           content="width=device-width, initial-scale=1.0">
 
     <title>Edit Data Kost Fasilitas</title>
+    <link rel="icon" href="../uploads/logoaksara.png">
 
 
     <!-- Bootstrap 5 -->

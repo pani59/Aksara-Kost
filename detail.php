@@ -157,7 +157,7 @@ if ($user_login_id) {
 
 $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION['foto']))
     ? 'uploads/' . $_SESSION['foto'] . '?v=' . time()
-    : 'uploads/default.jpeg';
+    : 'uploads/profil.jpeg';
 
 // Fungsi Rupiah
 function rupiah($angka) {
@@ -171,7 +171,7 @@ function rupiah($angka) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail <?= htmlspecialchars($kos['nama_kos']); ?> - AKSARA KOST</title>
-    <link rel="icon" href="uploads/logokost.png" type="image/png">
+    <link rel="icon" href="uploads/logoaksara.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -335,7 +335,7 @@ function rupiah($angka) {
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="uploads/logoaksara.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -349,7 +349,7 @@ function rupiah($angka) {
         <div>
             <?php if (isset($_SESSION['user_id'])): ?>
                 <a href="profil.php" class="btn-profile">
-                    <img src="<?= htmlspecialchars($foto_session); ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='uploads/default.jpeg';">
+                    <img src="<?= htmlspecialchars($foto_session); ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='uploads/profil.jpeg';">
                     <span><?= htmlspecialchars($user_data_session['nama'] ?? $_SESSION['nama'] ?? 'User'); ?></span>
                 </a>
             <?php else: ?>

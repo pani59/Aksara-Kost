@@ -11,7 +11,7 @@ if (!isset($_SESSION['is_login']) || $_SESSION['is_login'] !== true) {
 }
 
 // LOGIKA MENGECEK FILE FOTO FISIK UNIK BERDASARKAN USER_ID
-$found_foto = 'default.jpeg';
+$found_foto = 'profil.jpeg';
 if (isset($_SESSION['user_id'])) {
     $uid = $_SESSION['user_id'];
     $extensions = ['jpg', 'jpeg', 'png', 'gif'];
@@ -112,6 +112,7 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Owner</title>
+    <link rel="icon" href="../uploads/logoaksara.png">
 
     <!-- FONT -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -327,7 +328,7 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
             <li class="nav-item d-flex align-items-center pr-2">
                 <div class="owner-profile-badge">
                     <a class="d-flex align-items-center text-decoration-none" href="#">
-                        <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'default.jpeg'); ?>" class="img-circle elevation-1" alt="User" onerror="this.src='../uploads/default.jpeg';">
+                        <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'profil.jpeg'); ?>" class="img-circle elevation-1" alt="User" onerror="this.src='../uploads/profil.jpeg';">
                         <span class="text-secondary font-weight-bold ml-2">Owner</span>
                     </a>
                 </div>
@@ -343,7 +344,7 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
            <!-- USER PANEL SIDEBAR: FOTO & NAMA KEDUANYA BERUBAH DINAMIS -->
             <div class="user-panel mt-2 pb-3 mb-3 d-flex align-items-center">
                 <div class="image">
-                    <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'default.jpeg'); ?>" class="img-circle elevation-2" alt="User Image" onerror="this.src='../uploads/default.jpeg';">
+                    <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'profil.jpeg'); ?>" class="img-circle elevation-2" alt="User Image" onerror="this.src='../uploads/profil.jpeg';">
                 </div>
                 <div class="info">
                     <a href="#" class="d-block"><?= htmlspecialchars($_SESSION['nama'] ?? 'Owner'); ?></a>

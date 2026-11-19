@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = mysqli_real_escape_string($db, trim($_POST['email'] ?? ''));
     $no_wa = mysqli_real_escape_string($db, trim($_POST['no_wa'] ?? ''));
 
-    $nama_foto = $_SESSION['foto'] ?? 'default.jpeg';
+    $nama_foto = $_SESSION['foto'] ?? 'profil.jpeg';
     $foto_lama = $nama_foto;
     $upload_berhasil = false;
 
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Hapus foto lama setelah foto baru berhasil disimpan
                 if (
                     !empty($foto_lama) &&
-                    $foto_lama !== 'default.jpeg' &&
+                    $foto_lama !== 'profil.jpeg' &&
                     $foto_lama !== $nama_foto
                 ) {
                     $old_file = 'uploads/' . basename($foto_lama);
@@ -140,7 +140,7 @@ $foto_user = (
     file_exists('uploads/' . basename($_SESSION['foto']))
 )
     ? 'uploads/' . basename($_SESSION['foto']) . '?v=' . time()
-    : 'uploads/default.jpeg';
+    : 'uploads/profil.jpeg';
 
 $nama_user = htmlspecialchars($user['nama'] ?? '');
 $email_user = htmlspecialchars($user['email'] ?? '');
@@ -157,7 +157,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil Saya - AKSARA KOST</title>
-    <link rel="icon" href="uploads/logokost.png" type="image/png">
+    <link rel="icon" href="uploads/logoaksara.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -477,7 +477,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="uploads/logoaksara.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -491,7 +491,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         </div>
 
         <a href="profil.php" class="btn-profile">
-            <img src="<?= $foto_html ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='uploads/default.jpeg';">
+            <img src="<?= $foto_html ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='uploads/profil.jpeg';">
             <span><?= $nama_html ?></span>
         </a>
     </div>
@@ -504,7 +504,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
     <aside class="sidebar">
         <div class="sidebar-user">
             <div class="avatar-container">
-                <img src="<?= $foto_html ?>" alt="Foto Profil" onerror="this.src='uploads/default.jpeg';">
+                <img src="<?= $foto_html ?>" alt="Foto Profil" onerror="this.src='uploads/profil.jpeg';">
             </div>
             <strong><?= $nama_html ?></strong>
             <span><?= $role_user ?></span>
@@ -553,7 +553,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
                 <p>Selamat datang kembali di halaman profil kamu.</p>
             </div>
             <div class="welcome-icon">
-                <img src="uploads/logokost.png" alt="Logo Aksara Kost">
+                <img src="uploads/logoaksara.png" alt="Logo Aksara Kost">
             </div>
         </section>
 
@@ -566,7 +566,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
             <div class="profile-view-grid">
                 <div class="profile-avatar-box">
                     <div class="profile-avatar-large">
-                        <img src="<?= $foto_html ?>" alt="Foto Profil" onerror="this.src='uploads/default.jpeg';">
+                        <img src="<?= $foto_html ?>" alt="Foto Profil" onerror="this.src='uploads/profil.jpeg';">
                     </div>
                     <span style="font-size: 12px; color: var(--muted); font-weight: 600;">Foto profil akun kamu</span>
                 </div>

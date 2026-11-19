@@ -48,7 +48,7 @@ if ($user_id) {
 }
 
 // LOGIKA MENGECEK FILE FOTO FISIK UNIK BERDASARKAN USER_ID
-$found_foto = 'default.jpeg';
+$found_foto = 'profil.jpeg';
 if (isset($_SESSION['user_id'])) {
     $uid = $_SESSION['user_id'];
     $extensions = ['jpg', 'jpeg', 'png', 'gif'];
@@ -174,7 +174,7 @@ if ($json_locations === false) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beranda - AKSARA KOST</title>
-    <link rel="icon" href="uploads/logokost.png">
+    <link rel="icon" href="uploads/logoaksara.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -417,7 +417,7 @@ if ($json_locations === false) {
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="uploads/logoaksara.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -432,7 +432,7 @@ if ($json_locations === false) {
         <div class="nav-auth">
             <?php if ($user_id): ?>
                 <a href="profil.php" class="btn-profile">
-                    <img src="<?= htmlspecialchars($foto_session); ?>" alt="Foto Profil" class="navbar-profile-img" onerror="this.src='uploads/default.jpeg';">
+                    <img src="<?= htmlspecialchars($foto_session); ?>" alt="Foto Profil" class="navbar-profile-img" onerror="this.src='uploads/profil.jpeg';">
                     <span><?= htmlspecialchars($user['nama'] ?? $_SESSION['nama'] ?? 'User'); ?></span>
                 </a>
             <?php else: ?>
@@ -559,7 +559,7 @@ if ($json_locations === false) {
     <!-- TENTANG AKSARA KOST -->
     <section class="about-card-wrapper" id="tentang">
         <div class="about-header">
-            <img src="uploads/logokost.png" alt="Logo Aksara Kost" class="about-icon-main">
+            <img src="uploads/logoaksara.png" alt="Logo Aksara Kost" class="about-icon-main">
             <h2>Tentang AKSARA KOST</h2>
             <p>Platform pencarian kost online yang mudah, cepat, dan terpercaya. Temukan kost idealmu hanya dalam beberapa klik, dengan data terverifikasi dan dukungan penuh untuk pengalaman mencari kost yang aman dan nyaman.</p>
         </div>
@@ -594,7 +594,7 @@ if ($json_locations === false) {
     <div class="footer-container">
         <div class="footer-col">
             <div class="footer-logo">
-                <img src="uploads/logokost.png" alt="Logo Aksara Kost">
+                <img src="uploads/logoaksara.png" alt="Logo Aksara Kost">
                 <div class="footer-logo-text">
                     <strong>Aksara</strong>
                     <span>Kost</span>

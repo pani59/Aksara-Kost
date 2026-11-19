@@ -56,7 +56,7 @@ function e($value) {
 // Foto profil (diubah karena sudah di luar folder aksara)
 $foto_user = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION['foto'])) 
     ? 'uploads/' . $_SESSION['foto'] . '?v=' . time() 
-    : 'uploads/default.jpeg';
+    : 'uploads/profil.jpeg';
 
 // Mengambil data booking dan foto kos terkait
 $q_booking = mysqli_query($db, "
@@ -90,7 +90,7 @@ $default_image = 'assets/images/default-kos.jpg';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Status Pesanan / Booking - AKSARA KOST</title>
-    <link rel="icon" href="uploads/logokost.png" type="image/png">
+    <link rel="icon" href="uploads/logoaksara.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -400,7 +400,7 @@ $default_image = 'assets/images/default-kos.jpg';
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="uploads/logoaksara.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -418,7 +418,7 @@ $default_image = 'assets/images/default-kos.jpg';
                 src="<?= e($foto_user); ?>"
                 alt="Profil"
                 class="navbar-profile-img"
-                onerror="this.src='uploads/default.jpeg';"
+                onerror="this.src='uploads/profil.jpeg';"
             >
             <span><?= e($user['nama'] ?? $_SESSION['nama']); ?></span>
         </a>
@@ -435,7 +435,7 @@ $default_image = 'assets/images/default-kos.jpg';
                 <img
                     src="<?= e($foto_user); ?>"
                     alt="Foto Profil"
-                    onerror="this.src='uploads/default.jpeg';"
+                    onerror="this.src='uploads/profil.jpeg';"
                 >
             </div>
             <strong><?= e($user['nama']); ?></strong>
@@ -485,7 +485,7 @@ $default_image = 'assets/images/default-kos.jpg';
                 <p>Pantau riwayat dan status pengajuan booking kost kamu di sini.</p>
             </div>
             <div class="welcome-icon">
-                <img src="uploads/logokost.png" alt="Logo Aksara Kost">
+                <img src="uploads/logoaksara.png" alt="Logo Aksara Kost">
             </div>
         </section>
 
@@ -523,7 +523,7 @@ $default_image = 'assets/images/default-kos.jpg';
                                 onerror="this.onerror=null; this.src='<?= e($default_image); ?>';"
                             >
                             <div class="logo-badge">
-                                <img src="uploads/logokost.png" alt="Logo Aksara Kost">
+                                <img src="uploads/logoaksara.png" alt="Logo Aksara Kost">
                             </div>
                         </div>
 

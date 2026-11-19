@@ -1,11 +1,6 @@
 <?php
-// Aktifkan error reporting untuk mendeteksi pesan kesalahan jika ada
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 session_start();
-require_once __DIR__ . '/database.php';
+require_once __DIR__ . '/../database.php';
 
 // Menyesuaikan koneksi database
 if (!isset($db) && isset($conn)) {
@@ -36,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = mysqli_real_escape_string($db, trim($_POST['email'] ?? ''));
     $no_wa = mysqli_real_escape_string($db, trim($_POST['no_wa'] ?? ''));
 
-    $nama_foto = $_SESSION['foto'] ?? 'default.jpeg';
+    $nama_foto = $_SESSION['foto'] ?? 'profil.jpeg';
     $foto_lama = $nama_foto;
     $upload_berhasil = false;
 
@@ -72,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
 
                 $nama_foto = 'user_' . $user_id . '.' . $file_ext;
-                $tujuan = 'uploads/' . $nama_foto;
+                $tujuan = '../uploads/' . $nama_foto;
 
                 if (move_uploaded_file($file_tmp, $tujuan)) {
                     $upload_berhasil = true;
@@ -92,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 nama = '$nama',
                 email = '$email',
                 no_wa = '$no_wa'
-               WHERE user_id = '$user_id'"
+             WHERE user_id = '$user_id'"
         );
 
         if ($update) {
@@ -102,10 +97,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Hapus foto lama setelah foto baru berhasil disimpan
                 if (
                     !empty($foto_lama) &&
-                    $foto_lama !== 'default.jpeg' &&
+                    $foto_lama !== 'profil.jpeg' &&
                     $foto_lama !== $nama_foto
                 ) {
-                    $old_file = 'uploads/' . basename($foto_lama);
+                    $old_file = '../uploads/' . basename($foto_lama);
 
                     if (file_exists($old_file)) {
                         unlink($old_file);
@@ -114,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Bersihkan file dengan ekstensi lama
                 foreach (['jpg', 'jpeg', 'png', 'gif'] as $ext) {
-                    $old_file = 'uploads/user_' . $user_id . '.' . $ext;
+                    $old_file = '../uploads/user_' . $user_id . '.' . $ext;
 
                     if (
                         file_exists($old_file) &&
@@ -141,10 +136,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // FOTO PROFIL
 $foto_user = (
     !empty($_SESSION['foto']) &&
-    file_exists('uploads/' . basename($_SESSION['foto']))
+    file_exists('../uploads/' . basename($_SESSION['foto']))
 )
-    ? 'uploads/' . basename($_SESSION['foto']) . '?v=' . time()
-    : 'uploads/default.jpeg';
+    ? '../uploads/' . basename($_SESSION['foto']) . '?v=' . time()
+    : '../uploads/profil.jpeg';
 
 $nama_user = htmlspecialchars($user['nama'] ?? '');
 $email_user = htmlspecialchars($user['email'] ?? '');
@@ -161,14 +156,14 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profil - AKSARA KOST</title>
-    <link rel="icon" href="uploads/logokost.png" type="image/png">
+    <link rel="icon" href="../uploads/logoaksara.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         /* =================================
-            RESET DAN DASAR (SAGE GREEN THEME)
+           RESET DAN DASAR (SAGE GREEN THEME)
         ================================= */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
@@ -188,7 +183,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         }
 
         /* =================================
-            NAVBAR DENGAN TOMBOL KEMBALI
+           NAVBAR DENGAN TOMBOL KEMBALI
         ================================= */
         .navbar { background: rgba(250,249,246,0.96); backdrop-filter: blur(15px); border-bottom: 1px solid var(--sage-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .navbar-container { width: 100%; max-width: 1300px; margin: auto; padding: 14px 25px; display: flex; align-items: center; justify-content: space-between; position: relative; }
@@ -245,7 +240,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         }
 
         /* =================================
-            LAYOUT UTAMA
+           LAYOUT UTAMA
         ================================= */
         .layout {
             max-width: 1300px;
@@ -258,7 +253,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         }
 
         /* =================================
-            SIDEBAR
+           SIDEBAR
         ================================= */
         .sidebar {
             background: #ffffff;
@@ -308,7 +303,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         }
 
         /* =================================
-            MAIN CONTENT
+           MAIN CONTENT
         ================================= */
         .main-content { min-width: 0; }
 
@@ -533,7 +528,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         }
 
         /* =================================
-            RESPONSIVE DESIGN
+           RESPONSIVE DESIGN
         ================================= */
         @media (max-width: 1000px) {
             .layout { grid-template-columns: 240px 1fr; gap: 20px; }
@@ -571,7 +566,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="uploads/logokost.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="../uploads/logoaksara.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -585,7 +580,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         </div>
 
         <a href="profil.php" class="btn-profile">
-            <img src="<?= $foto_html ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='uploads/default.jpeg';">
+            <img src="<?= $foto_html ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='../uploads/profil.jpeg';">
             <span><?= $nama_html ?></span>
         </a>
     </div>
@@ -598,7 +593,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
     <aside class="sidebar">
         <div class="sidebar-user">
             <div class="avatar-container">
-                <img src="<?= $foto_html ?>" alt="Foto Profil" onerror="this.src='uploads/default.jpeg';">
+                <img src="<?= $foto_html ?>" alt="Foto Profil" onerror="this.src='../uploads/profil.jpeg';">
             </div>
             <strong><?= $nama_html ?></strong>
             <span><?= $role_user ?></span>
@@ -647,7 +642,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
                 <p>Perbarui informasi akun dan foto profil kamu di sini.</p>
             </div>
             <div class="welcome-icon">
-                <img src="uploads/logokost.png" alt="Logo Aksara Kost">
+                <img src="../uploads/logoaksara.png" alt="Logo Aksara Kost">
             </div>
         </section>
 
@@ -671,7 +666,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
                                 src="<?= $foto_html ?>"
                                 id="previewFoto"
                                 alt="Preview Foto Profil"
-                                onerror="this.src='uploads/default.jpeg';"
+                                onerror="this.src='../uploads/profil.jpeg';"
                             >
                         </div>
 
@@ -686,7 +681,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
                             hidden
                         >
                         <p class="photo-note">
-                            
+                           
                         </p>
                     </div>
 
@@ -761,10 +756,10 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
                         <!-- TOMBOL AKSI -->
                         <div class="action-buttons">
                             <button type="submit" class="btn-save">
-                                Simpan Perubahan
+                                 Simpan Perubahan
                             </button>
                             <a href="profil.php" class="btn-cancel">
-                                Batal
+                                 Batal
                             </a>
                         </div>
 
