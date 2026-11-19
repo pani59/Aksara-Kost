@@ -387,7 +387,7 @@ function rupiah($angka) {
                 <?php if ($status_ketersediaan === 'Tersedia'): ?>
                     <span class="badge-status badge-tersedia"><i class="fa-solid fa-circle-check"></i> Kamar Tersedia</span>
                 <?php else: ?>
-                    <span class="badge-status badge-terisi"><i class="fa-solid fa-circle-xmark"></i> Kamar Penuh / Terisi</span>
+                    <span class="badge-status badge-terisi"><i class="fa-solid fa-circle-xmark"></i> Kamar Terisi</span>
                 <?php endif; ?>
             </div>
 
