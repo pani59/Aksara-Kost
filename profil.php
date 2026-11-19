@@ -7,7 +7,8 @@ if (!isset($db) && isset($conn)) {
     $db = $conn;
 } elseif (!isset($db) && isset($koneksi)) {
     $db = $koneksi;
-}
+    }
+    
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
