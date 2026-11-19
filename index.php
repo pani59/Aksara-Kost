@@ -1,4 +1,5 @@
 <?php
+// Aktifkan error reporting untuk mendeteksi pesan kesalahan jika ada
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -30,7 +31,7 @@ function rupiah($angka) {
 $default_image = 'uploads/tampilankos.jpeg';
 
 /* =========================================
-   DATA PENGGUNA
+   DATA PENGGUNA & LOGIKA FOTO UNIK
 ========================================= */
 $user_id = $_SESSION['user_id'] ?? null;
 $user = [];
@@ -46,10 +47,22 @@ if ($user_id) {
     }
 }
 
-$foto_session = 'uploads/default.jpeg';
-if (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION['foto'])) {
-    $foto_session = 'uploads/' . $_SESSION['foto'];
+// LOGIKA MENGECEK FILE FOTO FISIK UNIK BERDASARKAN USER_ID
+$found_foto = 'default.jpeg';
+if (isset($_SESSION['user_id'])) {
+    $uid = $_SESSION['user_id'];
+    $extensions = ['jpg', 'jpeg', 'png', 'gif'];
+    foreach ($extensions as $ext) {
+        $filename = 'user_' . $uid . '.' . $ext;
+        if (file_exists(__DIR__ . '/uploads/' . $filename)) {
+            $found_foto = $filename;
+            break;
+        }
+    }
 }
+$_SESSION['foto'] = $found_foto;
+
+$foto_session = 'uploads/' . $found_foto;
 
 /* =========================================
    QUERY KOS POPULER & BEST SELLER
@@ -103,7 +116,6 @@ usort($list_kos, function($a, $b) {
 $carousel_kos = array_filter($list_kos, function($item) {
     return $item['calculated_rating'] >= 4.5;
 });
-// Jika data kurang dari 1, ambil data teratas agar carousel tidak kosong
 if (empty($carousel_kos)) {
     $carousel_kos = array_slice($list_kos, 0, 3);
 }
@@ -237,7 +249,6 @@ if ($json_locations === false) {
             height: 100%;
             object-fit: cover;
         }
-        /* Informasi di dalam Carousel Banner */
         .carousel-caption-box {
             position: absolute;
             bottom: 0;
@@ -296,7 +307,6 @@ if ($json_locations === false) {
         .section-header a { font-size: 13px; color: var(--sage-dark); font-weight: 700; transition: .3s; }
         .section-header a:hover { color: var(--sage); }
 
-        /* ICON RUMAH BULAT */
         .icon-box-circle {
             width: 34px;
             height: 34px;
@@ -398,13 +408,6 @@ if ($json_locations === false) {
             #map { height: 350px; }
             .footer-container { grid-template-columns: 1fr; gap: 25px; }
             .footer { padding: 35px 20px 20px; }
-        }
-        @media (max-width: 380px) {
-            .kos-grid { grid-template-columns: 1fr; }
-            .kos-img-wrapper { height: 190px; }
-            .hero h1 { font-size: 22px; }
-            .search-bar button { padding: 11px 13px; }
-            .pill-btn { padding: 7px 12px; font-size: 11px; }
         }
     </style>
 </head>
@@ -640,7 +643,6 @@ document.addEventListener('DOMContentLoaded', function() {
 const track = document.getElementById('carouselTrack');
 
 if (track && track.children.length > 1) {
-    // Duplikat foto pertama untuk transisi tanpa putus
     const firstSlide = track.children[0].cloneNode(true);
     track.appendChild(firstSlide);
 
@@ -652,19 +654,15 @@ if (track && track.children.length > 1) {
         track.style.transition = 'transform 0.6s ease-in-out';
         track.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
 
-        // Jika sudah sampai foto duplikat terakhir
         if (currentSlideIndex === totalSlides - 1) {
             setTimeout(function() {
-                // Matikan animasi sementara
                 track.style.transition = 'none';
-                // Kembali ke foto pertama tanpa terlihat melompat
                 currentSlideIndex = 0;
                 track.style.transform = 'translateX(0)';
             }, 600);
         }
     }
 
-    // Ganti foto setiap 4 detik
     setInterval(moveCarousel, 4000);
 }
 </script>
