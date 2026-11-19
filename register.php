@@ -46,12 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             mysqli_stmt_close($stmt_cek);
 
-            // LOGIKA STATUS VERIFIKASI BERDASARKAN ROLE
-            if ($role === 'User') {
-                $status_verifikasi = 'Aktif'; // User langsung aktif tanpa menunggu admin
-            } else {
-                $status_verifikasi = 'Menunggu'; // Owner tetap harus menunggu konfirmasi admin
-            }
+            // LOGIKA STATUS VERIFIKASI BERDASARKAN ROLE (MENGGUNAKAN PANJANG HURUF YANG SAMA: 8 HURUF)
+if ($role === 'User') {
+    $status_verifikasi = 'Disetujui'; // Langsung disetujui (panjang 8 huruf, sama dengan 'Menunggu')
+} else {
+    $status_verifikasi = 'Menunggu';  // Owner tetap menunggu konfirmasi admin
+}
 
             // Query insert murni TANPA kolom foto (aman untuk database penguji)
             $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?)";
