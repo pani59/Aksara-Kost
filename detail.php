@@ -72,6 +72,9 @@ $res_fas = mysqli_query($db, "
     WHERE kf.kos_id = '$kos_id'
 ");
 
+// Ambil daftar kamar berdasarkan kos_id untuk pilihan form booking
+$res_kamar = mysqli_query($db, "SELECT * FROM kamar WHERE kos_id = '$kos_id'");
+
 // Stat Rating & Total Ulasan
 $res_review = mysqli_query($db, "
     SELECT AVG(r.rating) as avg_rating, COUNT(r.review_id) as total_review
@@ -139,6 +142,11 @@ if ($user_login_id) {
 $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION['foto']))
     ? 'uploads/' . $_SESSION['foto'] . '?v=' . time()
     : 'uploads/default.jpeg';
+
+// Fungsi Rupiah
+function rupiah($angka) {
+    return ($angka > 0) ? 'Rp ' . number_format((int)$angka, 0, ',', '.') : 'Harga belum tersedia';
+}
 ?>
 
 <!DOCTYPE html>
@@ -249,7 +257,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION
         /* FORM BOOKING LANGSUNG */
         .booking-box { margin-top: 25px; background: var(--sage-soft); padding: 22px; border-radius: 18px; border: 1px solid var(--sage-border); }
         .booking-box label { font-size: 13px; font-weight: 700; color: var(--sage-dark); display: block; margin-bottom: 8px; }
-        .booking-box input[type="date"] { width: 100%; padding: 12px 16px; border: 1px solid var(--sage-border); border-radius: 12px; outline: none; margin-bottom: 14px; font-size: 13px; background: #fff; font-family: 'Poppins', sans-serif; color: var(--text); }
+        .booking-box select, .booking-box input[type="date"] { width: 100%; padding: 12px 16px; border: 1px solid var(--sage-border); border-radius: 12px; outline: none; margin-bottom: 14px; font-size: 13px; background: #fff; font-family: 'Poppins', sans-serif; color: var(--text); }
         .btn-booking { width: 100%; padding: 12px; background: var(--sage); color: white; border: none; border-radius: 30px; font-weight: 700; cursor: pointer; font-size: 14px; transition: 0.3s; box-shadow: 0 4px 14px rgba(135,169,135,0.2); }
         .btn-booking:hover { background: var(--sage-dark); transform: translateY(-1px); }
 
@@ -339,7 +347,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION
             <?php endif; ?>
         </div>
 
-        <!-- KOLOM KANAN: INFORMASI & FORM BOOKING -->
+        <!-- KOLOM KANAN: INFORMASI & FORM BOOKING TERHUBUNG KE KAMAR -->
         <div>
             <h1 class="title"><?= htmlspecialchars($kos['nama_kos']); ?></h1>
             <p class="lokasi"><i class="fa-solid fa-location-dot"></i> <?= htmlspecialchars($kos['alamat']); ?></p>
@@ -367,10 +375,30 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION
                 <?php endif; ?>
             </div>
 
-            <!-- FORM BOOKING LANGSUNG -->
+            <!-- FORM BOOKING TERHUBUNG KE TABEL KAMAR -->
             <form action="proses_booking.php" method="POST" class="booking-box">
                 <input type="hidden" name="kos_id" value="<?= $kos['kos_id']; ?>">
                 
+                <!-- PILIH KAMAR -->
+                <label><i class="fa-solid fa-bed"></i> Pilih Kamar:</label>
+                <select name="kamar_id" required>
+                    <option value="" disabled selected hidden>-- Pilih Kamar & Status --</option>
+                    <?php if ($res_kamar && mysqli_num_rows($res_kamar) > 0): ?>
+                        <?php while ($kamar = mysqli_fetch_assoc($res_kamar)): 
+                            $status_kamar = trim($kamar['status_kamar']);
+                            $is_tersedia = (strtolower($status_kamar) === 'kosong');
+                            $label_status = $is_tersedia ? ' (Tersedia)' : ' (' . $status_kamar . ')';
+                        ?>
+                            <option value="<?= $kamar['kamar_id']; ?>" <?= !$is_tersedia ? 'disabled style="background:#f1f3f4; color:#999;"' : ''; ?>>
+                                Kamar <?= htmlspecialchars($kamar['no_kamar']); ?> - <?= rupiah($kamar['harga']); ?><?= $label_status; ?>
+                            </option>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <option value="" disabled>Belum ada data kamar tersedia</option>
+                    <?php endif; ?>
+                </select>
+
+                <!-- PILIH TANGGAL SURVEY -->
                 <label><i class="fa-regular fa-calendar-days"></i> Pilih Tanggal Survey / Masuk:</label>
                 <input type="date" name="tanggal_survey" required min="<?= date('Y-m-d'); ?>">
 
@@ -399,8 +427,8 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION
                 <button class="btn-action btn-hubungi" style="background:#888;" onclick="alert('Nomor WA Pemilik belum tersedia.')"><i class="fa-brands fa-whatsapp"></i> Hubungi Pemilik</button>
             <?php endif; ?>
             <a href="favorit.php?tambah_id=<?= $_GET['id']; ?>" class="btn-action btn-tandai" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none;" onclick="alert('Kost berhasil ditambahkan ke favorit!');">
-    <i class="fa-solid fa-heart" style="margin-right: 6px;"></i> Simpan Favorit
-</a>
+                <i class="fa-solid fa-heart" style="margin-right: 6px;"></i> Simpan Favorit
+            </a>
         </div>
 
         <!-- SEKSI ULASAN & REVIEW -->
