@@ -50,7 +50,7 @@ if (!$kos) {
 
 /*
 |--------------------------------------------------------------------------
-| QUERY FOTO, HARGA, FASILITAS & RATING
+| QUERY FOTO, HARGA, FASILITAS & STATUS KAMAR OTOMATIS
 |--------------------------------------------------------------------------
 */
 $res_foto = mysqli_query($db, "SELECT * FROM foto_kos WHERE kos_id = '$kos_id' ORDER BY foto_id ASC");
@@ -61,9 +61,28 @@ if ($res_foto) {
     }
 }
 
-$res_harga = mysqli_query($db, "SELECT MIN(harga) AS harga_mulai FROM kamar WHERE kos_id = '$kos_id'");
-$harga_data = $res_harga ? mysqli_fetch_assoc($res_harga) : null;
-$harga_mulai = $harga_data['harga_mulai'] ?? 0;
+// Ambil harga terendah dan deteksi kamar otomatis
+$res_kamar = mysqli_query($db, "SELECT * FROM kamar WHERE kos_id = '$kos_id'");
+$harga_mulai = 0;
+$status_ketersediaan = 'Terisi';
+$detected_kamar_id = 0;
+
+if ($res_kamar && mysqli_num_rows($res_kamar) > 0) {
+    $min_harga = PHP_INT_MAX;
+    while ($kamar = mysqli_fetch_assoc($res_kamar)) {
+        if ($kamar['harga'] < $min_harga) {
+            $min_harga = $kamar['harga'];
+            // Prioritaskan kamar yang kosong untuk otomatis dipilih
+            if (strtolower(trim($kamar['status_kamar'])) === 'kosong' || $detected_kamar_id == 0) {
+                $detected_kamar_id = $kamar['kamar_id'];
+            }
+        }
+        if (strtolower(trim($kamar['status_kamar'])) === 'kosong') {
+            $status_ketersediaan = 'Tersedia';
+        }
+    }
+    $harga_mulai = ($min_harga !== PHP_INT_MAX) ? $min_harga : 0;
+}
 
 $res_fas = mysqli_query($db, "
     SELECT f.nama_fasilitas
@@ -71,9 +90,6 @@ $res_fas = mysqli_query($db, "
     JOIN fasilitas f ON kf.fasilitas_id = f.fasilitas_id
     WHERE kf.kos_id = '$kos_id'
 ");
-
-// Ambil daftar kamar berdasarkan kos_id untuk pilihan form booking
-$res_kamar = mysqli_query($db, "SELECT * FROM kamar WHERE kos_id = '$kos_id'");
 
 // Stat Rating & Total Ulasan
 $res_review = mysqli_query($db, "
@@ -246,6 +262,19 @@ function rupiah($angka) {
         .title { font-size: 24px; color: var(--text); margin-bottom: 6px; font-weight: 800; }
         .lokasi { font-size: 13px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
         .lokasi i { color: var(--sage); }
+
+        /* STATUS & HARGA */
+        .status-badge-wrapper { margin-bottom: 8px; }
+        .badge-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .badge-tersedia { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .badge-terisi { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+
         .harga { font-size: 24px; font-weight: 800; color: var(--sage-dark); margin-bottom: 6px; }
         .harga span { font-size: 13px; color: var(--muted); font-weight: normal; }
         .rating { font-size: 13px; color: #f59e0b; font-weight: 700; margin-bottom: 20px; }
@@ -257,9 +286,10 @@ function rupiah($angka) {
         /* FORM BOOKING LANGSUNG */
         .booking-box { margin-top: 25px; background: var(--sage-soft); padding: 22px; border-radius: 18px; border: 1px solid var(--sage-border); }
         .booking-box label { font-size: 13px; font-weight: 700; color: var(--sage-dark); display: block; margin-bottom: 8px; }
-        .booking-box select, .booking-box input[type="date"] { width: 100%; padding: 12px 16px; border: 1px solid var(--sage-border); border-radius: 12px; outline: none; margin-bottom: 14px; font-size: 13px; background: #fff; font-family: 'Poppins', sans-serif; color: var(--text); }
+        .booking-box input[type="date"] { width: 100%; padding: 12px 16px; border: 1px solid var(--sage-border); border-radius: 12px; outline: none; margin-bottom: 14px; font-size: 13px; background: #fff; font-family: 'Poppins', sans-serif; color: var(--text); }
         .btn-booking { width: 100%; padding: 12px; background: var(--sage); color: white; border: none; border-radius: 30px; font-weight: 700; cursor: pointer; font-size: 14px; transition: 0.3s; box-shadow: 0 4px 14px rgba(135,169,135,0.2); }
         .btn-booking:hover { background: var(--sage-dark); transform: translateY(-1px); }
+        .btn-booking:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
 
         /* DESKRIPSI & TOMBOL */
         .deskripsi { grid-column: 1 / -1; margin-top: 30px; border-top: 1px solid var(--sage-border); padding-top: 22px; }
@@ -347,10 +377,19 @@ function rupiah($angka) {
             <?php endif; ?>
         </div>
 
-        <!-- KOLOM KANAN: INFORMASI & FORM BOOKING TERHUBUNG KE KAMAR -->
+        <!-- KOLOM KANAN: INFORMASI & FORM BOOKING OTOMATIS -->
         <div>
             <h1 class="title"><?= htmlspecialchars($kos['nama_kos']); ?></h1>
             <p class="lokasi"><i class="fa-solid fa-location-dot"></i> <?= htmlspecialchars($kos['alamat']); ?></p>
+
+            <!-- STATUS KETERSEDIAAN OTOMATIS DI ATAS HARGA -->
+            <div class="status-badge-wrapper">
+                <?php if ($status_ketersediaan === 'Tersedia'): ?>
+                    <span class="badge-status badge-tersedia"><i class="fa-solid fa-circle-check"></i> Kamar Tersedia</span>
+                <?php else: ?>
+                    <span class="badge-status badge-terisi"><i class="fa-solid fa-circle-xmark"></i> Kamar Penuh / Terisi</span>
+                <?php endif; ?>
+            </div>
 
             <div class="harga">
                 <?= $harga_mulai > 0 ? 'Rp ' . number_format($harga_mulai, 0, ',', '.') : 'Harga belum tersedia'; ?>
@@ -375,35 +414,19 @@ function rupiah($angka) {
                 <?php endif; ?>
             </div>
 
-            <!-- FORM BOOKING TERHUBUNG KE TABEL KAMAR -->
+            <!-- FORM BOOKING DENGAN KAMAR TERDETEKSI OTOMATIS (TANPA PILIH DROPDOWN) -->
             <form action="proses_booking.php" method="POST" class="booking-box">
                 <input type="hidden" name="kos_id" value="<?= $kos['kos_id']; ?>">
                 
-                <!-- PILIH KAMAR -->
-                <label><i class="fa-solid fa-bed"></i> Pilih Kamar:</label>
-                <select name="kamar_id" required>
-                    <option value="" disabled selected hidden>-- Pilih Kamar & Status --</option>
-                    <?php if ($res_kamar && mysqli_num_rows($res_kamar) > 0): ?>
-                        <?php while ($kamar = mysqli_fetch_assoc($res_kamar)): 
-                            $status_kamar = trim($kamar['status_kamar']);
-                            $is_tersedia = (strtolower($status_kamar) === 'kosong');
-                            $label_status = $is_tersedia ? ' (Tersedia)' : ' (' . $status_kamar . ')';
-                        ?>
-                            <option value="<?= $kamar['kamar_id']; ?>" <?= !$is_tersedia ? 'disabled style="background:#f1f3f4; color:#999;"' : ''; ?>>
-                                Kamar <?= htmlspecialchars($kamar['no_kamar']); ?> - <?= rupiah($kamar['harga']); ?><?= $label_status; ?>
-                            </option>
-                        <?php endwhile; ?>
-                    <?php else: ?>
-                        <option value="" disabled>Belum ada data kamar tersedia</option>
-                    <?php endif; ?>
-                </select>
+                <!-- ID Kamar dikirim otomatis secara tersembunyi -->
+                <input type="hidden" name="kamar_id" value="<?= $detected_kamar_id; ?>">
 
-                <!-- PILIH TANGGAL SURVEY -->
+                <!-- PILIH TANGGAL SURVEY / MASUK -->
                 <label><i class="fa-regular fa-calendar-days"></i> Pilih Tanggal Survey / Masuk:</label>
                 <input type="date" name="tanggal_survey" required min="<?= date('Y-m-d'); ?>">
 
-                <button type="submit" class="btn-booking">
-                    <i class="fa-solid fa-clipboard-list"></i> Ajukan Booking Kost
+                <button type="submit" class="btn-booking" <?= ($status_ketersediaan !== 'Tersedia' || $detected_kamar_id == 0) ? 'disabled' : ''; ?>>
+                    <i class="fa-solid fa-clipboard-list"></i> <?= ($status_ketersediaan === 'Tersedia') ? 'Ajukan Booking Kost' : 'Kost Penuh (Tidak Bisa Booking)'; ?>
                 </button>
             </form>
         </div>
