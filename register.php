@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $status_verifikasi = 'Menunggu';      // Owner menunggu konfirmasi admin
             }
 
-            // Query insert database dengan variabel status_verifikasi tersebut
+            // Query insert database (tidak mengubah struktur database/tabel sama sekali)
             $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt_insert = mysqli_prepare($conn, $query_insert);
 
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // 1. AMBIL USER_ID UNIK YANG BARU SAJA DIBUAT
                     $user_id = mysqli_insert_id($conn);
 
-                    // 2. PROSES UPLOAD FOTO DENGAN FORMAT user_[user_id].[ext]
+                    // 2. PROSES UPLOAD FOTO DENGAN FORMAT user_[user_id].[ext] KE FOLDER UPLOADS (VOLUME RAILWAY)
                     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
                         $file_tmp    = $_FILES['foto']['tmp_name'];
                         $file_ext    = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['nama']     = $nama;
                         $_SESSION['role']     = 'User';
 
-                        // Set session foto default atau cek langsung file fisiknya
+                        // Set session foto default atau cek langsung file fisiknya di folder uploads
                         $found_foto = 'default.jpeg';
                         foreach (['jpg', 'jpeg', 'png', 'gif'] as $ext) {
                             $check_filename = 'user_' . $user_id . '.' . $ext;
