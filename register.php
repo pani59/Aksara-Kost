@@ -46,14 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             mysqli_stmt_close($stmt_cek);
 
-            // LOGIKA STATUS VERIFIKASI BERDASARKAN ROLE (MENGGUNAKAN PANJANG HURUF YANG SAMA: 8 HURUF)
-if ($role === 'User') {
-    $status_verifikasi = 'Disetujui'; // Langsung disetujui (panjang 8 huruf, sama dengan 'Menunggu')
-} else {
-    $status_verifikasi = 'Menunggu';  // Owner tetap menunggu konfirmasi admin
-}
+            // LOGIKA STATUS VERIFIKASI BERDASARKAN ROLE SESUAI ENUM DATABASE
+            if ($role === 'User') {
+                $status_verifikasi = 'Terverifikasi'; // User langsung terverifikasi
+            } else {
+                $status_verifikasi = 'Menunggu';      // Owner menunggu konfirmasi admin
+            }
 
-            // Query insert murni TANPA kolom foto (aman untuk database penguji)
+            // Query insert database dengan variabel status_verifikasi tersebut
             $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt_insert = mysqli_prepare($conn, $query_insert);
 
@@ -82,10 +82,18 @@ if ($role === 'User') {
                         }
                     }
 
-                    // PESAN SUKSES DINAMIS BERDASARKAN ROLE
+                    // AUTO-LOGIN KHUSUS USER (LANGSUNG KE INDEX.PHP TANPA LOGIN LAGI)
                     if ($role === 'User') {
-                        $success = "Pendaftaran berhasil! Akun User Anda sudah aktif dan dapat langsung digunakan untuk login.";
+                        $_SESSION['is_login'] = true;
+                        $_SESSION['user_id']  = $user_id;
+                        $_SESSION['nama']     = $nama;
+                        $_SESSION['role']     = 'User';
+
+                        mysqli_stmt_close($stmt_insert);
+                        header("Location: index.php");
+                        exit;
                     } else {
+                        // Jika Owner, tampilkan pesan menunggu konfirmasi seperti biasa
                         $success = "Pendaftaran berhasil! Akun Anda sedang <b>Menunggu Konfirmasi</b> dari Admin. Silakan tunggu hingga disetujui untuk dapat login.";
                     }
                 } else {
