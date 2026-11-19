@@ -61,31 +61,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $email, $password, $role, $no_wa, $status_verifikasi);
                 
                 if (mysqli_stmt_execute($stmt_insert)) {
-                    // AMBIL USER_ID UNIK YANG BARU SAJA MASUK KE DATABASE
+                    // 1. AMBIL USER_ID UNIK
                     $user_id = mysqli_insert_id($conn);
 
-                    // LOGIKA PENYIMPANAN FOTO DENGAN ID UNIK DI FOLDER UPLOADS YANG AMAN
+                    // 2. PROSES UPLOAD FOTO (PASTIKAN DIJALANKAN UNTUK SEMUA ROLE)
                     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
                         $file_tmp    = $_FILES['foto']['tmp_name'];
-                        $file_name   = $_FILES['foto']['name'];
-                        $file_ext    = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                        $file_ext    = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
                         $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
                         if (in_array($file_ext, $allowed_ext, true)) {
                             $nama_foto  = 'user_' . $user_id . '.' . $file_ext;
-                            
-                            // Pastikan path folder uploads terbaca dengan benar relatif terhadap file ini
-                            $target_dir = rtrim(__DIR__, '/\\') . '/uploads/';
+                            $target_dir = __DIR__ . '/uploads/';
 
                             if (!is_dir($target_dir)) {
                                 mkdir($target_dir, 0777, true);
                             }
 
+                            // Pindahkan file ke folder uploads
                             move_uploaded_file($file_tmp, $target_dir . $nama_foto);
                         }
                     }
 
-                    // AUTO-LOGIN KHUSUS USER (LANGSUNG KE INDEX.PHP)
+                    // 3. JIKA ROLE USER: LANGSUNG AUTO-LOGIN KE INDEX.PHP
                     if ($role === 'User') {
                         $_SESSION['is_login'] = true;
                         $_SESSION['user_id']  = $user_id;
@@ -96,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header("Location: index.php");
                         exit;
                     } else {
-                        // Jika Owner, tampilkan pesan menunggu konfirmasi admin
+                        // JIKA OWNER: TAMPILKAN PESAN MENUNGGU
                         $success = "Pendaftaran berhasil! Akun Anda sedang <b>Menunggu Konfirmasi</b> dari Admin. Silakan tunggu hingga disetujui untuk dapat login.";
                     }
                 } else {
