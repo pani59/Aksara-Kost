@@ -71,8 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['user_id'] = $user['user_id'];
                     $_SESSION['nama'] = $user['nama'];
                     $_SESSION['role'] = $is_admin_account ? $input_role : $user['role'];
+                    $_SESSION['is_login'] = true;
 
-                    // MENCARI FOTO PROFIL FISIK BERDASARKAN USER_ID
+                    // == TAMBAHKAN BAGIAN INI AGAR FOTO TERDETEKSI SAAT LOGIN ==
                     $found_foto = 'default.jpeg';
                     $extensions = ['jpg', 'jpeg', 'png', 'gif'];
 
@@ -83,12 +84,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             break;
                         }
                     }
-
                     $_SESSION['foto'] = $found_foto;
-                    $_SESSION['is_login'] = true;
+                    // ========================================================
 
                     mysqli_stmt_close($stmt);
-
+                    
                     // PENGALIHAN BERDASARKAN ROLE YANG DIPILIH / AKTIF
                     $active_role = strtolower(trim($_SESSION['role']));
                     if ($active_role === 'admin') {
