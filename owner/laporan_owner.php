@@ -341,11 +341,11 @@ $total_tahunan = array_sum($pendapatan_bulanan);
         <ul class="navbar-nav ml-auto">
             <li class="nav-item d-flex align-items-center pr-2">
                 <div class="owner-profile-badge">
-                    <a class="d-flex align-items-center text-decoration-none" href="#">
-                        <img src="../uploads/default.jpeg" class="img-circle elevation-1" alt="User">
-                        <span class="text-secondary font-weight-bold ml-2">Owner</span>
-                    </a>
-                </div>
+    <a class="d-flex align-items-center text-decoration-none" href="#">
+        <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'default.jpeg'); ?>" class="img-circle elevation-1" alt="User" onerror="this.src='../uploads/default.jpeg';">
+        <span class="text-secondary font-weight-bold ml-2">Owner</span>
+    </a>
+</div>
             </li>
         </ul>
     </nav>
