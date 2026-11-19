@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['nama'] = $user['nama'];
                     $_SESSION['role'] = $is_admin_account ? $input_role : $user['role'];
 
-                    // MENCARI FOTO PROFIL
+                    // MENCARI FOTO PROFIL FISIK BERDASARKAN USER_ID
                     $found_foto = 'default.jpeg';
                     $extensions = ['jpg', 'jpeg', 'png', 'gif'];
 
@@ -364,7 +364,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <!-- FORM LOGIN (DIKEMBALIKAN UTUH DI SINI) -->
+            <!-- FORM LOGIN -->
             <form action="" method="POST">
                 <!-- NAMA -->
                 <div class="form-group">
