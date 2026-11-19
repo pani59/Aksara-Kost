@@ -61,16 +61,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 mysqli_stmt_bind_param($stmt_insert, "ssssss", $nama, $email, $password, $role, $no_wa, $status_verifikasi);
                 
                 if (mysqli_stmt_execute($stmt_insert)) {
-                    // 1. AMBIL USER_ID UNIK
+                    // 1. AMBIL USER_ID UNIK YANG BARU SAJA DIBUAT
                     $user_id = mysqli_insert_id($conn);
 
-                    // 2. PROSES UPLOAD FOTO (PASTIKAN DIJALANKAN UNTUK SEMUA ROLE)
+                    // 2. PROSES UPLOAD FOTO DENGAN FORMAT user_[user_id].[ext]
                     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
                         $file_tmp    = $_FILES['foto']['tmp_name'];
                         $file_ext    = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
                         $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
                         if (in_array($file_ext, $allowed_ext, true)) {
+                            // Format nama file disesuaikan dengan ID unik user
                             $nama_foto  = 'user_' . $user_id . '.' . $file_ext;
                             $target_dir = __DIR__ . '/uploads/';
 
@@ -78,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 mkdir($target_dir, 0777, true);
                             }
 
-                            // Pindahkan file ke folder uploads
+                            // Pindahkan file ke folder uploads dengan nama baru
                             move_uploaded_file($file_tmp, $target_dir . $nama_foto);
                         }
                     }
@@ -89,6 +90,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['user_id']  = $user_id;
                         $_SESSION['nama']     = $nama;
                         $_SESSION['role']     = 'User';
+
+                        // Set session foto default atau cek langsung file fisiknya
+                        $found_foto = 'default.jpeg';
+                        foreach (['jpg', 'jpeg', 'png', 'gif'] as $ext) {
+                            $check_filename = 'user_' . $user_id . '.' . $ext;
+                            if (file_exists(__DIR__ . '/uploads/' . $check_filename)) {
+                                $found_foto = $check_filename;
+                                break;
+                            }
+                        }
+                        $_SESSION['foto'] = $found_foto;
 
                         mysqli_stmt_close($stmt_insert);
                         header("Location: index.php");
@@ -374,7 +386,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- FOTO PROFIL (DIKEMBALIKAN) -->
+                <!-- FOTO PROFIL -->
                 <div class="form-group">
                     <label>Foto Profil (Opsional)</label>
                     <div class="input-wrapper">

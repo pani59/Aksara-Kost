@@ -1,4 +1,9 @@
 <?php
+// Aktifkan error reporting untuk mendeteksi pesan kesalahan jika ada
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 require_once __DIR__ . '/database.php';
 
@@ -30,13 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($username === '' || $password === '' || $role === '') {
         $error = "Harap isi semua kolom!";
     } else {
-        $query = "SELECT * FROM user WHERE nama = ? LIMIT 1";
+        // PERBAIKAN: Cari user berdasarkan nama DAN role agar ID yang diambil akurat
+        $query = "SELECT * FROM user WHERE nama = ? AND role = ? LIMIT 1";
         $stmt = mysqli_prepare($conn, $query);
 
         if (!$stmt) {
             $error = "Terjadi kesalahan pada database.";
         } else {
-            mysqli_stmt_bind_param($stmt, "s", $username);
+            mysqli_stmt_bind_param($stmt, "ss", $username, $role);
             mysqli_stmt_execute($stmt);
 
             $result = mysqli_stmt_get_result($stmt);
@@ -73,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['role'] = $is_admin_account ? $input_role : $user['role'];
                     $_SESSION['is_login'] = true;
 
-                    // == TAMBAHKAN BAGIAN INI AGAR FOTO TERDETEKSI SAAT LOGIN ==
+                    // PENCARIAN FOTO FISIK BERDASARKAN ID USER YANG AKURAT
                     $found_foto = 'default.jpeg';
                     $extensions = ['jpg', 'jpeg', 'png', 'gif'];
 
@@ -84,8 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             break;
                         }
                     }
+
                     $_SESSION['foto'] = $found_foto;
-                    // ========================================================
 
                     mysqli_stmt_close($stmt);
                     
@@ -103,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
             } else {
-                $error = "Username tidak ditemukan!";
+                $error = "Username atau Role tidak ditemukan!";
             }
 
             mysqli_stmt_close($stmt);
