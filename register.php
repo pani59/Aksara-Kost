@@ -46,8 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             mysqli_stmt_close($stmt_cek);
 
-            // Set status verifikasi awal menjadi "Menunggu"
-            $status_verifikasi = 'Menunggu';
+            // LOGIKA STATUS VERIFIKASI BERDASARKAN ROLE
+            if ($role === 'User') {
+                $status_verifikasi = 'Aktif'; // User langsung aktif tanpa menunggu admin
+            } else {
+                $status_verifikasi = 'Menunggu'; // Owner tetap harus menunggu konfirmasi admin
+            }
 
             // Query insert murni TANPA kolom foto (aman untuk database penguji)
             $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?)";
@@ -78,7 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     }
 
-                    $success = "Pendaftaran berhasil! Akun Anda sedang <b>Menunggu Konfirmasi</b> dari Admin. Silakan tunggu hingga disetujui untuk dapat login.";
+                    // PESAN SUKSES DINAMIS BERDASARKAN ROLE
+                    if ($role === 'User') {
+                        $success = "Pendaftaran berhasil! Akun User Anda sudah aktif dan dapat langsung digunakan untuk login.";
+                    } else {
+                        $success = "Pendaftaran berhasil! Akun Anda sedang <b>Menunggu Konfirmasi</b> dari Admin. Silakan tunggu hingga disetujui untuk dapat login.";
+                    }
                 } else {
                     $error = "Gagal mendaftar: " . mysqli_error($conn);
                 }
