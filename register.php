@@ -64,15 +64,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // AMBIL USER_ID UNIK YANG BARU SAJA MASUK KE DATABASE
                     $user_id = mysqli_insert_id($conn);
 
-                    // LOGIKA PENYIMPANAN FOTO DENGAN ID UNIK DI FOLDER UPLOADS
+                    // LOGIKA PENYIMPANAN FOTO DENGAN ID UNIK DI FOLDER UPLOADS YANG AMAN
                     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-                        $file_tmp   = $_FILES['foto']['tmp_name'];
-                        $file_ext   = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
+                        $file_tmp    = $_FILES['foto']['tmp_name'];
+                        $file_name   = $_FILES['foto']['name'];
+                        $file_ext    = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
                         $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
                         if (in_array($file_ext, $allowed_ext, true)) {
-                            $nama_foto = 'user_' . $user_id . '.' . $file_ext;
-                            $target_dir = __DIR__ . '/uploads/';
+                            $nama_foto  = 'user_' . $user_id . '.' . $file_ext;
+                            
+                            // Pastikan path folder uploads terbaca dengan benar relatif terhadap file ini
+                            $target_dir = rtrim(__DIR__, '/\\') . '/uploads/';
 
                             if (!is_dir($target_dir)) {
                                 mkdir($target_dir, 0777, true);
@@ -82,27 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     }
 
-                    // AUTO-LOGIN KHUSUS USER (DILENGKAPI DENGAN UPLOAD FOTO)
+                    // AUTO-LOGIN KHUSUS USER (LANGSUNG KE INDEX.PHP)
                     if ($role === 'User') {
-                        // 1. PROSES UPLOAD FOTO TERLEBIH DAHULU JIKA ADA
-                        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-                            $file_tmp    = $_FILES['foto']['tmp_name'];
-                            $file_ext    = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
-                            $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
-
-                            if (in_array($file_ext, $allowed_ext, true)) {
-                                $nama_foto  = 'user_' . $user_id . '.' . $file_ext;
-                                $target_dir = __DIR__ . '/uploads/';
-
-                                if (!is_dir($target_dir)) {
-                                    mkdir($target_dir, 0777, true);
-                                }
-
-                                move_uploaded_file($file_tmp, $target_dir . $nama_foto);
-                            }
-                        }
-
-                        // 2. SET SESSION LOGIN
                         $_SESSION['is_login'] = true;
                         $_SESSION['user_id']  = $user_id;
                         $_SESSION['nama']     = $nama;
@@ -112,27 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header("Location: index.php");
                         exit;
                     } else {
-                        // Jika Owner, simpan foto juga lalu tampilkan pesan menunggu
-                        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-                            $file_tmp    = $_FILES['foto']['tmp_name'];
-                            $file_ext    = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
-                            $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
-
-                            if (in_array($file_ext, $allowed_ext, true)) {
-                                $nama_foto  = 'user_' . $user_id . '.' . $file_ext;
-                                $target_dir = __DIR__ . '/uploads/';
-
-                                if (!is_dir($target_dir)) {
-                                    mkdir($target_dir, 0777, true);
-                                }
-
-                                move_uploaded_file($file_tmp, $target_dir . $nama_foto);
-                            }
-                        }
-
+                        // Jika Owner, tampilkan pesan menunggu konfirmasi admin
                         $success = "Pendaftaran berhasil! Akun Anda sedang <b>Menunggu Konfirmasi</b> dari Admin. Silakan tunggu hingga disetujui untuk dapat login.";
                     }
-                    
                 } else {
                     $error = "Gagal mendaftar: " . mysqli_error($conn);
                 }
