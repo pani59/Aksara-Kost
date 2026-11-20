@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_query($conn, "UPDATE kamar SET status_kamar = 'Kosong' WHERE kamar_id = '$kamar_id'");
         }
 
-        header("Location: booking_owner.php");
+        header("Location: booking.php");
         exit;
     }
 }
