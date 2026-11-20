@@ -22,9 +22,21 @@ if (!$booking) {
 // Hanya memproses dan mengubah status_booking
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status_booking = mysqli_real_escape_string($conn, $_POST['status_booking']);
+    $kamar_id = $booking['kamar_id']; // Ambil kamar_id dari data booking saat ini
 
+    // 1. Update status booking
     $update = "UPDATE booking SET status_booking = '$status_booking' WHERE booking_id = '$booking_id'";
     if (mysqli_query($conn, $update)) {
+        
+        // 2. OTOMATIS UPDATE STATUS KAMAR BERDASARKAN STATUS BOOKING
+        if ($status_booking === 'Disetujui') {
+            // Jika disetujui, ubah kamar menjadi 'Terisi'
+            mysqli_query($conn, "UPDATE kamar SET status_kamar = 'Terisi' WHERE kamar_id = '$kamar_id'");
+        } else {
+            // Jika ditolak atau dikembalikan jadi menunggu, ubah kamar jadi 'Kosong'
+            mysqli_query($conn, "UPDATE kamar SET status_kamar = 'Kosong' WHERE kamar_id = '$kamar_id'");
+        }
+
         header("Location: booking_owner.php");
         exit;
     }
@@ -34,7 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Edit Data Booking - Owner</title>
+    <title>Edit Data Booking </title>
+    <link rel="icon" href="../uploads/logoaksara.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <style>
         body { background: #f4f6f9; padding: 50px 20px; font-family: Arial, sans-serif; }

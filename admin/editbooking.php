@@ -22,10 +22,22 @@ if (!$booking) {
 // Hanya memproses dan mengubah status_booking
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status_booking = mysqli_real_escape_string($conn, $_POST['status_booking']);
+    $kamar_id = $booking['kamar_id']; // Ambil kamar_id dari data booking saat ini
 
+    // 1. Update status booking
     $update = "UPDATE booking SET status_booking = '$status_booking' WHERE booking_id = '$booking_id'";
     if (mysqli_query($conn, $update)) {
-        header("Location: booking.php");
+        
+        // 2. OTOMATIS UPDATE STATUS KAMAR BERDASARKAN STATUS BOOKING
+        if ($status_booking === 'Disetujui') {
+            // Jika disetujui, ubah kamar menjadi 'Terisi'
+            mysqli_query($conn, "UPDATE kamar SET status_kamar = 'Terisi' WHERE kamar_id = '$kamar_id'");
+        } else {
+            // Jika ditolak atau dikembalikan jadi menunggu, ubah kamar jadi 'Kosong'
+            mysqli_query($conn, "UPDATE kamar SET status_kamar = 'Kosong' WHERE kamar_id = '$kamar_id'");
+        }
+
+        header("Location: booking_owner.php");
         exit;
     }
 }

@@ -54,11 +54,14 @@ $data_total = mysqli_fetch_assoc($q_total);
 $total_pendapatan = $data_total['total_pendapatan'] ?? 0;
 $booking_disetujui = $data_total['total_booking'] ?? 0;
 
-// 2. OKUPANSI KAMAR
+// 2. OKUPANSI KAMAR (Dihitung langsung dari kamar yang statusnya 'Terisi' atau memiliki booking aktif)
 $q_kamar_total = mysqli_query($conn, "SELECT COUNT(*) AS total FROM kamar");
 $total_kamar = mysqli_fetch_assoc($q_kamar_total)['total'] ?? 0;
 
-$q_kamar_terisi = mysqli_query($conn, "SELECT COUNT(*) AS terisi FROM kamar WHERE status_kamar = 'Terisi'");
+$q_kamar_terisi = mysqli_query($conn, "SELECT COUNT(DISTINCT k.kamar_id) AS terisi 
+                                       FROM kamar k
+                                       JOIN booking b ON k.kamar_id = b.kamar_id
+                                       WHERE k.status_kamar = 'Terisi' OR b.status_booking IN ('Disetujui', 'Terisi')");
 $kamar_terisi = mysqli_fetch_assoc($q_kamar_terisi)['terisi'] ?? 0;
 
 if ($kamar_terisi == 0) {
