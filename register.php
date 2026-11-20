@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // 1. AMBIL USER_ID UNIK YANG BARU SAJA DIBUAT
                     $user_id = mysqli_insert_id($conn);
 
-                    // 2. PROSES UPLOAD FOTO DENGAN FORMAT user_[user_id].[ext] KE FOLDER UPLOADS (VOLUME RAILWAY)
+                    // 2. PROSES UPLOAD FOTO DENGAN FORMAT user_[user_id].[ext] KE FOLDER UPLOADS
                     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
                         $file_tmp    = $_FILES['foto']['tmp_name'];
                         $file_ext    = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar - AKSARA KOST</title>
-    <link rel="icon" href="uploads/logoaksara.png" type="image/png">
+    <link rel="icon" href="assets/img/logoaksara.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -261,7 +261,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="uploads/logoaksara.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="assets/img/logoaksara.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -308,7 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <section class="register-form-container">
             <div class="form-logo">
                 <div class="form-logo-icon">
-                    <img src="uploads/logoaksara.png" alt="Logo Aksara Kost">
+                    <img src="assets/img/logoaksara.png" alt="Logo Aksara Kost">
                 </div>
             </div>
 

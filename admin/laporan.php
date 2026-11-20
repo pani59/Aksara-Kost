@@ -93,7 +93,7 @@ $total_tahunan = array_sum($pendapatan_bulanan);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laporan Pendapatan</title>
-    <link rel="icon" href="../uploads/logoaksara.png">
+    <link rel="icon" href="../assets/img/logoaksara.png">
 
     <!-- FONT -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -353,7 +353,7 @@ $total_tahunan = array_sum($pendapatan_bulanan);
 
                 <div class="admin-profile-badge">
                     <a class="d-flex align-items-center text-decoration-none" href="#">
-                        <img src="../uploads/vani.jpeg"
+                        <img src="../assets/img/vani.jpeg"
                              class="img-circle elevation-1"
                              alt="User">
 
@@ -381,7 +381,7 @@ $total_tahunan = array_sum($pendapatan_bulanan);
             <div class="user-panel mt-2 pb-3 mb-3 d-flex align-items-center">
 
                 <div class="image">
-                    <img src="../uploads/vani.jpeg"
+                    <img src="../assets/img/vani.jpeg"
                          class="img-circle elevation-2"
                          alt="User Image">
                 </div>

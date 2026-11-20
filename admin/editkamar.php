@@ -91,7 +91,7 @@ if (isset($_POST['simpan'])) {
           content="width=device-width, initial-scale=1.0">
 
     <title>Edit Data Kamar</title>
-    <link rel="icon" href="../uploads/logoaksara.png">
+    <link rel="icon" href="../assets/img/logoaksara.png">
 
 
     <!-- Bootstrap 5 -->

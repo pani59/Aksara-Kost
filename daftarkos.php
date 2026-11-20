@@ -70,7 +70,7 @@ if ($user_id) {
 
 $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION['foto']))
     ? 'uploads/' . $_SESSION['foto'] . '?v=' . time()
-    : 'uploads/profil.jpeg';
+    : 'assets/img/profil.jpeg';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -78,7 +78,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Kos - AKSARA KOST</title>
-    <link rel="icon" href="uploads/logoaksara.png" type="image/png">
+    <link rel="icon" href="assets/img/logoaksara.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -261,7 +261,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="uploads/logoaksara.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="assets/img/logoaksara.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -277,7 +277,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION
         <div>
             <?php if ($user_id): ?>
                 <a href="profil.php" class="btn-profile">
-                    <img src="<?= htmlspecialchars($foto_session); ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='uploads/profil.jpeg';">
+                    <img src="<?= htmlspecialchars($foto_session); ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='assets/img/profil.jpeg';">
                     <span><?= htmlspecialchars($user['nama'] ?? $_SESSION['nama'] ?? 'User'); ?></span>
                 </a>
             <?php else: ?>

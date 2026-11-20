@@ -163,7 +163,7 @@ if ($act === 'excel') {
 <head>
     <meta charset="UTF-8">
     <title>Bukti Konfirmasi Booking - KOS/BKG-01/BOOK00<?= $data['booking_id']; ?></title>
-    <link rel="icon" href="../uploads/logoaksara.png" type="image/png">
+    <link rel="icon" href="assets/img/logoaksara.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">

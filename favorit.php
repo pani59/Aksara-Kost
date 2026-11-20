@@ -76,10 +76,10 @@ function e($value) {
     return htmlspecialchars((string)($value ?? '-'), ENT_QUOTES, 'UTF-8');
 }
 
-// Foto profil aktif (mengambil dari session seperti file booking.php)
+// Foto profil aktif (mengarah ke assets/img/profil.jpeg)
 $foto_user = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION['foto'])) 
     ? 'uploads/' . $_SESSION['foto'] . '?v=' . time() 
-    : 'uploads/profil.jpeg';
+    : 'assets/img/profil.jpeg';
 
 // Mengambil data kos HANYA yang ada di dalam daftar favorit user tersebut
 $daftar_kos_favorit = [];
@@ -129,7 +129,7 @@ $default_image = 'assets/images/default-kos.jpg';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kos Favorit Saya - AKSARA KOST</title>
-    <link rel="icon" href="uploads/logoaksara.png" type="image/png">
+    <link rel="icon" href="assets/img/logoaksara.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -316,7 +316,7 @@ $default_image = 'assets/images/default-kos.jpg';
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="uploads/logoaksara.png" alt="Logo AKSARA KOST" class="logo-icon">
+            <img src="assets/img/logoaksara.png" alt="Logo AKSARA KOST" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -330,7 +330,7 @@ $default_image = 'assets/images/default-kos.jpg';
         </div>
 
         <a href="profil.php" class="btn-profile">
-            <img src="<?= e($foto_user); ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='uploads/profil.jpeg';">
+            <img src="<?= e($foto_user); ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='assets/img/profil.jpeg';">
             <span><?= e($user['nama']); ?></span>
         </a>
     </div>
@@ -341,7 +341,7 @@ $default_image = 'assets/images/default-kos.jpg';
     <aside class="sidebar">
         <div class="sidebar-user">
             <div class="avatar-container">
-                <img src="<?= e($foto_user); ?>" alt="Foto Profil" onerror="this.src='uploads/profil.jpeg';">
+                <img src="<?= e($foto_user); ?>" alt="Foto Profil" onerror="this.src='assets/img/profil.jpeg';">
             </div>
             <strong><?= e($user['nama']); ?></strong>
             <span><?= e($user['role'] ?? 'User'); ?></span>
@@ -368,7 +368,7 @@ $default_image = 'assets/images/default-kos.jpg';
                 <p>Daftar kost pilihan yang sudah kamu sukai.</p>
             </div>
             <div class="welcome-icon">
-                <img src="uploads/logoaksara.png" alt="Logo AKSARA KOST">
+                <img src="assets/img/logoaksara.png" alt="Logo AKSARA KOST">
             </div>
         </section>
 
@@ -391,7 +391,7 @@ $default_image = 'assets/images/default-kos.jpg';
                         <div class="fav-image">
                             <img src="<?= e($foto); ?>" alt="<?= e($f['nama_kos']); ?>" onerror="this.onerror=null; this.src='<?= e($default_image); ?>';">
                             <div class="logo-badge">
-                                <img src="uploads/logoaksara.png" alt="Logo AKSARA KOST">
+                                <img src="assets/img/logoaksara.png" alt="Logo AKSARA KOST">
                             </div>
                         </div>
 
