@@ -30,6 +30,19 @@ if (!$user) {
 
 $error = '';
 
+// LOGIKA PENCARIAN FOTO FISIK BERDASARKAN USER_ID (DIPERBAIKI)
+$found_foto = 'profil.jpeg';
+$extensions = ['jpg', 'jpeg', 'png', 'gif'];
+foreach ($extensions as $ext) {
+    $filename = 'user_' . $user_id . '.' . $ext;
+    // Gunakan 'uploads/' jika edit.php di folder utama, atau '../uploads/' jika di dalam subfolder
+    if (file_exists(__DIR__ . '/uploads/' . $filename)) {
+        $found_foto = $filename;
+        break;
+    }
+}
+$_SESSION['foto'] = $found_foto;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $nama  = mysqli_real_escape_string($db, trim($_POST['nama'] ?? ''));
@@ -72,7 +85,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
 
                 $nama_foto = 'user_' . $user_id . '.' . $file_ext;
-                $tujuan = '../uploads/' . $nama_foto;
+                $tujuan = __DIR__ . '/uploads/' . $nama_foto;
+
+                if (!is_dir(__DIR__ . '/uploads/')) {
+                    mkdir(__DIR__ . '/uploads/', 0777, true);
+                }
 
                 if (move_uploaded_file($file_tmp, $tujuan)) {
                     $upload_berhasil = true;
@@ -105,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $foto_lama !== 'profil.jpeg' &&
                     $foto_lama !== $nama_foto
                 ) {
-                    $old_file = '../uploads/' . basename($foto_lama);
+                    $old_file = __DIR__ . '/uploads/' . basename($foto_lama);
 
                     if (file_exists($old_file)) {
                         unlink($old_file);
@@ -114,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Bersihkan file dengan ekstensi lama
                 foreach (['jpg', 'jpeg', 'png', 'gif'] as $ext) {
-                    $old_file = '../uploads/user_' . $user_id . '.' . $ext;
+                    $old_file = __DIR__ . '/uploads/user_' . $user_id . '.' . $ext;
 
                     if (
                         file_exists($old_file) &&
@@ -138,13 +155,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// FOTO PROFIL (diarahkan fallback ke assets/img/profil.jpeg jika belum ada di uploads)
+// FOTO PROFIL (Fallback aman ke assets/img/profil.jpeg atau uploads/)
 $foto_user = (
     !empty($_SESSION['foto']) &&
-    file_exists('../uploads/' . basename($_SESSION['foto']))
+    file_exists(__DIR__ . '/uploads/' . basename($_SESSION['foto']))
 )
-    ? '../uploads/' . basename($_SESSION['foto']) . '?v=' . time()
-    : '../assets/img/profil.jpeg';
+    ? 'uploads/' . basename($_SESSION['foto']) . '?v=' . time()
+    : 'assets/img/profil.jpeg';
 
 $nama_user = htmlspecialchars($user['nama'] ?? '');
 $email_user = htmlspecialchars($user['email'] ?? '');
@@ -161,7 +178,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profil - AKSARA KOST</title>
-    <link rel="icon" href="../assets/img/logoaksara.png" type="image/png">
+    <link rel="icon" href="assets/img/logoaksara.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -571,7 +588,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
 <nav class="navbar">
     <div class="navbar-container">
         <a href="index.php" class="logo">
-            <img src="../assets/img/logoaksara.png" alt="Logo Aksara Kost" class="logo-icon">
+            <img src="assets/img/logoaksara.png" alt="Logo Aksara Kost" class="logo-icon">
             <div class="logo-text-group">
                 <span class="logo-title">AKSARA</span>
                 <span class="logo-subtitle">KOST</span>
@@ -585,7 +602,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
         </div>
 
         <a href="profil.php" class="btn-profile">
-            <img src="<?= $foto_html ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='../assets/img/profil.jpeg';">
+            <img src="<?= $foto_html ?>" alt="Profil" class="navbar-profile-img" onerror="this.src='assets/img/profil.jpeg';">
             <span><?= $nama_html ?></span>
         </a>
     </div>
@@ -598,7 +615,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
     <aside class="sidebar">
         <div class="sidebar-user">
             <div class="avatar-container">
-                <img src="<?= $foto_html ?>" alt="Foto Profil" onerror="this.src='../assets/img/profil.jpeg';">
+                <img src="<?= $foto_html ?>" alt="Foto Profil" onerror="this.src='assets/img/profil.jpeg';">
             </div>
             <strong><?= $nama_html ?></strong>
             <span><?= $role_user ?></span>
@@ -647,7 +664,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
                 <p>Perbarui informasi akun dan foto profil kamu di sini.</p>
             </div>
             <div class="welcome-icon">
-                <img src="../assets/img/logoaksara.png" alt="Logo Aksara Kost">
+                <img src="assets/img/logoaksara.png" alt="Logo Aksara Kost">
             </div>
         </section>
 
@@ -671,7 +688,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
                                 src="<?= $foto_html ?>"
                                 id="previewFoto"
                                 alt="Preview Foto Profil"
-                                onerror="this.src='../assets/img/profil.jpeg';"
+                                onerror="this.src='assets/img/profil.jpeg';"
                             >
                         </div>
 
