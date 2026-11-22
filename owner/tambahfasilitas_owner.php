@@ -35,315 +35,355 @@ if (isset($_POST['simpan'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Data Kost Fasilitas</title>
+    <title>Tambah Data Kost Fasilitas - AKSARA KOST</title>
     <link rel="icon" href="../assets/img/logoaksara.png">
 
-    <!-- Bootstrap 4 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
-    <!-- FontAwesome untuk Icon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         body {
+            background-color: #f6f7f5;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #1e293b;
             margin: 0;
-            background-color: #F2F4F3;
-            font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
-            color: #1F2937;
         }
 
-        /* HEADER */
-        .navbar-custom {
-            height: 62px;
-            background-color: #2E7D5B;
-            display: flex;
-            align-items: center;
-            padding: 0 28px;
-        }
-        .navbar-brand-custom {
-            color: white;
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .main-wrapper {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 15px;
         }
 
-        /* CONTENT & CARD */
-        .content {
-            max-width: 680px;
-            margin: 30px auto;
-            padding: 0 20px 40px 20px;
-        }
-
-        .card-custom {
-            background: #fff;
+        /* Banner Header Atas */
+        .header-banner {
+            background: linear-gradient(135deg, #d8e5d8 0%, #e4ede4 60%, #d5e3d5 100%);
             border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.07);
-            padding: 32px 36px;
+            padding: 28px 36px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #c9dac9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .judul {
-            font-size: 26px;
+        .header-banner::after {
+            content: "";
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            background: rgba(255, 255, 255, 0.28);
+            border-radius: 50%;
+            top: -80px;
+            right: 18%;
+            pointer-events: none;
+        }
+
+        .header-title {
             font-weight: 700;
-            color: #1F2937;
+            font-size: 1.65rem;
+            color: #1b3b2b;
             margin-bottom: 4px;
-            line-height: 1.2;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .subjudul {
-            font-size: 14px;
-            color: #6B7280;
-            margin-bottom: 28px;
+        .header-subtitle {
+            color: #52665a;
+            margin-bottom: 0;
+            font-size: 0.95rem;
+            padding-left: 36px;
         }
 
-        .form-group {
+        .header-logo img {
+            height: 72px;
+            width: auto;
+            object-fit: contain;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Card Utama Form */
+        .form-card {
+            background-color: #ffffff;
+            border-radius: 18px;
+            border: 1px solid #e2e8e4;
+            padding: 36px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        /* Kolom Kiri (Logo & Info Pengganti Gambar Rumah) */
+        .left-info-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            padding: 20px;
+            border-right: 1px solid #ebefec;
+        }
+
+        .logo-circle-bg {
+            width: 190px;
+            height: 190px;
+            background-color: #eaf2eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 22px;
+            padding: 25px;
+            position: relative;
         }
 
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #1F2937;
+        .logo-circle-bg img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .left-info-title {
+            font-weight: 700;
+            color: #2c6e49;
+            font-size: 1.2rem;
             margin-bottom: 8px;
         }
 
-        .form-control {
-            font-size: 14px;
-            border: 1px solid #D1D5DB;
-            border-radius: 8px;
-            padding: 10px 14px;
-            height: 45px;
+        .left-info-desc {
+            color: #64748b;
+            font-size: 0.9rem;
+            max-width: 210px;
+            line-height: 1.5;
+            margin-bottom: 20px;
         }
 
-        .form-control:focus {
-            border-color: #2E7D5B;
-            outline: 0;
-            box-shadow: 0 0 0 0.2rem rgba(46,125,91,.15);
-        }
-
-        /* TOMBOL */
-        .tombol-container {
-            margin-top: 26px;
+        .divider-home {
             display: flex;
-            justify-content: flex-end;
-            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            width: 75%;
+            gap: 12px;
+            color: #6b8e78;
         }
 
-        .btn {
-            font-size: 14px;
+        .divider-home::before,
+        .divider-home::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: #cbd5ce;
+        }
+
+        /* Styling Input Form & Ikon di Dalamnya */
+        .form-label {
             font-weight: 600;
-            padding: 9px 20px;
+            font-size: 0.92rem;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .custom-input-group {
+            display: flex;
+            align-items: center;
+            background-color: #f8faf9;
+            border: 1px solid #dce4df;
+            border-radius: 10px;
+            padding: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .custom-input-group:focus-within {
+            border-color: #3a7d56;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(58, 125, 86, 0.12);
+        }
+
+        .input-icon-box {
+            width: 38px;
+            height: 38px;
+            background-color: #e6efe8;
+            color: #3a7d56;
             border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+            flex-shrink: 0;
+            margin-left: 2px;
+        }
+
+        .custom-input-group .form-select {
             border: none;
+            background: transparent;
+            box-shadow: none;
+            padding-left: 14px;
+            font-size: 0.95rem;
+            color: #334155;
+            width: 100%;
         }
 
-        .btn-tambah {
-            background-color: #2E7D5B;
-            color: white;
-        }
-
-        .btn-tambah:hover {
-            background-color: #256B4D;
-            color: white;
-        }
-
+        /* Tombol Kembali & Tambah */
         .btn-kembali {
-            background-color: #6B7280;
-            color: white;
-            text-decoration: none;
+            border: 1px solid #cbd5e1;
+            background-color: #ffffff;
+            color: #475569;
+            border-radius: 50px;
+            padding: 10px 26px;
+            font-weight: 600;
+            font-size: 0.92rem;
             display: inline-flex;
             align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: 0.2s;
         }
 
         .btn-kembali:hover {
-            background-color: #575E69;
-            color: white;
-            text-decoration: none;
+            background-color: #f1f5f9;
+            color: #1e293b;
         }
 
-        @media (max-width: 600px) {
-            .card-custom { padding: 24px 20px; }
-            .tombol-container { justify-content: stretch; }
-            .tombol-container .btn { flex: 1; justify-content: center; }
-            .navbar-custom { height: 56px; padding: 0 18px; }
-            .navbar-brand-custom { font-size: 21px; }
+        .btn-tambah {
+            background-color: #4a8259;
+            border: none;
+            color: #ffffff;
+            border-radius: 50px;
+            padding: 10px 28px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.2s;
+        }
+
+        .btn-tambah:hover {
+            background-color: #3b6b48;
+            color: #ffffff;
+        }
+
+        /* Responsif untuk layar HP */
+        @media (max-width: 768px) {
+            .header-banner {
+                flex-direction: column-reverse;
+                text-align: center;
+                gap: 15px;
+            }
+            .header-title {
+                justify-content: center;
+            }
+            .header-subtitle {
+                padding-left: 0;
+            }
+            .left-info-panel {
+                border-right: none;
+                border-bottom: 1px solid #ebefec;
+                padding-bottom: 28px;
+                margin-bottom: 28px;
+            }
         }
     </style>
-<style id="tema-admin-owner-sage">
-
-/* =====================================================
-   TEMA KONSISTEN ADMIN & OWNER - MENGIKUTI USER.PHP
-   Hanya CSS/tampilan; tidak mengubah PHP, SQL, atau database.
-   ===================================================== */
-:root{--sage:#81c784;--sage-dark:#137333;--sage-soft:#e6f4ea;--page:#f8faf9;--ink:#2c3e50;--muted:#64748b;--line:#edf2f0;}
-html,body{font-family:'Source Sans Pro',Arial,sans-serif!important;color:var(--ink)!important;}
-body{background:var(--page)!important;}
-.content-wrapper{background:var(--page)!important;min-height:100vh!important;}
-.content-header,.content{padding-left:20px;padding-right:20px;}
-.judul-halaman,.content-header h1{color:var(--ink)!important;font-weight:600!important;}
-.main-sidebar,.main-sidebar.sidebar-dark-primary,.sidebar-dark-primary{background:#fff!important;border-right:1px solid var(--line)!important;}
-.main-sidebar{box-shadow:2px 0 12px rgba(0,0,0,.025)!important;}
-.main-sidebar .brand-link{background:#fff!important;border-bottom:1px solid var(--line)!important;color:var(--ink)!important;}
-.sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link,
-.sidebar .nav-sidebar>.nav-item>.nav-link{color:#4a5568!important;border-radius:8px!important;margin:2px 0!important;}
-.sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link.active,
-.sidebar .nav-sidebar>.nav-item>.nav-link.active{background:var(--sage-soft)!important;color:var(--sage-dark)!important;font-weight:600!important;box-shadow:none!important;}
-.sidebar-dark-primary .nav-sidebar>.nav-item>.nav-link:hover,
-.sidebar .nav-sidebar>.nav-item>.nav-link:hover{background:#f1f8f3!important;color:var(--sage-dark)!important;}
-.sidebar .user-panel{border-bottom:1px solid var(--line)!important;}
-.sidebar .user-panel .info a{color:var(--ink)!important;font-weight:700!important;}
-.sidebar .user-panel .image img{object-fit:cover;}
-.main-header.navbar{background:var(--page)!important;border-bottom:1px solid var(--line)!important;}
-.main-header .nav-link{color:#64748b!important;}
-.admin-profile-badge{background:#fff!important;border:1px solid #dcdcdc!important;border-radius:40px!important;box-shadow:0 2px 6px rgba(0,0,0,.04)!important;}
-.card,.card-custom{background:#fff!important;border:1px solid var(--line)!important;border-radius:12px!important;box-shadow:0 4px 12px rgba(0,0,0,.035)!important;}
-.card-header{background:#fff!important;border-bottom:1px solid var(--line)!important;border-radius:12px 12px 0 0!important;}
-.table{color:var(--ink)!important;}
-.table thead th,.table thead.thead-light th{background:#f5f8f6!important;color:#405247!important;border-color:var(--line)!important;font-weight:600!important;}
-.table td,.table th{vertical-align:middle!important;border-color:var(--line)!important;}
-.table-hover tbody tr:hover{background:#f7fbf8!important;}
-.btn-success,.btn-primary,.btn-info{background:var(--sage)!important;border-color:var(--sage)!important;color:#fff!important;}
-.btn-success:hover,.btn-primary:hover,.btn-info:hover{background:#66bb6a!important;border-color:#66bb6a!important;}
-.btn-outline-success{color:var(--sage-dark)!important;border-color:var(--sage)!important;}
-.btn-outline-success:hover{background:var(--sage-soft)!important;}
-.form-control,.custom-select{border:1px solid #dfe7e2!important;border-radius:7px!important;box-shadow:none!important;}
-.form-control:focus,.custom-select:focus{border-color:var(--sage)!important;box-shadow:0 0 0 .15rem rgba(129,199,132,.18)!important;}
-label{color:#405247;font-weight:600;}
-.badge-success,.badge-info{background:var(--sage)!important;color:#fff!important;}
-.page-link{color:var(--sage-dark)!important;}
-.page-item.active .page-link{background:var(--sage)!important;border-color:var(--sage)!important;color:#fff!important;}
-.content .btn,.card .btn{border-radius:7px!important;}
-
-</style>
-
-<style id="ukuran-profil-sidebar-navbar">
-/* Ukuran foto dan nama pada sidebar */
-.main-sidebar .user-panel {
-    min-height: 88px !important;
-    padding-top: 10px !important;
-    padding-bottom: 18px !important;
-    display: flex !important;
-    align-items: center !important;
-}
-.main-sidebar .user-panel .image img {
-    width: 62px !important;
-    height: 62px !important;
-    min-width: 62px !important;
-    object-fit: cover !important;
-    border-radius: 50% !important;
-}
-.main-sidebar .user-panel .info {
-    padding-left: 13px !important;
-    min-width: 0 !important;
-    white-space: normal !important;
-}
-.main-sidebar .user-panel .info a {
-    display: block !important;
-    font-size: 16px !important;
-    font-weight: 700 !important;
-    line-height: 1.3 !important;
-    white-space: normal !important;
-}
-
-/* Bingkai, foto, dan tulisan profil di kanan atas navbar */
-.admin-profile-badge {
-    padding: 9px 19px 9px 10px !important;
-    min-height: 66px !important;
-    border-radius: 40px !important;
-    display: flex !important;
-    align-items: center !important;
-}
-.admin-profile-badge img {
-    width: 50px !important;
-    height: 50px !important;
-    min-width: 50px !important;
-    object-fit: cover !important;
-    border-radius: 50% !important;
-}
-.admin-profile-badge span {
-    font-size: 18px !important;
-    font-weight: 700 !important;
-    margin-left: 10px !important;
-}
-@media (max-width: 575.98px) {
-    .main-sidebar .user-panel .image img {
-        width: 54px !important; height: 54px !important; min-width: 54px !important;
-    }
-    .main-sidebar .user-panel .info a { font-size: 14px !important; }
-    .admin-profile-badge { padding: 6px 12px 6px 7px !important; min-height: 54px !important; }
-    .admin-profile-badge img { width: 40px !important; height: 40px !important; min-width: 40px !important; }
-    .admin-profile-badge span { font-size: 15px !important; }
-}
-</style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<!-- NAVBAR -->
-<nav class="navbar-custom">
-    <div class="navbar-brand-custom">
-        <i class="fas fa-home"></i>
-        AKSARA KOST
-    </div>
-</nav>
-
-<!-- CONTENT -->
-<div class="content">
-    <div class="card-custom">
-
-        <!-- JUDUL & SUBJUDUL -->
-        <div class="judul">
-            Tambah Data Kost Fasilitas
+<div class="main-wrapper">
+    
+    <!-- Banner Header Atas -->
+    <div class="header-banner">
+        <div>
+            <h1 class="header-title">
+                <i class="bi bi-pencil-fill fs-5"></i> Tambah Data Kost Fasilitas
+            </h1>
+            <p class="header-subtitle">Silahkan tambah data relasi fasilitas kost di bawah ini.</p>
         </div>
-        <div class="subjudul">
-            Silahkan tambah data relasi fasilitas kost di bawah ini.
+        <div class="header-logo">
+            <img src="../assets/img/logoaksara.png" alt="Logo Aksara Kost">
         </div>
-
-        <!-- FORM TAMBAH KOST FASILITAS -->
-        <form method="POST">
-
-            <!-- PILIH KOST -->
-            <div class="form-group">
-                <label>Pilih Kost</label>
-                <select name="kos_id" class="form-control" required>
-                    <option value="">-- Pilih Kost --</option>
-                    <?php while ($row_kos = mysqli_fetch_assoc($query_kos)): ?>
-                        <option value="<?= $row_kos['kos_id']; ?>">
-                            <?= isset($row_kos['nama_kos']) ? htmlspecialchars($row_kos['nama_kos']) : 'Kos ID: ' . $row_kos['kos_id']; ?>
-                        </option>
-                    <?php endwhile; ?>
-                </select>
-            </div>
-
-            <!-- PILIH FASILITAS -->
-            <div class="form-group">
-                <label>Pilih Fasilitas</label>
-                <select name="fasilitas_id" class="form-control" required>
-                    <option value="">-- Pilih Fasilitas --</option>
-                    <?php while ($row_fasilitas = mysqli_fetch_assoc($query_fasilitas)): ?>
-                        <option value="<?= $row_fasilitas['fasilitas_id']; ?>">
-                            <?= htmlspecialchars($row_fasilitas['nama_fasilitas']); ?>
-                        </option>
-                    <?php endwhile; ?>
-                </select>
-            </div>
-
-            <!-- BUTTON -->
-            <div class="tombol-container">
-                <a href="kosfasilitas_owner.php" class="btn btn-kembali">
-                    Kembali
-                </a>
-                <button type="submit" name="simpan" class="btn btn-tambah">
-                    Tambah
-                </button>
-            </div>
-
-        </form>
-
     </div>
+
+    <!-- Container Form Utama -->
+    <div class="form-card">
+        <div class="row align-items-center">
+            
+            <!-- Sisi Kiri: Logo Aksara (Pengganti Gambar Rumah) -->
+            <div class="col-md-4">
+                <div class="left-info-panel">
+                    <div class="logo-circle-bg">
+                        <img src="../assets/img/logoaksara.png" alt="Logo Aksara Kost">
+                    </div>
+                    <h2 class="left-info-title">Relasi Fasilitas</h2>
+                    <p class="left-info-desc">Hubungkan fasilitas dengan kost yang sesuai dengan benar.</p>
+                    <div class="divider-home">
+                        <i class="bi bi-house-door-fill"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sisi Kanan: Input Form -->
+            <div class="col-md-8 ps-md-4">
+                <form method="POST">
+                    
+                    <!-- PILIH KOST -->
+                    <div class="mb-3">
+                        <label class="form-label">Pilih Kost</label>
+                        <div class="custom-input-group">
+                            <div class="input-icon-box">
+                                <i class="bi bi-building-fill"></i>
+                            </div>
+                            <select name="kos_id" class="form-select" required>
+                                <option value="">-- Pilih Kost --</option>
+                                <?php while ($row_kos = mysqli_fetch_assoc($query_kos)): ?>
+                                    <option value="<?= $row_kos['kos_id']; ?>">
+                                        <?= isset($row_kos['nama_kos']) ? htmlspecialchars($row_kos['nama_kos']) : 'Kos ID: ' . $row_kos['kos_id']; ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- PILIH FASILITAS -->
+                    <div class="mb-4">
+                        <label class="form-label">Pilih Fasilitas</label>
+                        <div class="custom-input-group">
+                            <div class="input-icon-box">
+                                <i class="bi bi-tools"></i>
+                            </div>
+                            <select name="fasilitas_id" class="form-select" required>
+                                <option value="">-- Pilih Fasilitas --</option>
+                                <?php while ($row_fasilitas = mysqli_fetch_assoc($query_fasilitas)): ?>
+                                    <option value="<?= $row_fasilitas['fasilitas_id']; ?>">
+                                        <?= htmlspecialchars($row_fasilitas['nama_fasilitas']); ?>
+                                    </option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- TOMBOL AKSI -->
+                    <div class="d-flex justify-content-end gap-2 pt-2">
+                        <a href="kosfasilitas_owner.php" class="btn-kembali">
+                            <i class="bi bi-arrow-counterclockwise"></i> Kembali
+                        </a>
+                        <button type="submit" name="simpan" class="btn-tambah">
+                            <i class="bi bi-plus-lg"></i> Tambah
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+
 </div>
 
 </body>
