@@ -331,7 +331,7 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
             <li class="nav-item d-flex align-items-center pr-2">
                 <div class="owner-profile-badge">
                     <a class="d-flex align-items-center text-decoration-none" href="#">
-                        <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'profil.jpeg'); ?>" class="img-circle elevation-1" alt="User" onerror="this.src='../uploads/profil.jpeg';">
+                        <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'profil.jpeg'); ?>" class="img-circle elevation-1" alt="User" onerror="this.src='../assets/img/profil.jpeg';">
                         <span class="text-secondary font-weight-bold ml-2">Owner</span>
                     </a>
                 </div>
@@ -347,7 +347,7 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
            <!-- USER PANEL SIDEBAR: FOTO & NAMA KEDUANYA BERUBAH DINAMIS -->
             <div class="user-panel mt-2 pb-3 mb-3 d-flex align-items-center">
                 <div class="image">
-                    <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'profil.jpeg'); ?>" class="img-circle elevation-2" alt="User Image" onerror="this.src='../uploads/profil.jpeg';">
+                    <img src="../uploads/<?= htmlspecialchars($_SESSION['foto'] ?? 'profil.jpeg'); ?>" class="img-circle elevation-2" alt="User Image" onerror="this.src='../assets/img/profil.jpeg';">
                 </div>
                 <div class="info">
                     <a href="#" class="d-block"><?= htmlspecialchars($_SESSION['nama'] ?? 'Owner'); ?></a>
