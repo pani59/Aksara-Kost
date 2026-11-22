@@ -309,7 +309,7 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
             <li class="nav-item d-flex align-items-center pr-2">
                 <div class="admin-profile-badge">
                     <a class="d-flex align-items-center text-decoration-none" href="#">
-                        <img src="../uploads/vani.jpeg" class="img-circle elevation-1" alt="User">
+                        <img src="../assets/img/Vanips.jpeg" class="img-circle elevation-1" alt="User">
                         <span class="text-secondary font-weight-bold ml-2">Admin</span>
                     </a>
                 </div>
@@ -326,7 +326,7 @@ while ($r = mysqli_fetch_assoc($q_bulanan)) {
             <!-- USER PANEL -->
             <div class="user-panel mt-2 pb-3 mb-3 d-flex align-items-center">
                 <div class="image">
-                    <img src="../uploads/vani.jpeg" class="img-circle elevation-2" alt="User Image">
+                    <img src="../assets/img/Vanips.jpeg" class="img-circle elevation-2" alt="User Image">
                 </div>
                 <div class="info">
                     <a href="#" class="d-block">VANI PERMATASARI</a>
