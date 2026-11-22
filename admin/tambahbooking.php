@@ -399,7 +399,6 @@ if (isset($_POST['simpan'])) {
                                 <option value="Menunggu">Menunggu</option>
                                 <option value="Diterima">Diterima</option>
                                 <option value="Ditolak">Ditolak</option>
-                                <option value="Batal">Batal</option>
                             </select>
                         </div>
                     </div>
