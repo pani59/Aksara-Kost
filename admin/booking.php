@@ -284,7 +284,7 @@ if (!$result) {
             <li class="nav-item d-flex align-items-center pr-2">
                 <div class="admin-profile-badge">
                     <a class="d-flex align-items-center text-decoration-none" href="#">
-                        <img src="../assets/img/vani.jpeg" class="img-circle elevation-1" alt="User">
+                        <img src="../assets/img/Vanips.jpeg" class="img-circle elevation-1" alt="User">
                         <span class="text-secondary font-weight-bold ml-2">Admin</span>
                     </a>
                 </div>
@@ -300,7 +300,7 @@ if (!$result) {
             <!-- USER PANEL -->
             <div class="user-panel mt-2 pb-3 mb-3 d-flex align-items-center">
                 <div class="image">
-                    <img src="../assets/img/vani.jpeg" class="img-circle elevation-2" alt="User Image">
+                    <img src="../assets/img/Vanips.jpeg" class="img-circle elevation-2" alt="User Image">
                 </div>
                 <div class="info">
                     <a href="#" class="d-block">VANI PERMATASARI</a>

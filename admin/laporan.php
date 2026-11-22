@@ -353,7 +353,7 @@ $total_tahunan = array_sum($pendapatan_bulanan);
 
                 <div class="admin-profile-badge">
                     <a class="d-flex align-items-center text-decoration-none" href="#">
-                        <img src="../assets/img/vani.jpeg"
+                        <img src="../assets/img/Vanips.jpeg"
                              class="img-circle elevation-1"
                              alt="User">
 
@@ -381,7 +381,7 @@ $total_tahunan = array_sum($pendapatan_bulanan);
             <div class="user-panel mt-2 pb-3 mb-3 d-flex align-items-center">
 
                 <div class="image">
-                    <img src="../assets/img/vani.jpeg"
+                    <img src="../assets/img/Vanips.jpeg"
                          class="img-circle elevation-2"
                          alt="User Image">
                 </div>

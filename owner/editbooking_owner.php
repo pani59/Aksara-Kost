@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Edit Data Booking </title>
-    <link rel="icon" href="../uploads/logoaksara.png">
+    <link rel="icon" href="../assets/img/logoaksara.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <style>
         body { background: #f4f6f9; padding: 50px 20px; font-family: Arial, sans-serif; }
