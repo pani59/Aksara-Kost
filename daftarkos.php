@@ -58,9 +58,25 @@ if ($filter_harga !== '') {
     }
 }
 
+// Logika pencarian nama, lokasi, dan angka harga manual (dengan atau tanpa titik)
 if ($cari !== '') {
-    $where[] = "(k.nama_kos LIKE '%" . mysqli_real_escape_string($db, $cari) . "%' OR k.alamat LIKE '%" . mysqli_real_escape_string($db, $cari) . "%')";
+    $cari_aman  = mysqli_real_escape_string($db, $cari);
+    $cari_angka = preg_replace('/[^0-9]/', '', $cari);
+
+    if ($cari_angka !== '') {
+        $where[] = "(
+            k.nama_kos LIKE '%$cari_aman%' 
+            OR k.alamat LIKE '%$cari_aman%' 
+            OR EXISTS (
+                SELECT 1 FROM kamar km 
+                WHERE km.kos_id = k.kos_id AND km.harga LIKE '%$cari_angka%'
+            )
+        )";
+    } else {
+        $where[] = "(k.nama_kos LIKE '%$cari_aman%' OR k.alamat LIKE '%$cari_aman%')";
+    }
 }
+
 if (count($where) > 0) {
     $sql .= " WHERE " . implode(" AND ", $where);
 }
@@ -316,7 +332,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION
 
     <!-- FILTER BAR -->
     <form action="" method="GET" class="filter-header">
-        <input type="text" name="cari" placeholder="Cari nama atau lokasi kos..." value="<?= htmlspecialchars($cari); ?>">
+        <input type="text" name="cari" placeholder="Cari nama, lokasi, atau harga (cth: 600.000)..." value="<?= htmlspecialchars($cari); ?>">
         
         <!-- Filter Tipe Kost -->
         <select name="tipe">
@@ -326,7 +342,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION
             <option value="Campur" <?= $filter_tipe === 'Campur' ? 'selected' : ''; ?>>Campur</option>
         </select>
 
-        <!-- TAMBAHAN: Filter Rentang Harga -->
+        <!-- Filter Rentang Harga -->
         <select name="harga">
             <option value="">Semua Harga</option>
             <option value="bawah_1jt" <?= $filter_harga === 'bawah_1jt' ? 'selected' : ''; ?>>Di bawah Rp 1 jt</option>
