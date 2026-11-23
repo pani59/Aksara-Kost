@@ -540,9 +540,9 @@ function konfirmasiHapus(id, namaFasilitas) {
         confirmButtonText: 'Ya, Hapus',
         cancelButtonText: 'Batal',
         reverseButtons: true,
-        width: '480px',                  // Lebar diperbesar ke samping agar tidak terlalu tinggi ke bawah
+        width: '420px',                  // Ukuran lebar kompak mirip seperti contoh
         customClass: {
-            popup: 'rounded-modal'       // Kelas CSS kustom untuk lengkungan sudut
+            popup: 'rounded-modal-aksara' // Kelas kustom agar bentuknya persis
         }
     }).then((result) => {
         if (result.isConfirmed) {
@@ -552,31 +552,48 @@ function konfirmasiHapus(id, namaFasilitas) {
 }
 </script>
 
-<!-- CSS KUSTOM UNTUK MODAL -->
+<!-- CSS KUSTOM AGAR PERSIS SEPERTI CONTOH -->
 <style>
-    /* Mengatur sudut melengkung halus dan membuat padding lebih ringkas */
-    .rounded-modal {
-        border-radius: 20px !important;
-        padding: 24px 20px 20px 20px !important;
+    /* Mengatur lengkungan sudut, padding, dan bentuk kotak agar proporsional */
+    .rounded-modal-aksara {
+        border-radius: 24px !important;
+        padding: 24px 20px 22px 20px !important;
     }
     
-    /* Memperkecil ikon peringatan agar proporsional dan tidak memakan banyak tempat ke bawah */
-    .swal2-popup .swal2-icon {
-        width: 42px !important;
-        height: 42px !important;
-        font-size: 0.85rem !important;
-        margin: 5px auto 12px auto !important;
+    /* Ukuran ikon agar pas dan tidak terlalu besar */
+    .rounded-modal-aksara .swal2-icon {
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 0.8rem !important;
+        margin: 5px auto 10px auto !important;
     }
 
-    /* Merapikan jarak judul dan teks di dalam popup */
-    .swal2-title {
-        font-size: 1.25rem !important;
-        margin-bottom: 8px !important;
+    /* Ukuran teks judul */
+    .rounded-modal-aksara .swal2-title {
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 6px !important;
     }
 
-    .swal2-html-container {
-        font-size: 0.92rem !important;
-        margin: 0 0 15px 0 !important;
+    /* Ukuran teks konten/deskripsi */
+    .rounded-modal-aksara .swal2-html-container {
+        font-size: 0.88rem !important;
+        line-height: 1.4 !important;
+        margin: 0 0 20px 0 !important;
+    }
+
+    /* Mempercantik tombol Batal dan Hapus agar lonjong dan rapi */
+    .rounded-modal-aksara .swal2-actions {
+        margin: 0 !important;
+        gap: 10px !important;
+    }
+
+    .rounded-modal-aksara .swal2-styled {
+        border-radius: 30px !important;
+        padding: 8px 24px !important;
+        font-size: 0.88rem !important;
+        font-weight: 600 !important;
+        box-shadow: none !important;
     }
 </style>
 </body>
