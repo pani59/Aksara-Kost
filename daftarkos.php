@@ -332,7 +332,7 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION
 
     <!-- FILTER BAR -->
     <form action="" method="GET" class="filter-header">
-        <input type="text" name="cari" placeholder="Cari nama, lokasi, atau harga (cth: 600.000)..." value="<?= htmlspecialchars($cari); ?>">
+        <input type="text" name="cari" placeholder="Cari nama, lokasi, atau harga." value="<?= htmlspecialchars($cari); ?>">
         
         <!-- Filter Tipe Kost -->
         <select name="tipe">
