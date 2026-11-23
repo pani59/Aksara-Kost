@@ -540,8 +540,7 @@ function konfirmasiHapus(id, namaFasilitas) {
         confirmButtonText: 'Ya, Hapus',
         cancelButtonText: 'Batal',
         reverseButtons: true,
-        // --- TAMBAHKAN KODE INI UNTUK MENGATUR UKURAN DAN KELENGKUNGAN ---
-        width: '420px',                  // Mengatur agar ukuran popup lebih kecil & kompak
+        width: '480px',                  // Lebar diperbesar ke samping agar tidak terlalu tinggi ke bawah
         customClass: {
             popup: 'rounded-modal'       // Kelas CSS kustom untuk lengkungan sudut
         }
@@ -553,20 +552,31 @@ function konfirmasiHapus(id, namaFasilitas) {
 }
 </script>
 
-<!-- TAMBAHKAN CSS INI DI BAGIAN <style> ATAU DI BAWAHNYA -->
+<!-- CSS KUSTOM UNTUK MODAL -->
 <style>
-    /* Mengatur sudut agar melengkung halus (tidak kotak) */
+    /* Mengatur sudut melengkung halus dan membuat padding lebih ringkas */
     .rounded-modal {
         border-radius: 20px !important;
-        padding: 20px !important;
+        padding: 24px 20px 20px 20px !important;
     }
     
-    /* Memperkecil ukuran ikon seruan agar proporsional */
+    /* Memperkecil ikon peringatan agar proporsional dan tidak memakan banyak tempat ke bawah */
     .swal2-popup .swal2-icon {
-        width: 50px !important;
-        height: 50px !important;
-        font-size: 1rem !important;
-        margin: 15px auto 10px auto !important;
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 0.85rem !important;
+        margin: 5px auto 12px auto !important;
+    }
+
+    /* Merapikan jarak judul dan teks di dalam popup */
+    .swal2-title {
+        font-size: 1.25rem !important;
+        margin-bottom: 8px !important;
+    }
+
+    .swal2-html-container {
+        font-size: 0.92rem !important;
+        margin: 0 0 15px 0 !important;
     }
 </style>
 </body>
