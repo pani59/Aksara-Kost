@@ -499,9 +499,12 @@ if (!$result) {
                                             <a href="editkamar.php?id=<?= (int)$data['kamar_id']; ?>" class="btn btn-success btn-sm font-weight-bold">
                                                 Edit
                                             </a>
-                                            <a href="hapuskamar.php?id=<?= (int)$data['kamar_id']; ?>" class="btn btn-danger btn-sm font-weight-bold" onclick="return confirm('Yakin ingin menghapus data kamar ini?');">
+                                            <!-- Tombol Hapus memicu fungsi konfirmasi SweetAlert2 -->
+                                            <button type="button" 
+                                                    class="btn btn-danger btn-sm font-weight-bold" 
+                                                    onclick="konfirmasiHapus(<?= (int)$data['fasilitas_id']; ?>, '<?= htmlspecialchars($data['nama_fasilitas'], ENT_QUOTES); ?>')">
                                                 Hapus
-                                            </a>
+                                            </button>
                                         </td>
                                     </tr>
                                 <?php
@@ -534,6 +537,80 @@ if (!$result) {
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+<!-- SWEETALERT2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- SCRIPT KUSTOM KONFIRMASI HAPUS -->
+<script>
+function konfirmasiHapus(id, namaFasilitas) {
+    Swal.fire({
+        title: 'Hapus Data Fasilitas?',
+        html: `Apakah kamu yakin ingin menghapus fasilitas <b>${namaFasilitas}</b>?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d9534f',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        width: '420px',                  // Ukuran lebar kompak mirip seperti contoh
+        customClass: {
+            popup: 'rounded-modal-aksara' // Kelas kustom agar bentuknya persis
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'hapuskamar.php?id=' + id;
+        }
+    });
+}
+</script>
+
+<!-- CSS KUSTOM AGAR PERSIS SEPERTI CONTOH -->
+<style>
+    /* Mengatur lengkungan sudut, padding, dan bentuk kotak agar proporsional */
+    .rounded-modal-aksara {
+        border-radius: 24px !important;
+        padding: 24px 20px 22px 20px !important;
+    }
+    
+    /* Ukuran ikon agar pas dan tidak terlalu besar */
+    .rounded-modal-aksara .swal2-icon {
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 0.8rem !important;
+        margin: 5px auto 10px auto !important;
+    }
+
+    /* Ukuran teks judul */
+    .rounded-modal-aksara .swal2-title {
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 6px !important;
+    }
+
+    /* Ukuran teks konten/deskripsi */
+    .rounded-modal-aksara .swal2-html-container {
+        font-size: 0.88rem !important;
+        line-height: 1.4 !important;
+        margin: 0 0 20px 0 !important;
+    }
+
+    /* Mempercantik tombol Batal dan Hapus agar lonjong dan rapi */
+    .rounded-modal-aksara .swal2-actions {
+        margin: 0 !important;
+        gap: 10px !important;
+    }
+
+    .rounded-modal-aksara .swal2-styled {
+        border-radius: 30px !important;
+        padding: 8px 24px !important;
+        font-size: 0.88rem !important;
+        font-weight: 600 !important;
+        box-shadow: none !important;
+    }
+</style>
+
 
 </body>
 </html>
