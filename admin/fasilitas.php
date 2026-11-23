@@ -535,19 +535,39 @@ function konfirmasiHapus(id, namaFasilitas) {
         html: `Apakah kamu yakin ingin menghapus fasilitas <b>${namaFasilitas}</b>?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#d9534f', // Warna merah untuk tombol hapus
-        cancelButtonColor: '#6c757d',   // Warna abu-abu untuk tombol batal
+        confirmButtonColor: '#d9534f',
+        cancelButtonColor: '#6c757d',
         confirmButtonText: 'Ya, Hapus',
         cancelButtonText: 'Batal',
-        reverseButtons: true            // Memposisikan tombol Batal di kiri dan Ya, Hapus di kanan
+        reverseButtons: true,
+        // --- TAMBAHKAN KODE INI UNTUK MENGATUR UKURAN DAN KELENGKUNGAN ---
+        width: '420px',                  // Mengatur agar ukuran popup lebih kecil & kompak
+        customClass: {
+            popup: 'rounded-modal'       // Kelas CSS kustom untuk lengkungan sudut
+        }
     }).then((result) => {
         if (result.isConfirmed) {
-            // Jika user memilih "Ya, Hapus", arahkan ke file proses hapus backend
             window.location.href = 'hapusfasilitas.php?id=' + id;
         }
     });
 }
 </script>
 
+<!-- TAMBAHKAN CSS INI DI BAGIAN <style> ATAU DI BAWAHNYA -->
+<style>
+    /* Mengatur sudut agar melengkung halus (tidak kotak) */
+    .rounded-modal {
+        border-radius: 20px !important;
+        padding: 20px !important;
+    }
+    
+    /* Memperkecil ukuran ikon seruan agar proporsional */
+    .swal2-popup .swal2-icon {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 1rem !important;
+        margin: 15px auto 10px auto !important;
+    }
+</style>
 </body>
 </html>
