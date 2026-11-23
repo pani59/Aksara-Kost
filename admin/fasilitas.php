@@ -29,6 +29,9 @@ if (!$result) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 
+    <!-- SWEETALERT2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
     <style>
         body {
             background-color: #f8faf9 !important;
@@ -207,10 +210,10 @@ if (!$result) {
             align-items: center;
             justify-content: center;
             margin: 2px !important;
-            font-weight: 600 !important; /* Menebalkan tulisan Edit & Hapus */
+            font-weight: 600 !important;
         }
 
-        /* TOMBOL TAMBAH & EDIT DENGAN HIJAU LEBIH PEKAT DAN SISI DILENGKUNGKAN */
+        /* TOMBOL TAMBAH & EDIT */
         .btn-success,
         .btn-primary {
             background-color: #137333 !important;
@@ -482,9 +485,12 @@ if (!$result) {
                                             <a href="editfasilitas.php?id=<?= (int)$data['fasilitas_id']; ?>" class="btn btn-success btn-sm font-weight-bold">
                                                 Edit
                                             </a>
-                                            <a href="hapusfasilitas.php?id=<?= (int)$data['fasilitas_id']; ?>" class="btn btn-danger btn-sm font-weight-bold" onclick="return confirm('Yakin ingin menghapus data fasilitas ini?');">
+                                            <!-- Tombol Hapus memicu fungsi konfirmasi SweetAlert2 -->
+                                            <button type="button" 
+                                                    class="btn btn-danger btn-sm font-weight-bold" 
+                                                    onclick="konfirmasiHapus(<?= (int)$data['fasilitas_id']; ?>, '<?= htmlspecialchars($data['nama_fasilitas'], ENT_QUOTES); ?>')">
                                                 Hapus
-                                            </a>
+                                            </button>
                                         </td>
                                     </tr>
                                 <?php
@@ -517,6 +523,31 @@ if (!$result) {
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+<!-- SWEETALERT2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- SCRIPT KUSTOM KONFIRMASI HAPUS -->
+<script>
+function konfirmasiHapus(id, namaFasilitas) {
+    Swal.fire({
+        title: 'Hapus Data Fasilitas?',
+        html: `Apakah kamu yakin ingin menghapus fasilitas <b>${namaFasilitas}</b>?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d9534f', // Warna merah untuk tombol hapus
+        cancelButtonColor: '#6c757d',   // Warna abu-abu untuk tombol batal
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true            // Memposisikan tombol Batal di kiri dan Ya, Hapus di kanan
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Jika user memilih "Ya, Hapus", arahkan ke file proses hapus backend
+            window.location.href = 'hapusfasilitas.php?id=' + id;
+        }
+    });
+}
+</script>
 
 </body>
 </html>
