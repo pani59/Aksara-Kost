@@ -13,8 +13,9 @@ if (!isset($db) || mysqli_connect_errno()) {
     die("Koneksi database gagal. Periksa kembali file database.php.");
 }
 
-$filter_tipe = $_GET['tipe'] ?? '';
-$cari        = trim($_GET['cari'] ?? '');
+$filter_tipe  = $_GET['tipe'] ?? '';
+$filter_harga = $_GET['harga'] ?? '';
+$cari         = trim($_GET['cari'] ?? '');
 
 $sql = "
     SELECT k.*, 
@@ -43,6 +44,20 @@ $where = [];
 if ($filter_tipe !== '') {
     $where[] = "k.tipe_kos = '" . mysqli_real_escape_string($db, $filter_tipe) . "'";
 }
+
+// Logika filter rentang harga berdasarkan harga_mulai kamar
+if ($filter_harga !== '') {
+    if ($filter_harga === 'bawah_1jt') {
+        $where[] = "(SELECT MIN(km.harga) FROM kamar km WHERE km.kos_id = k.kos_id) < 1000000";
+    } elseif ($filter_harga === '1jt_1.5jt') {
+        $where[] = "(SELECT MIN(km.harga) FROM kamar km WHERE km.kos_id = k.kos_id) BETWEEN 1000000 AND 1500000";
+    } elseif ($filter_harga === '1.5jt_2jt') {
+        $where[] = "(SELECT MIN(km.harga) FROM kamar km WHERE km.kos_id = k.kos_id) BETWEEN 1500001 AND 2000000";
+    } elseif ($filter_harga === 'atas_2jt') {
+        $where[] = "(SELECT MIN(km.harga) FROM kamar km WHERE km.kos_id = k.kos_id) > 2000000";
+    }
+}
+
 if ($cari !== '') {
     $where[] = "(k.nama_kos LIKE '%" . mysqli_real_escape_string($db, $cari) . "%' OR k.alamat LIKE '%" . mysqli_real_escape_string($db, $cari) . "%')";
 }
@@ -302,12 +317,24 @@ $foto_session = (!empty($_SESSION['foto']) && file_exists('uploads/' . $_SESSION
     <!-- FILTER BAR -->
     <form action="" method="GET" class="filter-header">
         <input type="text" name="cari" placeholder="Cari nama atau lokasi kos..." value="<?= htmlspecialchars($cari); ?>">
+        
+        <!-- Filter Tipe Kost -->
         <select name="tipe">
             <option value="">Semua Tipe Kost</option>
             <option value="Putra" <?= $filter_tipe === 'Putra' ? 'selected' : ''; ?>>Putra</option>
             <option value="Putri" <?= $filter_tipe === 'Putri' ? 'selected' : ''; ?>>Putri</option>
             <option value="Campur" <?= $filter_tipe === 'Campur' ? 'selected' : ''; ?>>Campur</option>
         </select>
+
+        <!-- TAMBAHAN: Filter Rentang Harga -->
+        <select name="harga">
+            <option value="">Semua Harga</option>
+            <option value="bawah_1jt" <?= $filter_harga === 'bawah_1jt' ? 'selected' : ''; ?>>Di bawah Rp 1 jt</option>
+            <option value="1jt_1.5jt" <?= $filter_harga === '1jt_1.5jt' ? 'selected' : ''; ?>>Rp 1 jt - Rp 1,5 jt</option>
+            <option value="1.5jt_2jt" <?= $filter_harga === '1.5jt_2jt' ? 'selected' : ''; ?>>Rp 1,5 jt - Rp 2 jt</option>
+            <option value="atas_2jt" <?= $filter_harga === 'atas_2jt' ? 'selected' : ''; ?>>Di atas Rp 2 jt</option>
+        </select>
+
         <button type="submit"><i class="fa-solid fa-magnifying-glass"></i> Cari Kost</button>
     </form>
 
