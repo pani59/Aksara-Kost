@@ -72,7 +72,6 @@ if ($res_kamar && mysqli_num_rows($res_kamar) > 0) {
     while ($kamar = mysqli_fetch_assoc($res_kamar)) {
         if ($kamar['harga'] < $min_harga) {
             $min_harga = $kamar['harga'];
-            // Prioritaskan kamar yang kosong untuk otomatis dipilih
             if (strtolower(trim($kamar['status_kamar'])) === 'kosong' || $detected_kamar_id == 0) {
                 $detected_kamar_id = $kamar['kamar_id'];
             }
@@ -120,12 +119,20 @@ $res_list_review = mysqli_query($db, "
 
 /*
 |--------------------------------------------------------------------------
-| CEK ID BOOKING USER (JIKA ADA)
+| CEK ID BOOKING USER & STATUS VERIFIKASI USER (JIKA ADA)
 |--------------------------------------------------------------------------
 */
 $user_booking_id = 0;
+$user_status_verifikasi = '';
 if (isset($_SESSION['user_id'])) {
     $user_id = (int)$_SESSION['user_id'];
+    
+    // Ambil status verifikasi user yang sedang login
+    $q_user_status = mysqli_query($db, "SELECT status_verifikasi FROM user WHERE user_id = '$user_id' LIMIT 1");
+    if ($q_user_status && $row_u = mysqli_fetch_assoc($q_user_status)) {
+        $user_status_verifikasi = $row_u['status_verifikasi'];
+    }
+
     $q_booking = mysqli_query($db, "
         SELECT b.booking_id 
         FROM booking b
@@ -178,10 +185,7 @@ function rupiah($angka) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
-        /* =================================
-            RESET DAN DASAR (SAGE GREEN THEME)
-        ================================= */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        - { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; background: #FAF9F6; color: #2C3E35; min-height: 100vh; }
         a { text-decoration: none; }
@@ -198,9 +202,6 @@ function rupiah($angka) {
             --shadow: 0 10px 35px rgba(135,169,135,0.12);
         }
 
-        /* =================================
-            NAVBAR
-        ================================= */
         .navbar { background: rgba(250,249,246,0.96); backdrop-filter: blur(15px); border-bottom: 1px solid var(--sage-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .navbar-container { width: 100%; max-width: 1300px; margin: auto; padding: 14px 25px; display: flex; align-items: center; justify-content: space-between; }
         
@@ -214,64 +215,26 @@ function rupiah($angka) {
         .nav-menu a { color: var(--muted); font-size: 15px; font-weight: 800; transition: .3s; }
         .nav-menu a:hover, .nav-menu a.active-link { color: var(--sage-dark); }
 
-        .btn-login {
-            background: var(--sage);
-            color: #fff !important;
-            padding: 8px 22px;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 13px;
-            transition: 0.3s;
-        }
+        .btn-login { background: var(--sage); color: #fff !important; padding: 8px 22px; border-radius: 30px; font-weight: 700; font-size: 13px; transition: 0.3s; }
         .btn-login:hover { background: var(--sage-dark); }
 
-        .btn-profile {
-            background: var(--sage-soft);
-            color: var(--sage-dark) !important;
-            border: 1px solid var(--sage-border);
-            padding: 5px 15px 5px 5px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            font-weight: 700 !important;
-        }
+        .btn-profile { background: var(--sage-soft); color: var(--sage-dark) !important; border: 1px solid var(--sage-border); padding: 5px 15px 5px 5px; border-radius: 30px; display: flex; align-items: center; gap: 9px; font-weight: 700 !important; }
         .navbar-profile-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--sage); }
 
-        /* =================================
-            LAYOUT MAIN CONTAINER
-        ================================= */
-        .container { 
-            max-width: 1100px; 
-            margin: 35px auto; 
-            background: #fff; 
-            padding: 35px; 
-            border-radius: 22px; 
-            border: 1px solid var(--sage-border); 
-            box-shadow: 0 5px 20px rgba(135,169,135,0.06); 
-        }
+        .container { max-width: 1100px; margin: 35px auto; background: #fff; padding: 35px; border-radius: 22px; border: 1px solid var(--sage-border); box-shadow: 0 5px 20px rgba(135,169,135,0.06); }
         .detail-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 35px; align-items: start; }
 
-        /* GALERI FOTO */
         .main-img { width: 100%; height: 320px; object-fit: cover; border-radius: 16px; background: var(--sage-soft); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .thumbs { display: flex; gap: 10px; margin-top: 12px; overflow-x: auto; padding-bottom: 5px; }
         .thumbs img { width: 85px; height: 70px; object-fit: cover; border-radius: 12px; cursor: pointer; border: 2px solid var(--sage-border); transition: 0.3s; }
         .thumbs img:hover { border-color: var(--sage); transform: scale(1.03); }
 
-        /* DETAIL INFORMASI */
         .title { font-size: 24px; color: var(--text); margin-bottom: 6px; font-weight: 800; }
         .lokasi { font-size: 13px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
         .lokasi i { color: var(--sage); }
 
-        /* STATUS & HARGA */
         .status-badge-wrapper { margin-bottom: 8px; }
-        .badge-status {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-        }
+        .badge-status { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
         .badge-tersedia { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
         .badge-terisi { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
 
@@ -279,11 +242,9 @@ function rupiah($angka) {
         .harga span { font-size: 13px; color: var(--muted); font-weight: normal; }
         .rating { font-size: 13px; color: #f59e0b; font-weight: 700; margin-bottom: 20px; }
 
-        /* FASILITAS */
         .fasilitas-title { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 12px; border-top: 1px solid var(--sage-border); padding-top: 18px; }
         .fasilitas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; color: var(--muted); font-weight: 500; }
 
-        /* FORM BOOKING LANGSUNG */
         .booking-box { margin-top: 25px; background: var(--sage-soft); padding: 22px; border-radius: 18px; border: 1px solid var(--sage-border); }
         .booking-box label { font-size: 13px; font-weight: 700; color: var(--sage-dark); display: block; margin-bottom: 8px; }
         .booking-box input[type="date"] { width: 100%; padding: 12px 16px; border: 1px solid var(--sage-border); border-radius: 12px; outline: none; margin-bottom: 14px; font-size: 13px; background: #fff; font-family: 'Poppins', sans-serif; color: var(--text); }
@@ -291,7 +252,8 @@ function rupiah($angka) {
         .btn-booking:hover { background: var(--sage-dark); transform: translateY(-1px); }
         .btn-booking:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
 
-        /* DESKRIPSI & TOMBOL */
+        .alert-warning-box { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 12px 15px; border-radius: 12px; font-size: 12px; margin-bottom: 14px; line-height: 1.5; }
+
         .deskripsi { grid-column: 1 / -1; margin-top: 30px; border-top: 1px solid var(--sage-border); padding-top: 22px; }
         .deskripsi h3 { font-size: 17px; margin-bottom: 10px; color: var(--text); font-weight: 800; }
         .deskripsi p { font-size: 14px; color: var(--muted); line-height: 1.8; }
@@ -303,7 +265,6 @@ function rupiah($angka) {
         .btn-tandai { background: var(--sage-soft); color: var(--sage-dark); border: 1px solid var(--sage-border); }
         .btn-tandai:hover { background: var(--sage); color: #fff; }
 
-        /* BAGIAN ULASAN / REVIEW */
         .review-section { grid-column: 1 / -1; margin-top: 35px; border-top: 1px solid var(--sage-border); padding-top: 25px; }
         .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
         .review-header h3 { font-size: 18px; color: var(--text); font-weight: 800; }
@@ -382,7 +343,6 @@ function rupiah($angka) {
             <h1 class="title"><?= htmlspecialchars($kos['nama_kos']); ?></h1>
             <p class="lokasi"><i class="fa-solid fa-location-dot"></i> <?= htmlspecialchars($kos['alamat']); ?></p>
 
-            <!-- STATUS KETERSEDIAAN OTOMATIS DI ATAS HARGA -->
             <div class="status-badge-wrapper">
                 <?php if ($status_ketersediaan === 'Tersedia'): ?>
                     <span class="badge-status badge-tersedia"><i class="fa-solid fa-circle-check"></i> Kamar Tersedia</span>
@@ -414,19 +374,30 @@ function rupiah($angka) {
                 <?php endif; ?>
             </div>
 
-            <!-- FORM BOOKING DENGAN KAMAR TERDETEKSI OTOMATIS (TANPA PILIH DROPDOWN) -->
+            <!-- FORM BOOKING DENGAN VALIDASI STATUS VERIFIKASI USER -->
             <form action="proses_booking.php" method="POST" class="booking-box">
                 <input type="hidden" name="kos_id" value="<?= $kos['kos_id']; ?>">
-                
-                <!-- ID Kamar dikirim otomatis secara tersembunyi -->
                 <input type="hidden" name="kamar_id" value="<?= $detected_kamar_id; ?>">
 
-                <!-- PILIH TANGGAL SURVEY / MASUK -->
-                <label><i class="fa-regular fa-calendar-days"></i> Pilih Tanggal Survey / Masuk:</label>
-                <input type="date" name="tanggal_survey" required min="<?= date('Y-m-d'); ?>">
+                <?php if (isset($_SESSION['user_id']) && $user_status_verifikasi === 'Menunggu'): ?>
+                    <!-- JIKA STATUS AKUN MASIH MENUNGGU -->
+                    <div class="alert-warning-box">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Akun Anda masih <strong>Menunggu Konfirmasi</strong> dari Admin. Anda belum dapat melakukan booking kost sebelum akun disetujui.
+                    </div>
+                <?php endif; ?>
 
-                <button type="submit" class="btn-booking" <?= ($status_ketersediaan !== 'Tersedia' || $detected_kamar_id == 0) ? 'disabled' : ''; ?>>
-                    <i class="fa-solid fa-clipboard-list"></i> <?= ($status_ketersediaan === 'Tersedia') ? 'Ajukan Booking Kost' : 'Kost Penuh (Tidak Bisa Booking)'; ?>
+                <label><i class="fa-regular fa-calendar-days"></i> Pilih Tanggal Survey / Masuk:</label>
+                <input type="date" name="tanggal_survey" required min="<?= date('Y-m-d'); ?>" <?= (isset($_SESSION['user_id']) && $user_status_verifikasi === 'Menunggu') ? 'disabled' : ''; ?>>
+
+                <button type="submit" class="btn-booking" <?= ($status_ketersediaan !== 'Tersedia' || $detected_kamar_id == 0 || (isset($_SESSION['user_id']) && $user_status_verifikasi === 'Menunggu')) ? 'disabled' : ''; ?>>
+                    <i class="fa-solid fa-clipboard-list"></i> 
+                    <?php if (isset($_SESSION['user_id']) && $user_status_verifikasi === 'Menunggu'): ?>
+                        Menunggu Verifikasi Admin
+                    <?php elseif ($status_ketersediaan === 'Tersedia'): ?>
+                        Ajukan Booking Kost
+                    <?php else: ?>
+                        Kost Penuh (Tidak Bisa Booking)
+                    <?php endif; ?>
                 </button>
             </form>
         </div>
@@ -460,7 +431,6 @@ function rupiah($angka) {
                 <h3>💬 Ulasan & Review Penghuni</h3>
             </div>
 
-            <!-- FORM TAMBAH REVIEW DARI USER -->
             <?php if (isset($_SESSION['user_id'])): ?>
                 <form action="proses_review.php" method="POST" class="form-review-box">
                     <input type="hidden" name="kos_id" value="<?= $kos['kos_id']; ?>">
@@ -485,7 +455,6 @@ function rupiah($angka) {
                 </p>
             <?php endif; ?>
 
-            <!-- DAFTAR ULASAN PENGGUNA -->
             <?php if ($res_list_review && mysqli_num_rows($res_list_review) > 0): ?>
                 <?php while ($rev = mysqli_fetch_assoc($res_list_review)): ?>
                     <div class="review-box">

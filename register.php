@@ -46,14 +46,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             mysqli_stmt_close($stmt_cek);
 
-            // LOGIKA STATUS VERIFIKASI BERDASARKAN ROLE SESUAI ENUM DATABASE
-            if ($role === 'User') {
-                $status_verifikasi = 'Terverifikasi'; // User langsung terverifikasi
-            } else {
-                $status_verifikasi = 'Menunggu';      // Owner menunggu konfirmasi admin
-            }
+            // LOGIKA REVISI GURU: 
+            // Baik User maupun Owner, saat mendaftar status verifikasinya "Menunggu"
+            $status_verifikasi = 'Menunggu';
 
-            // Query insert database (tidak mengubah struktur database/tabel sama sekali)
+            // Query insert database
             $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt_insert = mysqli_prepare($conn, $query_insert);
 
@@ -71,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
 
                         if (in_array($file_ext, $allowed_ext, true)) {
-                            // Format nama file disesuaikan dengan ID unik user
                             $nama_foto  = 'user_' . $user_id . '.' . $file_ext;
                             $target_dir = __DIR__ . '/uploads/';
 
@@ -79,36 +75,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 mkdir($target_dir, 0777, true);
                             }
 
-                            // Pindahkan file ke folder uploads dengan nama baru
                             move_uploaded_file($file_tmp, $target_dir . $nama_foto);
                         }
                     }
 
-                    // 3. JIKA ROLE USER: LANGSUNG AUTO-LOGIN KE INDEX.PHP
-                    if ($role === 'User') {
-                        $_SESSION['is_login'] = true;
-                        $_SESSION['user_id']  = $user_id;
-                        $_SESSION['nama']     = $nama;
-                        $_SESSION['role']     = 'User';
+                    // 3. AUTO-LOGIN KE AKUN (LANGSUNG MASUK MESKI STATUS MASIH MENUNGGU)
+                    $_SESSION['is_login'] = true;
+                    $_SESSION['user_id']  = $user_id;
+                    $_SESSION['nama']     = $nama;
+                    $_SESSION['role']     = $role;
 
-                        // Set session foto default atau cek langsung file fisiknya di folder uploads
-                        $found_foto = 'profil.jpeg';
-                        foreach (['jpg', 'jpeg', 'png', 'gif'] as $ext) {
-                            $check_filename = 'user_' . $user_id . '.' . $ext;
-                            if (file_exists(__DIR__ . '/uploads/' . $check_filename)) {
-                                $found_foto = $check_filename;
-                                break;
-                            }
+                    $found_foto = 'profil.jpeg';
+                    foreach (['jpg', 'jpeg', 'png', 'gif'] as $ext) {
+                        $check_filename = 'user_' . $user_id . '.' . $ext;
+                        if (file_exists(__DIR__ . '/uploads/' . $check_filename)) {
+                            $found_foto = $check_filename;
+                            break;
                         }
-                        $_SESSION['foto'] = $found_foto;
-
-                        mysqli_stmt_close($stmt_insert);
-                        header("Location: index.php");
-                        exit;
-                    } else {
-                        // JIKA OWNER: TAMPILKAN PESAN MENUNGGU
-                        $success = "Pendaftaran berhasil! Akun Anda sedang <b>Menunggu Konfirmasi</b> dari Admin. Silakan tunggu hingga disetujui untuk dapat login.";
                     }
+                    $_SESSION['foto'] = $found_foto;
+
+                    mysqli_stmt_close($stmt_insert);
+                    
+                    // Arahkan ke halaman profil/dashboard user
+                    header("Location: profil.php");
+                    exit;
+
                 } else {
                     $error = "Gagal mendaftar: " . mysqli_error($conn);
                 }
@@ -201,10 +193,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .alert-error {
             background: #fff0f0; color: #d63031; border: 1px solid #ffcaca;
             border-radius: 10px; padding: 12px 14px; margin-bottom: 18px; font-size: 12px;
-        }
-        .alert-success {
-            background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9;
-            border-radius: 10px; padding: 16px; margin-bottom: 18px; font-size: 13px; text-align: center; line-height: 1.6;
         }
 
         .form-group { margin-bottom: 18px; }
@@ -321,18 +309,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             <?php endif; ?>
 
-            <?php if (!empty($success)): ?>
-                <div class="alert-success">
-                    <i class="fa-solid fa-circle-check" style="font-size: 18px; margin-bottom: 6px; display: block;"></i>
-                    <?= $success; ?>
-                    <div style="margin-top: 15px;">
-                        <a href="login.php" class="btn-login-link" style="background: var(--sage); color: white; border: none;">
-                            <i class="fa-solid fa-right-to-bracket"></i> Kembali ke Halaman Login
-                        </a>
-                    </div>
-                </div>
-            <?php else: ?>
-
             <form action="" method="POST" enctype="multipart/form-data">
                 <!-- NAMA -->
                 <div class="form-group">
@@ -406,7 +382,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="fa-solid fa-right-to-bracket"></i> Sudah punya akun? Login di sini
             </a>
 
-            <?php endif; ?>
         </section>
 
     </div>
