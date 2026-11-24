@@ -247,7 +247,7 @@ function rupiah($angka) {
 
         .booking-box { margin-top: 25px; background: var(--sage-soft); padding: 22px; border-radius: 18px; border: 1px solid var(--sage-border); }
         .booking-box label { font-size: 13px; font-weight: 700; color: var(--sage-dark); display: block; margin-bottom: 8px; }
-        .booking-box input[type="date"] { width: 100%; padding: 12px 16px; border: 1px solid var(--sage-border); border-radius: 12px; outline: none; margin-bottom: 14px; font-size: 13px; background: #fff; font-family: 'Poppins', sans-serif; color: var(--text); }
+        .booking-box input[type="date"] {width: 100%; padding: 12px 16px; border: 1px solid var(--sage-border); border-radius: 12px; outline: none; margin-bottom: 14px; font-size: 13px; background: #fff; font-family: 'Poppins', sans-serif; color: var(--text); box-sizing: border-box; }
         .btn-booking { width: 100%; padding: 12px; background: var(--sage); color: white; border: none; border-radius: 30px; font-weight: 700; cursor: pointer; font-size: 14px; transition: 0.3s; box-shadow: 0 4px 14px rgba(135,169,135,0.2); }
         .btn-booking:hover { background: var(--sage-dark); transform: translateY(-1px); }
         .btn-booking:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
