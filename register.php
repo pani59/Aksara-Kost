@@ -46,11 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             mysqli_stmt_close($stmt_cek);
 
-            // LOGIKA REVISI GURU: 
-            // Baik User maupun Owner, saat mendaftar status verifikasinya "Menunggu"
+            // PASTIKAN STATUS VERIFIKASI SECARA EKSPLISIT BERISI "Menunggu"
             $status_verifikasi = 'Menunggu';
 
-            // Query insert database
+            // Query insert database dengan menyertakan kolom status_verifikasi secara eksplisit
             $query_insert = "INSERT INTO user (nama, email, password, role, no_wa, status_verifikasi) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt_insert = mysqli_prepare($conn, $query_insert);
 
