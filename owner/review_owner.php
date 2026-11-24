@@ -452,10 +452,10 @@ $_SESSION['foto'] = $found_foto;
                                         </td>
                                         <td class="kolom-aksi">
                                             <button type="button" 
-                                                    class="btn btn-danger btn-sm font-weight-bold" 
-                                                    onclick="konfirmasiHapus(<?= (int)$data['fasilitas_id']; ?>, '<?= htmlspecialchars($data['nama_fasilitas'], ENT_QUOTES); ?>')">
-                                                Hapus
-                                            </button>
+    class="btn btn-danger btn-sm font-weight-bold"
+    onclick="konfirmasiHapus(<?= (int)$data['review_id']; ?>, 'Review ID <?= (int)$data['review_id']; ?>')">
+    Hapus
+</button>
                                         </td>
                                     </tr>
                                 <?php

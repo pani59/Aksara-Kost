@@ -529,10 +529,10 @@ if (!$result) {
                                             </a>
                                             <!-- Tombol Hapus memicu fungsi konfirmasi SweetAlert2 -->
                                             <button type="button" 
-                                                    class="btn btn-danger btn-sm font-weight-bold" 
-                                                    onclick="konfirmasiHapus(<?= (int)$data['fasilitas_id']; ?>, '<?= htmlspecialchars($data['nama_fasilitas'], ENT_QUOTES); ?>')">
-                                                Hapus
-                                            </button>
+    class="btn btn-danger btn-sm font-weight-bold"
+    onclick="konfirmasiHapus(<?= (int)$data['kos_id']; ?>, '<?= htmlspecialchars($data['nama_kos'], ENT_QUOTES); ?>')">
+    Hapus
+</button>
                                         </td>
                                     </tr>
                                 <?php

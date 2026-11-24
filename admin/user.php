@@ -526,8 +526,8 @@ if (!$result) {
                                             </a>
 
                                             <button type="button" 
-                                                    class="btn btn-danger btn-sm font-weight-bold" 
-                                                    onclick="konfirmasiHapus(<?= (int)$data['fasilitas_id']; ?>, '<?= htmlspecialchars($data['nama_fasilitas'], ENT_QUOTES); ?>')">
+                                               class="btn btn-danger btn-sm font-weight-bold"
+                                                onclick="konfirmasiHapus(<?= (int)$data['user_id']; ?>, '<?= htmlspecialchars($data['nama'], ENT_QUOTES); ?>')">
                                                 Hapus
                                             </button>
 

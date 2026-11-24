@@ -506,10 +506,10 @@ if (!$result) {
                                                 Edit
                                             </a>
                                             <button type="button" 
-                                                    class="btn btn-danger btn-sm font-weight-bold" 
-                                                    onclick="konfirmasiHapus(<?= (int)$data['fasilitas_id']; ?>, '<?= htmlspecialchars($data['nama_fasilitas'], ENT_QUOTES); ?>')">
-                                                Hapus
-                                            </button>
+    class="btn btn-danger btn-sm font-weight-bold"
+    onclick="konfirmasiHapus(<?= (int)$data['foto_id']; ?>, 'Foto ID <?= (int)$data['foto_id']; ?>')">
+    Hapus
+</button>
                                         </td>
                                     </tr>
                                 <?php
