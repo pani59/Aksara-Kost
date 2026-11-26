@@ -145,6 +145,7 @@ $nama_user = htmlspecialchars($user['nama'] ?? '');
 $email_user = htmlspecialchars($user['email'] ?? '');
 $no_wa_user = htmlspecialchars($user['no_wa'] ?? '');
 $role_user = htmlspecialchars($user['role'] ?? 'User');
+$status_verifikasi = $user['status_verifikasi'] ?? 'Menunggu';
 
 $foto_html = htmlspecialchars($foto_user);
 $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
@@ -587,10 +588,19 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
                         <span class="profile-label"><i class="fa-solid fa-phone"></i> No. HP / WA</span>
                         <span class="profile-value"><?= htmlspecialchars($user['no_wa'] ?? '-') ?></span>
                     </div>
+                    
+                    <!-- STATUS VERIFIKASI DINAMIS -->
                     <div class="profile-item" style="border-bottom: none;">
                         <span class="profile-label"><i class="fa-solid fa-circle-check"></i> Status Verifikasi</span>
-                        <span class="profile-value" style="color: #28a745;">Terverifikasi</span>
+                        <span class="profile-value">
+                            <?php if ($status_verifikasi === 'Terverifikasi'): ?>
+                                <span style="color: #28a745; font-weight: 700;">Terverifikasi</span>
+                            <?php else: ?>
+                                <span style="color: #f39c12; font-weight: 700;">Menunggu Konfirmasi Admin/Owner</span>
+                            <?php endif; ?>
+                        </span>
                     </div>
+
                 </div>
             </div>
 

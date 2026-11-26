@@ -78,11 +78,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     }
 
-                    // 3. AUTO-LOGIN KE AKUN (LANGSUNG MASUK MESKI STATUS MASIH MENUNGGU)
+                    // 3. AUTO-LOGIN KE AKUN (DENGAN STATUS MENUNGGU)
                     $_SESSION['is_login'] = true;
                     $_SESSION['user_id']  = $user_id;
                     $_SESSION['nama']     = $nama;
                     $_SESSION['role']     = $role;
+                    $_SESSION['status_verifikasi'] = 'Menunggu';
 
                     $found_foto = 'profil.jpeg';
                     foreach (['jpg', 'jpeg', 'png', 'gif'] as $ext) {
@@ -96,8 +97,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     mysqli_stmt_close($stmt_insert);
                     
-                    // Arahkan ke halaman profil/dashboard user
-                    header("Location: profil.php");
+                    // DIARAHKAN KE HALAMAN AWAL WEB (index.php) SESUAI PERMINTAAN
+                    header("Location: index.php");
                     exit;
 
                 } else {
