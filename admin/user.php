@@ -588,11 +588,12 @@ if (!$result) {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- SCRIPT KUSTOM KONFIRMASI HAPUS -->
+<!-- SCRIPT KUSTOM KONFIRMASI HAPUS -->
 <script>
-function konfirmasiHapus(id, namaFasilitas) {
+function konfirmasiHapus(id, namaUser) {
     Swal.fire({
-        title: 'Hapus Data Fasilitas?',
-        html: `Apakah kamu yakin ingin menghapus fasilitas <b>${namaFasilitas}</b>?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
+        title: 'Hapus Data User?',
+        html: `Apakah kamu yakin ingin menghapus user <b>${namaUser}</b>?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d9534f',

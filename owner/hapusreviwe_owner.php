@@ -9,12 +9,13 @@ ini_set('display_errors', 1);
 // CEK PARAMETER REVIEW_ID
 // ==========================================
 if (!isset($_GET['id']) || empty($_GET['id'])) {
-    die("ID Review tidak ditemukan.");
+    header("Location: review_owner.php");
+    exit;
 }
 
 $review_id = intval($_GET['id']);
 
-// Ambil data review untuk ditampilkan di pesan konfirmasi (opsional)
+// Ambil data review untuk validasi keberadaan data di database
 $query_cek = mysqli_query($conn, "SELECT * FROM review WHERE review_id = $review_id");
 if (!$query_cek || mysqli_num_rows($query_cek) == 0) {
     header("Location: review_owner.php");
@@ -23,18 +24,16 @@ if (!$query_cek || mysqli_num_rows($query_cek) == 0) {
 $review = mysqli_fetch_assoc($query_cek);
 
 // ==========================================
-// PROSES HAPUS KETIKA DIKONFIRMASI
+// PROSES HAPUS LANGSUNG (TANPA POST)
 // ==========================================
-if (isset($_POST['konfirmasi_hapus'])) {
-    $query  = "DELETE FROM review WHERE review_id = $review_id";
-    $delete = mysqli_query($conn, $query);
+$query  = "DELETE FROM review WHERE review_id = $review_id";
+$delete = mysqli_query($conn, $query);
 
-    if ($delete) {
-        // Redirect kembali ke halaman daftar review owner setelah berhasil
-        header("Location: review_owner.php");
-        exit;
-    } else {
-        die("Gagal menghapus data review: " . mysqli_error($conn));
-    }
+if ($delete) {
+    // Redirect kembali ke halaman daftar review owner setelah berhasil
+    header("Location: review_owner.php");
+    exit;
+} else {
+    die("Gagal menghapus data review: " . mysqli_error($conn));
 }
 ?>

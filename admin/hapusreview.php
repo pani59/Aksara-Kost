@@ -10,9 +10,8 @@ if (!isset($_GET['id'])) {
 $id = (int) $_GET['id'];
 
 // ==========================================
-// AMBIL DATA REVIEW
+// AMBIL DATA REVIEW (VALIDASI)
 // ==========================================
-
 $query = mysqli_query(
     $conn,
     "SELECT * FROM review WHERE review_id = $id"
@@ -31,20 +30,18 @@ if (!$review) {
 }
 
 // ==========================================
-// PROSES HAPUS KETIKA DIKONFIRMASI
+// PROSES HAPUS LANGSUNG
 // ==========================================
-if (isset($_POST['konfirmasi_hapus'])) {
-    $hapus = mysqli_query(
-        $conn,
-        "DELETE FROM review WHERE review_id = $id"
-    );
+$hapus = mysqli_query(
+    $conn,
+    "DELETE FROM review WHERE review_id = $id"
+);
 
-    if (!$hapus) {
-        die("Gagal menghapus review: " . mysqli_error($conn));
-    }
-
-    // Kembali ke halaman review setelah berhasil
-    header("Location: review.php");
-    exit;
+if (!$hapus) {
+    die("Gagal menghapus review: " . mysqli_error($conn));
 }
+
+// Kembali ke halaman review setelah berhasil
+header("Location: review.php");
+exit;
 ?>

@@ -586,6 +586,28 @@ function konfirmasiHapus(id, namaFasilitas) {
         }
     });
 }
+</script><script>
+function konfirmasiHapus(id, infoReview) {
+    Swal.fire({
+        title: 'Hapus Data Review?',
+        html: `Apakah kamu yakin ingin menghapus review <b>${infoReview}</b>?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d9534f',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        width: '420px',
+        customClass: {
+            popup: 'rounded-modal-aksara'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'hapusreview.php?id=' + id;
+        }
+    });
+}
 </script>
 
 <!-- CSS KUSTOM AGAR PERSIS SEPERTI CONTOH -->

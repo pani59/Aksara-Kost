@@ -540,9 +540,9 @@ function konfirmasiHapus(id, namaFasilitas) {
         confirmButtonText: 'Ya, Hapus',
         cancelButtonText: 'Batal',
         reverseButtons: true,
-        width: '420px',                  // Ukuran lebar kompak mirip seperti contoh
+        width: '420px',
         customClass: {
-            popup: 'rounded-modal-aksara' // Kelas kustom agar bentuknya persis
+            popup: 'rounded-modal-aksara'
         }
     }).then((result) => {
         if (result.isConfirmed) {

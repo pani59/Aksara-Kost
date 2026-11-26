@@ -1,47 +1,25 @@
 <?php
 require_once '../database.php';
 
-// Cek apakah ada ID booking yang dikirim via URL
+// Cek apakah ada ID yang dikirim via URL
 if (!isset($_GET['id'])) {
-    header("Location: booking.php");
+    header("Location: booking.php"); // Sesuaikan dengan halaman asal tabelmu (misal: user.php, kos.php, dll)
     exit;
 }
 
 $id = (int) $_GET['id'];
 
-$query = mysqli_query(
+// Langsung eksekusi hapus karena konfirmasi sudah dilakukan oleh SweetAlert2 di frontend
+$hapus = mysqli_query(
     $conn,
-    "SELECT * FROM booking WHERE booking_id = $id"
+    "DELETE FROM booking WHERE booking_id = $id" // Sesuaikan nama tabel dan kolom ID-nya
 );
 
-if (!$query) {
-    die("Gagal mengambil data: " . mysqli_error($conn));
+if (!$hapus) {
+    die("Gagal menghapus data: " . mysqli_error($conn));
 }
 
-$booking = mysqli_fetch_assoc($query);
-
-// Jika data booking tidak ditemukan di database
-if (!$booking) {
-    header("Location: booking.php");
-    exit;
-}
-
-// ==========================================
-// PROSES HAPUS DATA KETIKA DIKONFIRMASI
-// ==========================================
-if (isset($_POST['konfirmasi_hapus'])) {
-    $hapus = mysqli_query(
-        $conn,
-        "DELETE FROM booking WHERE booking_id = $id"
-    );
-
-    if (!$hapus) {
-        die("Gagal menghapus booking: " . mysqli_error($conn));
-    }
-
-    // Kembali ke halaman kelola booking setelah berhasil
-    header("Location: booking.php");
-    exit;
-}
+// Redirect kembali ke halaman tabel setelah berhasil
+header("Location: booking.php");
+exit;
 ?>
-

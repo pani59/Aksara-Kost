@@ -548,10 +548,10 @@ if (!$result) {
 
 <!-- SCRIPT KUSTOM KONFIRMASI HAPUS -->
 <script>
-function konfirmasiHapus(id, namaFasilitas) {
+function konfirmasiHapus(id, namaFoto) {
     Swal.fire({
-        title: 'Hapus Data Fasilitas?',
-        html: `Apakah kamu yakin ingin menghapus fasilitas <b>${namaFasilitas}</b>?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
+        title: 'Hapus Data Foto Kost?',
+        html: `Apakah kamu yakin ingin menghapus foto ${namaFoto}?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d9534f',
@@ -559,9 +559,9 @@ function konfirmasiHapus(id, namaFasilitas) {
         confirmButtonText: 'Ya, Hapus',
         cancelButtonText: 'Batal',
         reverseButtons: true,
-        width: '420px',                  // Ukuran lebar kompak mirip seperti contoh
+        width: '420px',
         customClass: {
-            popup: 'rounded-modal-aksara' // Kelas kustom agar bentuknya persis
+            popup: 'rounded-modal-aksara'
         }
     }).then((result) => {
         if (result.isConfirmed) {

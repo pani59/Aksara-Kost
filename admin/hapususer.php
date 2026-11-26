@@ -10,9 +10,8 @@ if (!isset($_GET['id'])) {
 $id = (int) $_GET['id'];
 
 // ==========================================
-// AMBIL DATA USER
+// AMBIL DATA USER (VALIDASI)
 // ==========================================
-
 $query = mysqli_query(
     $conn,
     "SELECT * FROM user WHERE user_id = $id"
@@ -31,20 +30,18 @@ if (!$user) {
 }
 
 // ==========================================
-// PROSES HAPUS KETIKA DIKONFIRMASI
+// PROSES HAPUS LANGSUNG
 // ==========================================
-if (isset($_POST['konfirmasi_hapus'])) {
-    $hapus = mysqli_query(
-        $conn,
-        "DELETE FROM user WHERE user_id = $id"
-    );
+$hapus = mysqli_query(
+    $conn,
+    "DELETE FROM user WHERE user_id = $id"
+);
 
-    if (!$hapus) {
-        die("Gagal menghapus user: " . mysqli_error($conn));
-    }
-
-    // Kembali ke halaman user setelah berhasil
-    header("Location: user.php");
-    exit;
+if (!$hapus) {
+    die("Gagal menghapus user: " . mysqli_error($conn));
 }
+
+// Kembali ke halaman user setelah berhasil
+header("Location: user.php");
+exit;
 ?>

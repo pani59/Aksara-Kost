@@ -6,32 +6,31 @@ require_once '../database.php';
 // CEK PARAMETER KOS_ID & FASILITAS_ID
 // ==========================================
 if (!isset($_GET['kos_id']) || !isset($_GET['fasilitas_id'])) {
-    die("ID Kos atau ID Fasilitas tidak ditemukan.");
+    header("Location: kos_fasilitas_owner.php"); // Sesuaikan dengan nama file tabel owner kamu
+    exit;
 }
 
 $kos_id       = intval($_GET['kos_id']);
 $fasilitas_id = intval($_GET['fasilitas_id']);
 
-// Ambil data untuk pengecekan (opsional)
+// Ambil data untuk pengecekan validasi keberadaan data di database
 $query_cek = mysqli_query($conn, "SELECT * FROM kos_fasilitas WHERE kos_id = $kos_id AND fasilitas_id = $fasilitas_id");
 if (!$query_cek || mysqli_num_rows($query_cek) == 0) {
-    header("Location: kosfasilitas_owner.php");
+    header("Location: kos_fasilitas_owner.php");
     exit;
 }
 
 // ==========================================
-// PROSES HAPUS KETIKA DIKONFIRMASI
+// PROSES HAPUS LANGSUNG (TANPA POST)
 // ==========================================
-if (isset($_POST['konfirmasi_hapus'])) {
-    $query  = "DELETE FROM kos_fasilitas WHERE kos_id = $kos_id AND fasilitas_id = $fasilitas_id";
-    $delete = mysqli_query($conn, $query);
+$query  = "DELETE FROM kos_fasilitas WHERE kos_id = $kos_id AND fasilitas_id = $fasilitas_id";
+$delete = mysqli_query($conn, $query);
 
-    if ($delete) {
-        // Redirect kembali ke halaman utama setelah berhasil
-        header("Location: kosfasilitas_owner.php");
-        exit;
-    } else {
-        die("Gagal menghapus data: " . mysqli_error($conn));
-    }
+if ($delete) {
+    // Redirect kembali ke halaman utama setelah berhasil
+    header("Location: kos_fasilitas_owner.php");
+    exit;
+} else {
+    die("Gagal menghapus data: " . mysqli_error($conn));
 }
 ?>

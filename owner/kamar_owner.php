@@ -491,11 +491,12 @@ $_SESSION['foto'] = $found_foto;
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
 <!-- SCRIPT KUSTOM KONFIRMASI HAPUS -->
+<!-- SCRIPT KUSTOM KONFIRMASI HAPUS KAMAR OWNER -->
 <script>
-function konfirmasiHapus(id, namaFasilitas) {
+function konfirmasiHapus(id, namaKamar) {
     Swal.fire({
-        title: 'Hapus Data Fasilitas?',
-        html: `Apakah kamu yakin ingin menghapus fasilitas <b>${namaFasilitas}</b>?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
+        title: 'Hapus Data Kamar?',
+        html: `Apakah kamu yakin ingin menghapus kamar <b>${namaKamar}</b>?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d9534f',

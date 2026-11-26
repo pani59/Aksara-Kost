@@ -1,7 +1,7 @@
 <?php
 require_once '../database.php';
 
-// Cek apakah ada ID
+// Cek apakah ada ID yang dikirim via URL
 if (!isset($_GET['id'])) {
     header("Location: kamar.php");
     exit;
@@ -10,9 +10,8 @@ if (!isset($_GET['id'])) {
 $id = (int) $_GET['id'];
 
 // ==========================================
-// AMBIL DATA KAMAR
+// AMBIL DATA KAMAR (VALIDASI)
 // ==========================================
-
 $query = mysqli_query(
     $conn,
     "SELECT * FROM kamar WHERE kamar_id = $id"
@@ -24,27 +23,25 @@ if (!$query) {
 
 $kamar = mysqli_fetch_assoc($query);
 
-// Jika kamar tidak ditemukan
+// Jika kamar tidak ditemukan di database
 if (!$kamar) {
     header("Location: kamar.php");
     exit;
 }
 
 // ==========================================
-// PROSES HAPUS KETIKA DIKONFIRMASI
+// PROSES HAPUS LANGSUNG
 // ==========================================
-if (isset($_POST['konfirmasi_hapus'])) {
-    $hapus = mysqli_query(
-        $conn,
-        "DELETE FROM kamar WHERE kamar_id = $id"
-    );
+$hapus = mysqli_query(
+    $conn,
+    "DELETE FROM kamar WHERE kamar_id = $id"
+);
 
-    if (!$hapus) {
-        die("Gagal menghapus kamar: " . mysqli_error($conn));
-    }
-
-    // Kembali ke halaman kamar setelah berhasil
-    header("Location: kamar.php");
-    exit;
+if (!$hapus) {
+    die("Gagal menghapus kamar: " . mysqli_error($conn));
 }
+
+// Kembali ke halaman kamar setelah berhasil
+header("Location: kamar.php");
+exit;
 ?>

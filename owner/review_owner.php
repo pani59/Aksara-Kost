@@ -488,12 +488,18 @@ $_SESSION['foto'] = $found_foto;
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
 
+<!-- SWEETALERT2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
 <!-- SCRIPT KUSTOM KONFIRMASI HAPUS -->
+<!-- SCRIPT KUSTOM KONFIRMASI HAPUS REVIEW OWNER -->
 <script>
-function konfirmasiHapus(id, namaFasilitas) {
+function konfirmasiHapus(id, infoReview) {
     Swal.fire({
-        title: 'Hapus Data Fasilitas?',
-        html: `Apakah kamu yakin ingin menghapus fasilitas <b>${namaFasilitas}</b>?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
+        title: 'Hapus Data Review?',
+        html: `Apakah kamu yakin ingin menghapus review <b>${infoReview}</b>?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d9534f',

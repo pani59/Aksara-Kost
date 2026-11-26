@@ -500,11 +500,12 @@ $_SESSION['foto'] = $found_foto;
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- SCRIPT KUSTOM KONFIRMASI HAPUS -->
+<!-- SCRIPT KUSTOM KONFIRMASI HAPUS FOTO KOS OWNER -->
 <script>
-function konfirmasiHapus(id, namaFasilitas) {
+function konfirmasiHapus(id, namaFoto) {
     Swal.fire({
-        title: 'Hapus Data Fasilitas?',
-        html: `Apakah kamu yakin ingin menghapus fasilitas <b>${namaFasilitas}</b>?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
+        title: 'Hapus Data Foto Kost?',
+        html: `Apakah kamu yakin ingin menghapus foto <b>${namaFoto}</b>?<br><small class="text-muted">Data yang telah dihapus tidak dapat dikembalikan.</small>`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d9534f',
