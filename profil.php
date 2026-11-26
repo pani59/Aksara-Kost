@@ -596,7 +596,7 @@ $nama_html = htmlspecialchars($_SESSION['nama'] ?? $user['nama']);
                             <?php if ($status_verifikasi === 'Terverifikasi'): ?>
                                 <span style="color: #28a745; font-weight: 700;">Terverifikasi</span>
                             <?php else: ?>
-                                <span style="color: #f39c12; font-weight: 700;">Menunggu Konfirmasi Admin/Owner</span>
+                                <span style="color: #f39c12; font-weight: 700;">Menunggu Konfirmasi</span>
                             <?php endif; ?>
                         </span>
                     </div>

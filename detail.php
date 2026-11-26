@@ -382,7 +382,7 @@ function rupiah($angka) {
                 <?php if (isset($_SESSION['user_id']) && $user_status_verifikasi === 'Menunggu'): ?>
                     <!-- JIKA STATUS AKUN MASIH MENUNGGU -->
                     <div class="alert-warning-box">
-                        <i class="fa-solid fa-triangle-exclamation"></i> Akun Anda masih <strong>Menunggu Konfirmasi</strong> dari Admin. Anda belum dapat melakukan booking kost sebelum akun disetujui.
+                        <i class="fa-solid fa-triangle-exclamation"></i> Akun Anda masih <strong>Menunggu Konfirmasi</strong> Anda belum dapat melakukan booking kost sebelum akun disetujui.
                     </div>
                 <?php endif; ?>
 
